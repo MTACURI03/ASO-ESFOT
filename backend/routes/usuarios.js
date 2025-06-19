@@ -31,7 +31,7 @@ router.post('/registrar', async (req, res) => {
       tokenVerificacion });
     await nuevoUsuario.save();
 
-    const url = `https://aso-esfot-p1kb.vercel.app/verificar${tokenVerificacion}`;
+    const url = `https://aso-esfot-p1kb.vercel.app/verificar/${tokenVerificacion}`;
     await transporter.sendMail({
       from: 'tuusuario@gmail.com',
       to: correo,
