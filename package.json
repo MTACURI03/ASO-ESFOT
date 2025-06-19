@@ -1,0 +1,15 @@
+{
+  "name": "aso-esfot",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node backend/server.js",
+    "heroku-postbuild": "cd frontend && npm install && npm run build"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "nodemailer": "^7.0.3",
+    "react-router-dom": "^7.6.0"
+  }
+}
