@@ -34,6 +34,7 @@ const CrudPlanesPage = () => {
       imagen: form.imagen,
       precio: Number(form.precio)
     };
+    console.log('Datos enviados:', planData); // <-- Agrega esto
 
     if (editId) {
       // Actualizar
@@ -125,6 +126,7 @@ const CrudPlanesPage = () => {
                 if (file) {
                   const reader = new FileReader();
                   reader.onloadend = () => {
+                    console.log('Imagen base64:', reader.result); // <-- Agrega esto
                     setForm(prev => ({ ...prev, imagen: reader.result }));
                   };
                   reader.readAsDataURL(file);
