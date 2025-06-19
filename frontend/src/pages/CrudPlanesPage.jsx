@@ -13,7 +13,7 @@ const CrudPlanesPage = () => {
 
   // Cargar planes desde la base de datos
   useEffect(() => {
-    fetch('http://localhost:5000/api/planescrud')
+    fetch('https://aso-esfot-backend.onrender.com/api/planescrud')
       .then(res => res.json())
       .then(data => setPlanes(data));
   }, []);
@@ -37,21 +37,21 @@ const CrudPlanesPage = () => {
 
     if (editId) {
       // Actualizar
-      await fetch(`http://localhost:5000/api/planescrud/${editId}`, {
+      await fetch(`https://aso-esfot-backend.onrender.com/api/planescrud/${editId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(planData)
       });
     } else {
       // Crear
-      await fetch('http://localhost:5000/api/planescrud', {
+      await fetch('https://aso-esfot-backend.onrender.com/api/planescrud', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(planData)
       });
     }
     // Recargar planes
-    fetch('http://localhost:5000/api/planescrud')
+    fetch('https://aso-esfot-backend.onrender.com/api/planescrud')
       .then(res => res.json())
       .then(data => setPlanes(data));
     setForm({ titulo: '', beneficios: '', imagen: '', precio: '' });
@@ -72,7 +72,7 @@ const CrudPlanesPage = () => {
   // Eliminar plan
   const handleDelete = async (id) => {
     if (window.confirm('¿Estás seguro de eliminar este plan?')) {
-      await fetch(`http://localhost:5000/api/planescrud/${id}`, { method: 'DELETE' });
+      await fetch(`https://aso-esfot-backend.onrender.com/api/planescrud/${id}`, { method: 'DELETE' });
       setPlanes(planes.filter(p => p._id !== id));
     }
   };

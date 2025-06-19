@@ -23,7 +23,7 @@ const RegistroPage = () => {
         return;
       }
       console.log('usuarioId:', usuarioId, 'nombrePlan:', nombrePlan);
-      const response = await fetch('http://localhost:5000/api/planes/seleccionar', {
+      const response = await fetch('https://aso-esfot-backend.onrender.com/api/planes/seleccionar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usuarioId, nombrePlan, precio }),
@@ -43,7 +43,7 @@ const RegistroPage = () => {
 };
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/planescrud')
+    fetch('https://aso-esfot-backend.onrender.com/api/planescrud')
       .then(res => res.json())
       .then(data => setSecciones(data));
   }, []);

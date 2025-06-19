@@ -34,7 +34,7 @@ const CrearPasswordPage = () => {
   };
 
   try {
-    const response = await fetch("http://localhost:5000/api/usuarios/registrar", {
+    const response = await fetch("https://aso-esfot-backend.onrender.com/api/usuarios/registrar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(nuevoUsuario),

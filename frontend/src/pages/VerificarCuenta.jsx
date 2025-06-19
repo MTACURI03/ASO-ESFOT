@@ -9,7 +9,7 @@ const VerificarCuenta = () => {
   const handleVerificar = async () => {
     setMensaje('Verificando...');
     try {
-      const res = await fetch(`http://localhost:5000/api/usuarios/verificar/${token}`);
+      const res = await fetch(`https://aso-esfot-backend.onrender.com/api/usuarios/verificar/${token}`);
       const text = await res.text();
       setMensaje(text);
       if (res.ok) setVerificado(true);

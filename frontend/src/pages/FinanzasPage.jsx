@@ -9,13 +9,13 @@ const FinanzasPage = () => {
 
   // Trae el saldo, los gastos y los pagos
   useEffect(() => {
-    fetch('http://localhost:5000/api/finanzas/saldo')
+    fetch('https://aso-esfot-backend.onrender.com/api/finanzas/saldo')
       .then(res => res.json())
       .then(data => setSaldo(data.saldo));
-    fetch('http://localhost:5000/api/finanzas/gastos')
+    fetch('https://aso-esfot-backend.onrender.com/api/finanzas/gastos')
       .then(res => res.json())
       .then(data => setGastos(data));
-    fetch('http://localhost:5000/api/planes/aportaciones')
+    fetch('https://aso-esfot-backend.onrender.com/api/planes/aportaciones')
       .then(res => res.json())
       .then(data => setPagos(data.filter(p => p.estado === 'Pagado')));
   }, []);
@@ -23,7 +23,7 @@ const FinanzasPage = () => {
   // Registrar un gasto
   const handleAddGasto = (e) => {
     e.preventDefault();
-    fetch('http://localhost:5000/api/finanzas/gastar', {
+    fetch('https://aso-esfot-backend.onrender.com/api/finanzas/gastar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(nuevoGasto),

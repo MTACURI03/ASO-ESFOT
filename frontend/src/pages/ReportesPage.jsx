@@ -6,7 +6,7 @@ const ReportesPage = () => {
   const [aportaciones, setAportaciones] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/planes/aportaciones')
+    fetch('https://aso-esfot-backend.onrender.com/api/planes/aportaciones')
       .then(res => res.json())
       .then(data => setAportaciones(data))
       .catch(() => setAportaciones([]));
@@ -42,7 +42,7 @@ const ReportesPage = () => {
 
   const cambiarEstado = (id, estadoActual) => {
     const nuevoEstado = estadoActual === 'Pagado' ? 'Pendiente' : 'Pagado';
-    fetch(`http://localhost:5000/api/planes/aportaciones/${id}/estado`, {
+    fetch(`https://aso-esfot-backend.onrender.com/api/planes/aportaciones/${id}/estado`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ estado: nuevoEstado }),

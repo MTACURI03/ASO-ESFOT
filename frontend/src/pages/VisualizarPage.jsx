@@ -59,7 +59,7 @@ const VisualizarPage = () => {
       setLoading(false);
       return;
     }
-    fetch(`http://localhost:5000/api/planes/usuario/${usuarioId}`)
+    fetch(`https://aso-esfot-backend.onrender.com/api/planes/usuario/${usuarioId}`)
       .then(res => res.json())
       .then(data => {
         const planes = data.map(plan => ({
