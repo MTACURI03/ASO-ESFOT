@@ -77,25 +77,60 @@ const VisualizarPage = () => {
   }, []);
 
   // Función para generar el PDF
-  const generarReporte = () => {
-    const doc = new jsPDF();
-    doc.setFontSize(16);
-    doc.text('Factura de Aportaciones ASO-ESFOT', 20, 20);
-    doc.setFontSize(12);
+  const generarReporte = async () => {
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
 
-    let y = 35;
+    // Margen rojo
+    doc.setDrawColor(233, 76, 76);
+    doc.setLineWidth(3);
+    doc.rect(8, 8, 194, 281, 'S');
+
+    // Logo ESFOT (ajusta la ruta si es necesario)
+    const logoUrl = `${window.location.origin}/imagenes_asfot/logo.png`;
+    const getImageDataUrl = (url) =>
+      fetch(url)
+        .then(r => r.blob())
+        .then(blob => new Promise(resolve => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(blob);
+        }));
+
+    const logoDataUrl = await getImageDataUrl(logoUrl);
+    doc.addImage(logoDataUrl, 'PNG', 15, 12, 30, 30);
+
+    // Título y datos
+    doc.setFontSize(18);
+    doc.text('Factura de Aportaciones ASO-ESFOT', 55, 22);
+    doc.setFontSize(12);
+    doc.text(`Fecha de emisión: ${new Date().toLocaleDateString()}`, 55, 30);
+
+    let y = 50;
     aportaciones.forEach((item, idx) => {
+      doc.setFontSize(13);
+      doc.setTextColor(233, 76, 76);
       doc.text(`Plan: ${item.plan}`, 20, y);
-      doc.text(`Fecha: ${item.fecha}`, 20, y + 7);
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(11);
+      doc.text(`Fecha de selección: ${item.fecha}`, 20, y + 7);
       doc.text(`Estado: ${item.estado}`, 20, y + 14);
       doc.text('Detalles:', 20, y + 21);
       (PLANES_DETALLE[item.plan] || []).forEach((detalle, i) => {
-        doc.text(`- ${detalle}`, 30, y + 28 + i * 7);
+        doc.text(`- ${detalle}`, 30, y + 28 + i * 6);
       });
-      y += 28 + (PLANES_DETALLE[item.plan]?.length || 0) * 7 + 10;
-      if (y > 270) { // Salto de página si es necesario
+      y += 28 + (PLANES_DETALLE[item.plan]?.length || 0) * 6 + 10;
+      if (y > 260) { // Salto de página si es necesario
         doc.addPage();
-        y = 20;
+        // Redibuja margen y logo en la nueva página
+        doc.setDrawColor(233, 76, 76);
+        doc.setLineWidth(3);
+        doc.rect(8, 8, 194, 281, 'S');
+        doc.addImage(logoDataUrl, 'PNG', 15, 12, 30, 30);
+        y = 50;
       }
     });
 

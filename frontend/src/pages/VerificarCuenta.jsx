@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const VerificarCuenta = () => {
   const { token } = useParams();
   const [mensaje, setMensaje] = useState('');
   const [verificado, setVerificado] = useState(false);
+  const navigate = useNavigate();
 
   const handleVerificar = async () => {
     setMensaje('Verificando...');
@@ -29,7 +30,12 @@ const VerificarCuenta = () => {
           {mensaje && <p className="mt-3">{mensaje}</p>}
         </>
       ) : (
-        <p className="mt-3 text-success">¡Cuenta verificada! Ya puedes iniciar sesión.</p>
+        <>
+          <p className="mt-3 text-success">¡Cuenta verificada! Ya puedes iniciar sesión.</p>
+          <button className="btn btn-primary mt-2" onClick={() => navigate('/')}>
+            Ir al Login
+          </button>
+        </>
       )}
     </div>
   );

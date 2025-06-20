@@ -1,28 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import ModalMensaje from './ModalMensaje'; // Ajusta la ruta según tu estructura
 
 const RegistroPage = () => {
   const [visible, setVisible] = useState([false, false, false]);
   const [secciones, setSecciones] = useState([]);
+  const [modal, setModal] = useState({
+    show: false,
+    mensaje: '',
+    tipo: 'success',
+    confirm: false,
+    onConfirm: null
+  });
+  const [showCorreoModal, setShowCorreoModal] = useState(false);
 
   const toggle = (index) => {
     const updated = [...visible];
     updated[index] = !updated[index];
     setVisible(updated);
   };
-  
 
-  const elegirPlan = async (nombrePlan,precio) => {
-  const confirmar = window.confirm(`¿Estás seguro de elegir el ${nombrePlan}?`);
-  if (confirmar) {
+  const elegirPlan = (nombrePlan, precio) => {
+    setModal({
+      show: true,
+      mensaje: `¿Estás seguro de elegir el ${nombrePlan}?`,
+      tipo: 'warning',
+      confirm: true,
+      onConfirm: () => confirmarEleccion(nombrePlan, precio)
+    });
+  };
+
+  const confirmarEleccion = async (nombrePlan, precio) => {
+    setModal({ ...modal, show: false });
     try {
-      const usuarioId = localStorage.getItem('usuarioId'); // Ajusta según tu manejo de sesión
-      
+      const usuarioId = localStorage.getItem('usuarioId');
       if (!usuarioId) {
-        alert('No se encontró usuario autenticado');
+        setModal({
+          show: true,
+          mensaje: 'No se encontró usuario autenticado',
+          tipo: 'error',
+          confirm: false
+        });
         return;
       }
-      console.log('usuarioId:', usuarioId, 'nombrePlan:', nombrePlan);
       const response = await fetch('https://aso-esfot-backend.onrender.com/api/planes/seleccionar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -32,21 +52,43 @@ const RegistroPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        alert(`Has seleccionado el ${nombrePlan}.`);
+        setModal({
+          show: true,
+          mensaje: `Has seleccionado el ${nombrePlan}.`,
+          tipo: 'success',
+          confirm: false,
+          onClose: () => setShowCorreoModal(true)
+        });
       } else {
-        alert('Error al guardar el plan: ' + data.mensaje);
+        setModal({
+          show: true,
+          mensaje: 'Error al guardar el plan: ' + data.mensaje,
+          tipo: 'error',
+          confirm: false
+        });
       }
     } catch (error) {
-      alert('Error de red: ' + error.message);
+      setModal({
+        show: true,
+        mensaje: 'Error de red: ' + error.message,
+        tipo: 'error',
+        confirm: false
+      });
     }
-  }
-};
+  };
 
   useEffect(() => {
     fetch('https://aso-esfot-backend.onrender.com/api/planescrud')
       .then(res => res.json())
       .then(data => setSecciones(data));
   }, []);
+
+  const handleCloseModal = () => {
+    if (modal.onClose) modal.onClose();
+    setModal({ ...modal, show: false });
+  };
+
+  const handleCloseCorreoModal = () => setShowCorreoModal(false);
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -98,6 +140,24 @@ const RegistroPage = () => {
           </div>
         </div>
       </main>
+
+      {/* MODAL MENSAJE */}
+      <ModalMensaje
+        show={modal.show}
+        mensaje={modal.mensaje}
+        tipo={modal.tipo}
+        confirm={modal.confirm}
+        onClose={handleCloseModal}
+        onConfirm={modal.onConfirm}
+      />
+
+      {/* MODAL CORREO */}
+      <ModalMensaje
+        show={showCorreoModal}
+        mensaje="Se te envió una notificación a tu correo personal."
+        tipo="success"
+        onClose={handleCloseCorreoModal}
+      />
 
       {/* PIE DE PÁGINA */}
       <footer className="bg-esfot text-white text-center py-3">

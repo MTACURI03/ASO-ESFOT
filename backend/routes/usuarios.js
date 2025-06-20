@@ -46,9 +46,18 @@ router.post('/registrar', async (req, res) => {
 
   try {
     const tokenVerificacion = crypto.randomBytes(32).toString('hex');
-    const { nombre, apellido, telefono, carrera, correo, password } = req.body;
-    const nuevoUsuario = new Usuario({ nombre, apellido, telefono, carrera, correo, password,verificado: false,
-      tokenVerificacion });
+    const { nombre, apellido, telefono, carrera, semestre, correo, password } = req.body;
+    const nuevoUsuario = new Usuario({
+      nombre,
+      apellido,
+      telefono,
+      carrera,
+      semestre, // <-- agrega aquí
+      correo,
+      password,
+      verificado: false,
+      tokenVerificacion
+    });
     await nuevoUsuario.save();
 
     const url = `https://aso-esfot-p1kb.vercel.app/verificar/${tokenVerificacion}`;

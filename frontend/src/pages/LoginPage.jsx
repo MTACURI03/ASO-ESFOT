@@ -1,31 +1,32 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import ModalMensaje from './ModalMensaje'; // Ajusta la ruta según tu estructura
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
+  const [modal, setModal] = useState({ show: false, mensaje: '', tipo: 'success' });
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    const response = await fetch('https://aso-esfot-backend.onrender.com/api/usuarios/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ correo, password }),
+    });
+    const data = await response.json();
+    if (response.ok) {
+      setModal({ show: true, mensaje: 'Inicio de sesión exitoso', tipo: 'success' });
+    } else {
+      setModal({ show: true, mensaje: data.mensaje || 'Error al iniciar sesión', tipo: 'error' });
+    }
+  };
 
-    try {
-      const response = await fetch('https://aso-esfot-backend.onrender.com/api/usuarios/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ correo, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('usuarioId', data.usuario.id);
-        alert('Inicio de sesión exitoso');
-        // Aquí puedes redirigir a otra página, por ejemplo:
-        window.location.href = '/landing';
-      } else {
-        alert(data.mensaje);
-      }
-    } catch (error) {
-      alert('Error en el servidor');
+  const handleCloseModal = () => {
+    setModal({ ...modal, show: false });
+    if (modal.tipo === 'success') {
+      navigate('/landing'); // Cambia la ruta según tu app
     }
   };
 
@@ -98,6 +99,14 @@ const LoginPage = () => {
       <footer className="bg-esfot text-white text-center py-3">
         &copy; 2025 ASO-ESFOT. Todos los derechos reservados.
       </footer>
+
+      {/* Modal de mensaje */}
+      <ModalMensaje
+        show={modal.show}
+        mensaje={modal.mensaje}
+        tipo={modal.tipo}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 };
