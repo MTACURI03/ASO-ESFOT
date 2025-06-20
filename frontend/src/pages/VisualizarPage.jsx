@@ -110,6 +110,8 @@ const VisualizarPage = () => {
     doc.text(`Fecha de emisión: ${new Date().toLocaleDateString()}`, 55, 30);
 
     let y = 50;
+    const margenSuperior = 20;
+    const margenInferior = 270;
     aportaciones.forEach((item, idx) => {
       doc.setFontSize(13);
       doc.setTextColor(233, 76, 76);
@@ -119,13 +121,34 @@ const VisualizarPage = () => {
       doc.text(`Fecha de selección: ${item.fecha}`, 20, y + 7);
       doc.text(`Estado: ${item.estado}`, 20, y + 14);
       doc.text('Detalles:', 20, y + 21);
-      (PLANES_DETALLE[item.plan] || []).forEach((detalle, i) => {
+
+      const detalles = PLANES_DETALLE[item.plan] || [];
+      detalles.forEach((detalle, i) => {
+        const detalleY = y + 28 + i * 6;
+        // Si el siguiente detalle se sale del margen inferior, salta de página
+        if (detalleY > margenInferior) {
+          doc.addPage();
+          doc.setDrawColor(233, 76, 76);
+          doc.setLineWidth(3);
+          doc.rect(8, 8, 194, 281, 'S');
+          doc.addImage(logoDataUrl, 'PNG', 15, 12, 30, 30);
+          y = 50; // Reinicia y para la nueva página
+          doc.setFontSize(13);
+          doc.setTextColor(233, 76, 76);
+          doc.text(`Plan: ${item.plan}`, 20, y);
+          doc.setTextColor(0, 0, 0);
+          doc.setFontSize(11);
+          doc.text(`Fecha de selección: ${item.fecha}`, 20, y + 7);
+          doc.text(`Estado: ${item.estado}`, 20, y + 14);
+          doc.text('Detalles:', 20, y + 21);
+        }
         doc.text(`- ${detalle}`, 30, y + 28 + i * 6);
       });
-      y += 28 + (PLANES_DETALLE[item.plan]?.length || 0) * 6 + 10;
-      if (y > 260) { // Salto de página si es necesario
+
+      y += 28 + detalles.length * 6 + 10;
+      // Si el siguiente bloque se sale del margen inferior, salta de página
+      if (y > margenInferior) {
         doc.addPage();
-        // Redibuja margen y logo en la nueva página
         doc.setDrawColor(233, 76, 76);
         doc.setLineWidth(3);
         doc.rect(8, 8, 194, 281, 'S');

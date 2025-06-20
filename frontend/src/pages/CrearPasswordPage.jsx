@@ -14,6 +14,8 @@ const CrearPasswordPage = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [semestre, setSemestre] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   // Validaciones
   const nombreValido = /^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*$/.test(nombre);
@@ -103,8 +105,8 @@ const CrearPasswordPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        alert(data.mensaje || "Registrado con éxito ✅");
-        navigate('/');
+        setSuccessMessage(data.mensaje || "Registrado con éxito ✅");
+        setShowSuccessModal(true);
       } else {
         alert(data.mensaje || "Error al registrar el usuario");
       }
@@ -115,6 +117,28 @@ const CrearPasswordPage = () => {
 
   return (
     <div className="d-flex flex-column min-vh-100">
+      {/* Modal de éxito */}
+      {showSuccessModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999
+        }}>
+          <div style={{
+            background: 'white', padding: 32, borderRadius: 12, minWidth: 300, textAlign: 'center', boxShadow: '0 2px 16px #0002'
+          }}>
+            <h4>{successMessage}</h4>
+            <button
+              className="btn btn-primary mt-3"
+              onClick={() => {
+                setShowSuccessModal(false);
+                navigate('/');
+              }}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
       {/* ENCABEZADO */}
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
