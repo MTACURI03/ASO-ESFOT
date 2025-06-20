@@ -121,34 +121,39 @@ const UsuariosPage = () => {
             </thead>
             <tbody>
               {usuarios.length > 0 ? (
-                usuarios.map((u, i) => (
-                  <tr key={u._id}>
-                    <td>{i + 1}</td>
-                    <td>{u.nombre || ''}</td>
-                    <td>{u.apellido || ''}</td>
-                    <td>{u.correo || ''}</td>
-                    <td>{u.semestre || ''}</td>
-                    <td>
-                      <span className={`badge ${u.activo ? 'bg-success' : 'bg-danger'}`}>
-                        {u.activo ? 'Activo' : 'Inactivo'}
-                      </span>
-                    </td>
-                    <td>
-                      {u.activo ? (
-                        <button
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => mostrarModal(u._id, u.activo)}
-                        >
-                          Desactivar
-                        </button>
-                      ) : (
-                        <button className="btn btn-sm btn-outline-secondary" disabled>
-                          Inactivo
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))
+                usuarios
+                  .filter(u =>
+                    !busqueda ||
+                    (u.semestre && u.semestre.toLowerCase().includes(busqueda.toLowerCase()))
+                  )
+                  .map((u, i) => (
+                    <tr key={u._id}>
+                      <td>{i + 1}</td>
+                      <td>{u.nombre || ''}</td>
+                      <td>{u.apellido || ''}</td>
+                      <td>{u.correo || ''}</td>
+                      <td>{u.semestre || ''}</td>
+                      <td>
+                        <span className={`badge ${u.activo ? 'bg-success' : 'bg-danger'}`}>
+                          {u.activo ? 'Activo' : 'Inactivo'}
+                        </span>
+                      </td>
+                      <td>
+                        {u.activo ? (
+                          <button
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() => mostrarModal(u._id, u.activo)}
+                          >
+                            Desactivar
+                          </button>
+                        ) : (
+                          <button className="btn btn-sm btn-outline-secondary" disabled>
+                            Inactivo
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
               ) : (
                 <tr>
                   <td colSpan="7" className="text-center text-muted">No se encontraron usuarios.</td>

@@ -41,6 +41,11 @@ const FinanzasPage = () => {
     import('jspdf').then(jsPDF => {
       const doc = new jsPDF.jsPDF();
 
+      // Dibuja margen rojo
+      doc.setDrawColor(233, 76, 76); // Rojo
+      doc.setLineWidth(3);
+      doc.rect(8, 8, 194, 281, 'S'); // Margen para A4
+
       // Logo (usa una URL pública o base64 para máxima compatibilidad)
       const logoUrl = window.location.origin + '/imagenes_asoesfot/logo.png';
       const img = new window.Image();
@@ -59,7 +64,6 @@ const FinanzasPage = () => {
         doc.setFontSize(10);
         doc.text('ASOCIACIÓN DE ESTUDIANTES DE LA ESFOT', 55, 36);
         doc.text('Quito, Ecuador', 55, 41);
-        doc.text('RUC: 1790012345001', 55, 46);
 
         let y = 55;
         const margenInferior = 270;
@@ -80,7 +84,12 @@ const FinanzasPage = () => {
           y += 7;
           if (y > margenInferior) {
             doc.addPage();
-            y = 20;
+            // Redibuja margen y logo en nueva página
+            doc.setDrawColor(233, 76, 76);
+            doc.setLineWidth(3);
+            doc.rect(8, 8, 194, 281, 'S');
+            doc.addImage(img, 'PNG', 15, 10, 30, 30);
+            y = 55;
           }
         });
 
@@ -96,7 +105,12 @@ const FinanzasPage = () => {
           y += 7;
           if (y > margenInferior) {
             doc.addPage();
-            y = 20;
+            // Redibuja margen y logo en nueva página
+            doc.setDrawColor(233, 76, 76);
+            doc.setLineWidth(3);
+            doc.rect(8, 8, 194, 281, 'S');
+            doc.addImage(img, 'PNG', 15, 10, 30, 30);
+            y = 55;
           }
         });
 
@@ -119,10 +133,12 @@ const FinanzasPage = () => {
     <div className="d-flex flex-column min-vh-100">
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <img src="/imagenes_asoesfot/logo.png" alt="Logo" style={{ height: '60px' }} />
-        <Link to="/adminpage" className="btn btn-esfot me-2">Menú</Link>
-        <Link to="/adminpage/usuariospage" className="btn btn-esfot me-2">Gestionar Usuarios</Link>
-        <Link to="/adminpage/reportespage" className="btn btn-esfot me-2">Gestionar Aportantes</Link>
-        <Link to="/adminpage/crudpage" className="btn btn-esfot me-2">Gestionar Gastos</Link>
+        <div>
+          <Link to="/adminpage" className="btn btn-esfot me-2">Menú</Link>
+          <Link to="/adminpage/usuariospage" className="btn btn-esfot me-2">Gestionar Usuarios</Link>
+          <Link to="/adminpage/reportespage" className="btn btn-esfot me-2">Gestionar Aportantes</Link>
+          <Link to="/adminpage/crudpage" className="btn btn-esfot me-2">Gestionar Gastos</Link>
+        </div>
       </header>
       <main className="flex-grow-1 container py-4">
         <h2 className="text-center mb-4">Gestión Financiera - ASO ESFOT</h2>

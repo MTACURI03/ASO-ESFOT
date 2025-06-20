@@ -22,6 +22,11 @@ const ReportesPage = () => {
     const { jsPDF } = await import('jspdf');
     const doc = new jsPDF();
 
+    // Dibuja margen rojo
+    doc.setDrawColor(233, 76, 76); // Rojo
+    doc.setLineWidth(3);
+    doc.rect(8, 8, 194, 281, 'S'); // Margen para A4
+
     // Cargar logo desde public/
     const logoUrl = `${window.location.origin}/imagenes_asoesfot/logo.png`;
     const getImageDataUrl = (url) =>
@@ -60,6 +65,11 @@ const ReportesPage = () => {
       // Salto de página si es necesario
       if (y > margenInferior) {
         doc.addPage();
+        // Redibuja margen y logo en nueva página
+        doc.setDrawColor(233, 76, 76);
+        doc.setLineWidth(3);
+        doc.rect(8, 8, 194, 281, 'S');
+        doc.addImage(logoDataUrl, 'PNG', 15, 10, 30, 30);
         y = 50;
       }
     });
