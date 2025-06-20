@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ModalMensaje from './ModalMensaje'; // Ajusta la ruta según tu estructura
 
 const CrearPasswordPage = () => {
   const navigate = useNavigate();
@@ -15,7 +14,6 @@ const CrearPasswordPage = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [semestre, setSemestre] = useState('');
-  const [modal, setModal] = useState({ show: false, mensaje: '', tipo: 'success', onClose: null });
 
   // Validaciones
   const nombreValido = /^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*$/.test(nombre);
@@ -42,55 +40,46 @@ const CrearPasswordPage = () => {
     setTelefono(e.target.value.replace(/\D/g, '').slice(0, 10));
   };
 
-  const mostrarModal = (mensaje, tipo = 'error', onClose = null) => {
-    setModal({ show: true, mensaje, tipo, onClose });
-  };
-
-  const handleCloseModal = () => {
-    setModal({ ...modal, show: false });
-    if (modal.onClose) modal.onClose();
-  };
-
   const handleGuardar = async (e) => {
     e.preventDefault();
 
     if (!nombre || !apellido || !telefono || !carrera || !email || !password || !confirmPassword) {
-      mostrarModal("Por favor completa todos los campos.");
+      alert("Por favor completa todos los campos.");
       return;
     }
 
     if (!nombreValido) {
-      mostrarModal("El nombre debe empezar con mayúscula y solo contener letras.");
+      alert("El nombre debe empezar con mayúscula y solo contener letras.");
       return;
     }
 
     if (!apellidoValido) {
-      mostrarModal("El apellido debe empezar con mayúscula y solo contener letras.");
+      alert("El apellido debe empezar con mayúscula y solo contener letras.");
       return;
     }
 
     if (!telefonoValido) {
-      mostrarModal("El teléfono debe tener exactamente 10 dígitos.");
+      alert("El teléfono debe tener exactamente 10 dígitos.");
       return;
     }
 
     if (emailError || !/^[\w-.]+@epn\.edu\.ec$/.test(email)) {
-      mostrarModal("El correo debe ser institucional (@epn.edu.ec).");
+      alert("El correo debe ser institucional (@epn.edu.ec).");
       return;
     }
 
     if (!passwordValid) {
-      mostrarModal("La contraseña debe tener mínimo 9 caracteres y al menos una letra mayúscula.");
+      alert("La contraseña debe tener mínimo 9 caracteres y al menos una letra mayúscula.");
       return;
     }
 
     if (password !== confirmPassword) {
-      mostrarModal("Las contraseñas no coinciden.");
+      alert("Las contraseñas no coinciden.");
       return;
     }
 
     if (!semestre) {
-      mostrarModal("Por favor selecciona tu semestre.");
+      alert("Por favor selecciona tu semestre.");
       return;
     }
 
@@ -114,17 +103,13 @@ const CrearPasswordPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setModal({
-          show: true,
-          mensaje: data.mensaje || "Registrado con éxito ✅",
-          tipo: 'success',
-          onClose: () => navigate('/')
-        });
+        alert(data.mensaje || "Registrado con éxito ✅");
+        navigate('/');
       } else {
-        mostrarModal(data.mensaje || "Error al registrar el usuario");
+        alert(data.mensaje || "Error al registrar el usuario");
       }
     } catch (err) {
-      mostrarModal("Error al registrar: " + err.message);
+      alert("Error al registrar: " + err.message);
     }
   };
 
@@ -341,14 +326,6 @@ const CrearPasswordPage = () => {
           </div>
         </div>
       </main>
-
-      {/* MODAL MENSAJE */}
-      <ModalMensaje
-        show={modal.show}
-        mensaje={modal.mensaje}
-        tipo={modal.tipo}
-        onClose={handleCloseModal}
-      />
 
       {/* PIE DE PÁGINA */}
       <footer className="bg-esfot text-white text-center py-3">
