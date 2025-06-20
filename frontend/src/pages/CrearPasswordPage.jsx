@@ -128,7 +128,8 @@ const CrearPasswordPage = () => {
           }}>
             <h4>{successMessage}</h4>
             <button
-              className="btn btn-primary mt-3"
+              className="btn mt-3"
+              style={{ backgroundColor: '#e94c4c', color: 'white', border: 'none' }} // color institucional
               onClick={() => {
                 setShowSuccessModal(false);
                 navigate('/');

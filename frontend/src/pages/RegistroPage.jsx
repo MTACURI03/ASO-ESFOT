@@ -4,12 +4,15 @@ import { Link } from 'react-router-dom';
 const RegistroPage = () => {
   const [visible, setVisible] = useState([false, false, false]);
   const [secciones, setSecciones] = useState([]);
+  const [modal, setModal] = useState({ show: false, title: '', message: '', error: false });
 
   const toggle = (index) => {
     const updated = [...visible];
     updated[index] = !updated[index];
     setVisible(updated);
   };
+
+  const closeModal = () => setModal({ ...modal, show: false });
 
   const elegirPlan = async (nombrePlan, precio) => {
     const confirmar = window.confirm(`¿Estás seguro de elegir el ${nombrePlan}?`);
@@ -19,7 +22,12 @@ const RegistroPage = () => {
         const nombreUsuario = localStorage.getItem('nombreUsuario') || 'Usuario';
 
         if (!usuarioId) {
-          alert('No se encontró usuario autenticado');
+          setModal({
+            show: true,
+            title: 'Error',
+            message: 'No se encontró usuario autenticado',
+            error: true,
+          });
           return;
         }
         const response = await fetch('https://aso-esfot-backend.onrender.com/api/planes/seleccionar', {
@@ -31,14 +39,27 @@ const RegistroPage = () => {
         const data = await response.json();
 
         if (response.ok) {
-          alert(
-            `Has seleccionado el ${nombrePlan}.\n${nombreUsuario}\nSe te envió una notificación a tu correo revisalo por favor.`
-          );
+          setModal({
+            show: true,
+            title: 'Plan seleccionado',
+            message: `Has seleccionado el ${nombrePlan}.<br/><strong>${nombreUsuario}</strong><br/>Se te envió una notificación a tu correo, revísalo por favor.`,
+            error: false,
+          });
         } else {
-          alert('Error al guardar el plan: ' + data.mensaje);
+          setModal({
+            show: true,
+            title: 'Error',
+            message: 'Error al guardar el plan: ' + (data.mensaje || ''),
+            error: true,
+          });
         }
       } catch (error) {
-        alert('Error de red: ' + error.message);
+        setModal({
+          show: true,
+          title: 'Error de red',
+          message: error.message,
+          error: true,
+        });
       }
     }
   };
@@ -59,6 +80,26 @@ const RegistroPage = () => {
           <Link to="/visualizar" className="btn btn-esfot me-2">Mis Aportaciones</Link>
         </div>
       </header>
+
+      {/* MODAL */}
+      {modal.show && (
+        <div className="modal fade show" style={{ display: 'block', background: 'rgba(0,0,0,0.4)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className={`modal-header ${modal.error ? 'bg-danger text-white' : 'bg-success text-white'}`}>
+                <h5 className="modal-title">{modal.title}</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={closeModal}></button>
+              </div>
+              <div className="modal-body">
+                <div dangerouslySetInnerHTML={{ __html: modal.message }} />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={closeModal}>Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* CUERPO PRINCIPAL */}
       <main className="flex-grow-1 d-flex flex-column align-items-center justify-content-center p-4">

@@ -110,9 +110,10 @@ const VisualizarPage = () => {
     doc.text(`Fecha de emisión: ${new Date().toLocaleDateString()}`, 55, 30);
 
     let y = 50;
-    const margenSuperior = 20;
     const margenInferior = 270;
-    aportaciones.forEach((item, idx) => {
+
+    for (const item of aportaciones) {
+      // Encabezado del plan
       doc.setFontSize(13);
       doc.setTextColor(233, 76, 76);
       doc.text(`Plan: ${item.plan}`, 20, y);
@@ -123,8 +124,9 @@ const VisualizarPage = () => {
       doc.text('Detalles:', 20, y + 21);
 
       const detalles = PLANES_DETALLE[item.plan] || [];
-      detalles.forEach((detalle, i) => {
-        const detalleY = y + 28 + i * 6;
+      let detalleY = y + 28;
+
+      for (let i = 0; i < detalles.length; i++) {
         // Si el siguiente detalle se sale del margen inferior, salta de página
         if (detalleY > margenInferior) {
           doc.addPage();
@@ -132,20 +134,23 @@ const VisualizarPage = () => {
           doc.setLineWidth(3);
           doc.rect(8, 8, 194, 281, 'S');
           doc.addImage(logoDataUrl, 'PNG', 15, 12, 30, 30);
-          y = 50; // Reinicia y para la nueva página
+          // Reimprime encabezado del plan en la nueva página
+          detalleY = 50;
           doc.setFontSize(13);
           doc.setTextColor(233, 76, 76);
-          doc.text(`Plan: ${item.plan}`, 20, y);
+          doc.text(`Plan: ${item.plan}`, 20, detalleY);
           doc.setTextColor(0, 0, 0);
           doc.setFontSize(11);
-          doc.text(`Fecha de selección: ${item.fecha}`, 20, y + 7);
-          doc.text(`Estado: ${item.estado}`, 20, y + 14);
-          doc.text('Detalles:', 20, y + 21);
+          doc.text(`Fecha de selección: ${item.fecha}`, 20, detalleY + 7);
+          doc.text(`Estado: ${item.estado}`, 20, detalleY + 14);
+          doc.text('Detalles:', 20, detalleY + 21);
+          detalleY += 28;
         }
-        doc.text(`- ${detalle}`, 30, y + 28 + i * 6);
-      });
+        doc.text(`- ${detalles[i]}`, 30, detalleY);
+        detalleY += 6;
+      }
 
-      y += 28 + detalles.length * 6 + 10;
+      y = detalleY + 10;
       // Si el siguiente bloque se sale del margen inferior, salta de página
       if (y > margenInferior) {
         doc.addPage();
@@ -155,7 +160,7 @@ const VisualizarPage = () => {
         doc.addImage(logoDataUrl, 'PNG', 15, 12, 30, 30);
         y = 50;
       }
-    });
+    }
 
     doc.save('factura_aportaciones.pdf');
   };
