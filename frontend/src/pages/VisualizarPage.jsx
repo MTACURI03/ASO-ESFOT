@@ -113,7 +113,7 @@ const VisualizarPage = () => {
     const margenInferior = 270;
 
     for (const item of aportaciones) {
-      // Encabezado del plan
+      // Encabezado del plan (solo una vez)
       doc.setFontSize(13);
       doc.setTextColor(233, 76, 76);
       doc.text(`Plan: ${item.plan}`, 20, y);
@@ -134,17 +134,8 @@ const VisualizarPage = () => {
           doc.setLineWidth(3);
           doc.rect(8, 8, 194, 281, 'S');
           doc.addImage(logoDataUrl, 'PNG', 15, 12, 30, 30);
-          // Reimprime encabezado del plan en la nueva página
+          // Solo continuar con los detalles, sin repetir encabezado
           detalleY = 50;
-          doc.setFontSize(13);
-          doc.setTextColor(233, 76, 76);
-          doc.text(`Plan: ${item.plan}`, 20, detalleY);
-          doc.setTextColor(0, 0, 0);
-          doc.setFontSize(11);
-          doc.text(`Fecha de selección: ${item.fecha}`, 20, detalleY + 7);
-          doc.text(`Estado: ${item.estado}`, 20, detalleY + 14);
-          doc.text('Detalles:', 20, detalleY + 21);
-          detalleY += 28;
         }
         doc.text(`- ${detalles[i]}`, 30, detalleY);
         detalleY += 6;

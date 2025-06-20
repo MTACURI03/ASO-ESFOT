@@ -5,6 +5,7 @@ const RegistroPage = () => {
   const [visible, setVisible] = useState([false, false, false]);
   const [secciones, setSecciones] = useState([]);
   const [modal, setModal] = useState({ show: false, title: '', message: '', error: false });
+  const [confirmModal, setConfirmModal] = useState({ show: false, nombrePlan: '', precio: 0 });
 
   const toggle = (index) => {
     const updated = [...visible];
@@ -13,54 +14,60 @@ const RegistroPage = () => {
   };
 
   const closeModal = () => setModal({ ...modal, show: false });
+  const closeConfirmModal = () => setConfirmModal({ show: false, nombrePlan: '', precio: 0 });
 
-  const elegirPlan = async (nombrePlan, precio) => {
-    const confirmar = window.confirm(`¿Estás seguro de elegir el ${nombrePlan}?`);
-    if (confirmar) {
-      try {
-        const usuarioId = localStorage.getItem('usuarioId');
-        const nombreUsuario = localStorage.getItem('nombreUsuario') || 'Usuario';
+  // Nueva función para mostrar el modal de confirmación
+  const handleElegirPlan = (nombrePlan, precio) => {
+    setConfirmModal({ show: true, nombrePlan, precio });
+  };
 
-        if (!usuarioId) {
-          setModal({
-            show: true,
-            title: 'Error',
-            message: 'No se encontró usuario autenticado',
-            error: true,
-          });
-          return;
-        }
-        const response = await fetch('https://aso-esfot-backend.onrender.com/api/planes/seleccionar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ usuarioId, nombrePlan, precio }),
-        });
+  // Esta función solo se llama después de confirmar en el modal
+  const confirmarElegirPlan = async () => {
+    const { nombrePlan, precio } = confirmModal;
+    closeConfirmModal();
+    try {
+      const usuarioId = localStorage.getItem('usuarioId');
+      const nombreUsuario = localStorage.getItem('nombreUsuario') || 'Usuario';
 
-        const data = await response.json();
-
-        if (response.ok) {
-          setModal({
-            show: true,
-            title: 'Plan seleccionado',
-            message: `Has seleccionado el ${nombrePlan}.<br/><strong>${nombreUsuario}</strong><br/>Se te envió una notificación a tu correo, revísalo por favor.`,
-            error: false,
-          });
-        } else {
-          setModal({
-            show: true,
-            title: 'Error',
-            message: 'Error al guardar el plan: ' + (data.mensaje || ''),
-            error: true,
-          });
-        }
-      } catch (error) {
+      if (!usuarioId) {
         setModal({
           show: true,
-          title: 'Error de red',
-          message: error.message,
+          title: 'Error',
+          message: 'No se encontró usuario autenticado',
+          error: true,
+        });
+        return;
+      }
+      const response = await fetch('https://aso-esfot-backend.onrender.com/api/planes/seleccionar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuarioId, nombrePlan, precio }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setModal({
+          show: true,
+          title: 'Plan seleccionado',
+          message: `Has seleccionado el ${nombrePlan}.<br/><strong>${nombreUsuario}</strong><br/>Se te envió una notificación a tu correo, revísalo por favor.`,
+          error: false,
+        });
+      } else {
+        setModal({
+          show: true,
+          title: 'Error',
+          message: 'Error al guardar el plan: ' + (data.mensaje || ''),
           error: true,
         });
       }
+    } catch (error) {
+      setModal({
+        show: true,
+        title: 'Error de red',
+        message: error.message,
+        error: true,
+      });
     }
   };
 
@@ -81,14 +88,39 @@ const RegistroPage = () => {
         </div>
       </header>
 
-      {/* MODAL */}
+      {/* MODAL DE CONFIRMACIÓN */}
+      {confirmModal.show && (
+        <div className="modal fade show" style={{ display: 'block', background: 'rgba(0,0,0,0.4)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header bg-warning text-dark">
+                <h5 className="modal-title">Confirmar selección</h5>
+                <button type="button" className="btn-close" onClick={closeConfirmModal}></button>
+              </div>
+              <div className="modal-body">
+                ¿Estás seguro de elegir el <strong>{confirmModal.nombrePlan}</strong>?
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={closeConfirmModal}>Cancelar</button>
+                <button className="btn btn-primary" onClick={confirmarElegirPlan}>Sí, elegir</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL DE MENSAJE */}
       {modal.show && (
         <div className="modal fade show" style={{ display: 'block', background: 'rgba(0,0,0,0.4)' }}>
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
-              <div className={`modal-header ${modal.error ? 'bg-danger text-white' : 'bg-success text-white'}`}>
+              <div
+                className={`modal-header ${
+                  modal.error ? 'bg-danger text-white' : 'bg-warning text-dark'
+                }`}
+              >
                 <h5 className="modal-title">{modal.title}</h5>
-                <button type="button" className="btn-close btn-close-white" onClick={closeModal}></button>
+                <button type="button" className={`btn-close ${modal.error ? 'btn-close-white' : ''}`} onClick={closeModal}></button>
               </div>
               <div className="modal-body">
                 <div dangerouslySetInnerHTML={{ __html: modal.message }} />
@@ -129,7 +161,7 @@ const RegistroPage = () => {
                     {/* Botón Elegir Plan */}
                     <button
                       className="btn btn-primary mt-3"
-                      onClick={() => elegirPlan(item.titulo, item.precio)}
+                      onClick={() => handleElegirPlan(item.titulo, item.precio)}
                     >
                       Elegir plan
                     </button>
