@@ -26,7 +26,7 @@ const ModalMensaje = ({ show, mensaje, tipo = 'success', onClose }) => {
             <p>{mensaje}</p>
           </div>
           <div className="modal-footer">
-            <button className="btn" style={{ background: color.bg, color: color.text }} onClick={onClose}>
+            <button className="btn" style={{ background: color.bg, color: color.text }} onClick={onClose} autoFocus>
               Cerrar
             </button>
           </div>
