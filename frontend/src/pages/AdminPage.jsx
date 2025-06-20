@@ -29,7 +29,8 @@ const AdminPage = () => {
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
         <div>
           <Link to="/adminpage/crudpage" className="btn btn-esfot me-2">Gestionar Planes</Link>
-          <Link to="/adminpage/reportespage" className="btn btn-esfot me-2">Gestionar Aportaciones</Link>
+          <Link to="/adminpage/usuariospage" className="btn btn-esfot me-2">Gestión de Usuarios</Link>
+          <Link to="/adminpage/reportespage" className="btn btn-esfot me-2">Gestionar Aportantes</Link>
           <Link to="/adminpage/finanzaspage" className="btn btn-esfot me-2">Finanzas</Link>
           <button onClick={handleLogout} className="btn btn-danger">Cerrar sesión</button>
         </div>

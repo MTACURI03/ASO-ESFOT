@@ -10,6 +10,7 @@ import CrudPlanesPage from '../pages/CrudPlanesPage';
 import ReportesPage from '../pages/ReportesPage';
 import FinanzasPage from '../pages/FinanzasPage';
 import VerificarCuenta from '../pages/VerificarCuenta';
+import UsuariosPage from '../pages/UsuariosPage'; // Agrega esta línea arriba
 const AppRouter = () => (
   <BrowserRouter>
     <Routes>
@@ -20,6 +21,7 @@ const AppRouter = () => (
       <Route path="/crear-password" element={<CrearPasswordPage />} />
       <Route path="/adminpage" element={<AdminPage/>} />
       <Route path="/adminpage/crudpage" element={<CrudPlanesPage/>} />
+      <Route path="/adminpage/usuariospage" element={<UsuariosPage/>} /> {/* Nueva ruta */}
       <Route path="/adminpage/reportespage" element={<ReportesPage/>} />
       <Route path="/adminpage/finanzaspage" element={<FinanzasPage/>} />
       <Route path="/verificar/:token" element={<VerificarCuenta />} />
