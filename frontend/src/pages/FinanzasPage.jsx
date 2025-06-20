@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const FinanzasPage = () => {
   const [saldo, setSaldo] = useState(0);
   const [gastos, setGastos] = useState([]);
-  const [pagos, setPagos] = useState([]); // <-- Nuevo estado para pagos
+  const [pagos, setPagos] = useState([]);
   const [nuevoGasto, setNuevoGasto] = useState({ descripcion: '', monto: '' });
 
   // Trae el saldo, los gastos y los pagos
@@ -36,41 +36,93 @@ const FinanzasPage = () => {
       });
   };
 
-  // Generar reporte PDF
+  // Generar reporte PDF tipo factura con logo y detalles
   const generarReportePDF = () => {
-  import('jspdf').then(jsPDF => {
-    const doc = new jsPDF.jsPDF();
-    doc.setFontSize(16);
-    doc.text('Reporte de Finanzas ASO-ESFOT', 20, 20);
-    doc.setFontSize(12);
-    let y = 35;
-    doc.text('Pagos:', 20, y);
-    y += 7;
-    pagos.forEach((p, i) => {
-      doc.text(
-        `${i + 1}. ${new Date(p.fechaSeleccion).toLocaleDateString()} - ${p.usuarioId?.nombre || ''} ${p.usuarioId?.apellido || ''} - ${p.nombrePlan}: $${p.precio}`,
-        25,
-        y
-      );
-      y += 7;
+    import('jspdf').then(jsPDF => {
+      const doc = new jsPDF.jsPDF();
+
+      // Logo (usa una URL pública o base64 para máxima compatibilidad)
+      const logoUrl = window.location.origin + '/imagenes_asoesfot/logo.png';
+      const img = new window.Image();
+      img.crossOrigin = '';
+      img.src = logoUrl;
+      img.onload = () => {
+        doc.addImage(img, 'PNG', 15, 10, 30, 30);
+
+        // Encabezado de factura
+        doc.setFontSize(18);
+        doc.text('Factura de Finanzas ASO-ESFOT', 55, 22);
+        doc.setFontSize(12);
+        doc.text(`Fecha de emisión: ${new Date().toLocaleDateString()}`, 55, 30);
+
+        // Datos de la "empresa"
+        doc.setFontSize(10);
+        doc.text('ASOCIACIÓN DE ESTUDIANTES DE LA ESFOT', 55, 36);
+        doc.text('Quito, Ecuador', 55, 41);
+        doc.text('RUC: 1790012345001', 55, 46);
+
+        let y = 55;
+        const margenInferior = 270;
+
+        // Detalle de Pagos
+        doc.setFontSize(13);
+        doc.setTextColor(233, 76, 76);
+        doc.text('Detalle de Pagos:', 20, y);
+        doc.setTextColor(0, 0, 0);
+        y += 8;
+        pagos.forEach((p, i) => {
+          doc.setFontSize(11);
+          doc.text(
+            `${i + 1}. ${new Date(p.fechaSeleccion).toLocaleDateString()} - ${p.usuarioId?.nombre || ''} ${p.usuarioId?.apellido || ''} - ${p.nombrePlan}: $${p.precio}`,
+            25,
+            y
+          );
+          y += 7;
+          if (y > margenInferior) {
+            doc.addPage();
+            y = 20;
+          }
+        });
+
+        y += 8;
+        doc.setFontSize(13);
+        doc.setTextColor(233, 76, 76);
+        doc.text('Detalle de Gastos:', 20, y);
+        doc.setTextColor(0, 0, 0);
+        y += 8;
+        gastos.forEach((g, i) => {
+          doc.setFontSize(11);
+          doc.text(`${i + 1}. ${g.fecha || ''} - ${g.descripcion}: $${g.monto}`, 25, y);
+          y += 7;
+          if (y > margenInferior) {
+            doc.addPage();
+            y = 20;
+          }
+        });
+
+        y += 10;
+        doc.setFontSize(13);
+        doc.setTextColor(40, 167, 69);
+        doc.text(`Saldo actual: $${saldo}`, 20, y);
+
+        // Pie de página
+        doc.setFontSize(10);
+        doc.setTextColor(150, 150, 150);
+        doc.text('ASO-ESFOT © 2025 | Este documento es solo informativo.', 20, 285);
+
+        doc.save('factura_finanzas.pdf');
+      };
     });
-    y += 10;
-    doc.text('Gastos:', 20, y);
-    y += 7;
-    gastos.forEach((g, i) => {
-      doc.text(`${i + 1}. ${g.fecha || ''} - ${g.descripcion}: $${g.monto}`, 25, y);
-      y += 7;
-    });
-    doc.text(`Saldo actual: $${saldo}`, 20, y + 10);
-    doc.save('reporte_finanzas.pdf');
-  });
-};
+  };
 
   return (
     <div className="d-flex flex-column min-vh-100">
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <img src="/imagenes_asoesfot/logo.png" alt="Logo" style={{ height: '60px' }} />
-        <Link to="/adminpage" className="btn btn-light">Inicio</Link>
+        <Link to="/adminpage" className="btn btn-esfot me-2">Menú</Link>
+        <Link to="/adminpage/usuariospage" className="btn btn-esfot me-2">Gestionar Usuarios</Link>
+        <Link to="/adminpage/reportespage" className="btn btn-esfot me-2">Gestionar Aportantes</Link>
+        <Link to="/adminpage/crudpage" className="btn btn-esfot me-2">Gestionar Gastos</Link>
       </header>
       <main className="flex-grow-1 container py-4">
         <h2 className="text-center mb-4">Gestión Financiera - ASO ESFOT</h2>

@@ -1,25 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+const SEMESTRES = [
+  'Primer', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto', 'Séptimo', 'Octavo', 'Noveno', 'Décimo'
+];
+
 const UsuariosPage = () => {
   const [busqueda, setBusqueda] = useState('');
   const [usuarios, setUsuarios] = useState([]);
+  const [modal, setModal] = useState({ show: false, id: null, activoActual: true, loading: false });
 
   useEffect(() => {
-    fetch('https://aso-esfot-backend.onrender.com/api/usuarios')
+    const url = busqueda
+      ? `https://aso-esfot-backend.onrender.com/api/usuarios?semestre=${encodeURIComponent(busqueda)}`
+      : 'https://aso-esfot-backend.onrender.com/api/usuarios';
+    fetch(url)
       .then(res => res.json())
       .then(data => setUsuarios(data))
       .catch(() => setUsuarios([]));
-  }, []);
+  }, [busqueda]);
 
-  // Filtrar por semestre (puedes cambiar a select si lo deseas)
-  const filtrados = usuarios.filter(
-    u => (u.semestre || '').toLowerCase().includes(busqueda.toLowerCase())
-  );
+  // Mostrar modal de confirmación
+  const mostrarModal = (id, activoActual) => {
+    setModal({ show: true, id, activoActual, loading: false });
+  };
 
-  // Cambiar estado activo/inactivo
-  const cambiarActivo = (id, activoActual) => {
-    const nuevoActivo = !activoActual;
+  // Confirmar cambio de estado activo/inactivo
+  const confirmarCambioActivo = () => {
+    setModal(modal => ({ ...modal, loading: true }));
+    const id = modal.id;
+    const nuevoActivo = false;
     fetch(`https://aso-esfot-backend.onrender.com/api/usuarios/${id}/activo`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -32,15 +42,47 @@ const UsuariosPage = () => {
             u._id === id ? { ...u, activo: nuevoActivo } : u
           )
         );
+        setModal({ show: false, id: null, activoActual: true, loading: false });
       });
   };
 
+  // Cerrar modal
+  const cerrarModal = () => setModal({ show: false, id: null, activoActual: true, loading: false });
+
   return (
     <div className="d-flex flex-column min-vh-100">
+      {/* Modal de confirmación */}
+      {modal.show && (
+        <div className="modal fade show" style={{ display: 'block', background: 'rgba(0,0,0,0.4)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header bg-warning text-dark">
+                <h5 className="modal-title">Confirmar inactivación</h5>
+                <button type="button" className="btn-close" onClick={cerrarModal}></button>
+              </div>
+              <div className="modal-body">
+                ¿Seguro que quieres inactivar este usuario? No podrá iniciar sesión.
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={cerrarModal} disabled={modal.loading}>No</button>
+                <button className="btn btn-danger" onClick={confirmarCambioActivo} disabled={modal.loading}>
+                  {modal.loading ? 'Inactivando...' : 'Sí'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Encabezado */}
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
-        <Link to="/adminpage" className="btn btn-light">Inicio</Link>
+        <div>
+          <Link to="/adminpage" className="btn btn-esfot me-2">Menú</Link>
+          <Link to="/adminpage/reportespage" className="btn btn-esfot me-2">Gestionar Aportantes</Link>
+          <Link to="/adminpage/crudpage" className="btn btn-esfot me-2">Gestionar Planes</Link>
+          <Link to="/adminpage/finanzaspage" className="btn btn-esfot me-2">Finanzas</Link>
+        </div>
       </header>
 
       {/* Cuerpo */}
@@ -49,13 +91,18 @@ const UsuariosPage = () => {
 
         {/* Búsqueda por semestre */}
         <div className="input-group mb-4">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Buscar por semestre (ej: 3, 4, 5...)"
+          <label className="input-group-text" htmlFor="select-semestre">Filtrar por semestre</label>
+          <select
+            id="select-semestre"
+            className="form-select"
             value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-          />
+            onChange={e => setBusqueda(e.target.value)}
+          >
+            <option value="">Todos</option>
+            {SEMESTRES.map(s => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
         </div>
 
         {/* Tabla */}
@@ -73,8 +120,8 @@ const UsuariosPage = () => {
               </tr>
             </thead>
             <tbody>
-              {filtrados.length > 0 ? (
-                filtrados.map((u, i) => (
+              {usuarios.length > 0 ? (
+                usuarios.map((u, i) => (
                   <tr key={u._id}>
                     <td>{i + 1}</td>
                     <td>{u.nombre || ''}</td>
@@ -87,12 +134,18 @@ const UsuariosPage = () => {
                       </span>
                     </td>
                     <td>
-                      <button
-                        className={`btn btn-sm ${u.activo ? 'btn-outline-danger' : 'btn-outline-success'}`}
-                        onClick={() => cambiarActivo(u._id, u.activo)}
-                      >
-                        {u.activo ? 'Desactivar' : 'Activar'}
-                      </button>
+                      {u.activo ? (
+                        <button
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => mostrarModal(u._id, u.activo)}
+                        >
+                          Desactivar
+                        </button>
+                      ) : (
+                        <button className="btn btn-sm btn-outline-secondary" disabled>
+                          Inactivo
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))

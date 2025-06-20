@@ -83,7 +83,12 @@ const CrudPlanesPage = () => {
       {/* Encabezado */}
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
-        <Link to="/adminpage" className="btn btn-light">Inicio</Link>
+        <div>
+          <Link to="/adminpage" className="btn btn-esfot me-2">Menú</Link>
+          <Link to="/adminpage/usuariospage" className="btn btn-esfot me-2">Gestionar Usuarios</Link>
+          <Link to="/adminpage/reportespage" className="btn btn-esfot me-2">Gestionar Aportantes</Link>
+          <Link to="/adminpage/finanzaspage" className="btn btn-esfot me-2">Finanzas</Link>
+        </div>
       </header>
 
       {/* Cuerpo */}

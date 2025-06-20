@@ -33,10 +33,14 @@ router.get('/verificar/:token', async (req, res) => {
   }
 });
 
-// GET /api/usuarios
+// GET /api/usuarios?semestre=5
 router.get('/', async (req, res) => {
   try {
-    const usuarios = await Usuario.find();
+    const filtro = {};
+    if (req.query.semestre) {
+      filtro.semestre = req.query.semestre;
+    }
+    const usuarios = await Usuario.find(filtro);
     res.json(usuarios);
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al obtener usuarios', error: error.message });
@@ -111,8 +115,8 @@ router.post('/login', async (req, res) => {
     // Buscar usuario por correo
     const usuario = await Usuario.findOne({ correo });
 
-    if (!usuario) {
-      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    if (!usuario || !usuario.activo) {
+      return res.status(401).json({ mensaje: 'Usuario inactivo o no encontrado.' });
     }
 
     // Verificar contraseña
