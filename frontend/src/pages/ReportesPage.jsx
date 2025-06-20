@@ -145,7 +145,6 @@ const ReportesPage = () => {
           <Link to="/adminpage/usuariospage" className="btn btn-esfot me-2">Gestionar Usuarios</Link>
           <Link to="/adminpage/crudpage" className="btn btn-esfot me-2">Gestionar Planes</Link>
           <Link to="/adminpage/finanzaspage" className="btn btn-esfot me-2">Gestionar Finanzas</Link>
-          <Link to="/adminpage/reportespage" className="btn btn-danger me-2">Reportes</Link>
         </div>
       </header>
 

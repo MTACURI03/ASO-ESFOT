@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const SEMESTRES = [
-  'Primer', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto', 'Séptimo', 'Octavo', 'Noveno', 'Décimo'
-];
+  'Nivelacion','Primer semestre', 'Segundo semestre', 'Tercer semestre', 'Cuarto semestre', 'Quinto semestre',];
 
 const UsuariosPage = () => {
   const [busqueda, setBusqueda] = useState('');
@@ -124,7 +123,7 @@ const UsuariosPage = () => {
                 usuarios
                   .filter(u =>
                     !busqueda ||
-                    (u.semestre && u.semestre.toLowerCase().includes(busqueda.toLowerCase()))
+                    (u.semestre && u.semestre.toLowerCase() === busqueda.toLowerCase())
                   )
                   .map((u, i) => (
                     <tr key={u._id}>
