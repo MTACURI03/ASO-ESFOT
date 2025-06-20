@@ -32,7 +32,7 @@ const RegistroPage = () => {
 
         if (response.ok) {
           alert(
-            `Has seleccionado el ${nombrePlan}.\nNombre de usuario: ${nombreUsuario}\nSe te envió una notificación a tu correo revisalo.`
+            `Has seleccionado el ${nombrePlan}.\n${nombreUsuario}\nSe te envió una notificación a tu correo revisalo por favor.`
           );
         } else {
           alert('Error al guardar el plan: ' + data.mensaje);
