@@ -54,8 +54,8 @@ const RegistroPage = () => {
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
         <div>
-          <Link to="/adminpage" className="btn btn-light me-2">Menú</Link>
-          <Link to="/visualizar" className="btn btn-light">Mis Aportaciones</Link>
+          <Link to="/landing" className="btn btn-esfot me-2">Menú</Link>
+          <Link to="/visualizar" className="btn btn-esfot me-2">Mis Aportaciones</Link>
         </div>
       </header>
 

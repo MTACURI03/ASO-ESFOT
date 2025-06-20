@@ -31,6 +31,19 @@ router.post('/registrar', async (req, res) => {
   if (req.body.password.length < 9 || !/[A-Z]/.test(req.body.password)) {
     return res.status(400).json({ mensaje: 'La contraseña debe tener mínimo 9 caracteres y al menos una letra mayúscula.' });
   }
+
+  if (!/^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*$/.test(req.body.nombre)) {
+  return res.status(400).json({ mensaje: 'El nombre debe empezar con mayúscula y solo contener letras.' });
+}
+
+  if (!/^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*$/.test(req.body.apellido)) {
+  return res.status(400).json({ mensaje: 'El apellido debe empezar con mayúscula y solo contener letras.' });
+}
+
+  if (!/^\d{10}$/.test(req.body.telefono)) {
+  return res.status(400).json({ mensaje: 'El teléfono debe tener exactamente 10 dígitos.' });
+}
+
   try {
     const tokenVerificacion = crypto.randomBytes(32).toString('hex');
     const { nombre, apellido, telefono, carrera, correo, password } = req.body;

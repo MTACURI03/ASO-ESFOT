@@ -14,7 +14,10 @@ const CrearPasswordPage = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [emailError, setEmailError] = useState(false);
 
-  // Validaciones de contraseña
+  // Validaciones
+  const nombreValido = /^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*$/.test(nombre);
+  const apellidoValido = /^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*$/.test(apellido);
+  const telefonoValido = /^\d{10}$/.test(telefono);
   const passwordValid = password.length >= 9 && /[A-Z]/.test(password);
   const passwordError = password && !passwordValid;
 
@@ -24,11 +27,38 @@ const CrearPasswordPage = () => {
     setEmailError(!!value && !/^[\w-.]+@epn\.edu\.ec$/.test(value));
   };
 
+  const handleNombreChange = (e) => {
+    setNombre(e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ''));
+  };
+
+  const handleApellidoChange = (e) => {
+    setApellido(e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ''));
+  };
+
+  const handleTelefonoChange = (e) => {
+    setTelefono(e.target.value.replace(/\D/g, '').slice(0, 10));
+  };
+
   const handleGuardar = async (e) => {
     e.preventDefault();
 
     if (!nombre || !apellido || !telefono || !carrera || !email || !password || !confirmPassword) {
       alert("Por favor completa todos los campos.");
+      return;
+    }
+
+    if (!nombreValido) {
+      alert("El nombre debe empezar con mayúscula y solo contener letras.");
+      return;
+    }
+
+    if (!apellidoValido) {
+      alert("El apellido debe empezar con mayúscula y solo contener letras.");
+      return;
+    }
+
+    if (!telefonoValido) {
+      alert("El teléfono debe tener exactamente 10 dígitos.");
       return;
     }
 
@@ -109,34 +139,59 @@ const CrearPasswordPage = () => {
                 <label htmlFor="nombre" className="form-label">Nombre</label>
                 <input
                   type="text"
-                  className="form-control"
+                  className={`form-control ${nombre && !nombreValido ? 'is-invalid' : ''}`}
                   id="nombre"
                   placeholder="Juan"
                   value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
+                  onChange={handleNombreChange}
                 />
+                <div className="form-text">
+                  Debe empezar con mayúscula y solo contener letras.
+                </div>
+                {nombre && !nombreValido && (
+                  <div className="invalid-feedback d-block">
+                    El nombre debe empezar con mayúscula y solo contener letras.
+                  </div>
+                )}
               </div>
               <div className="mb-3">
                 <label htmlFor="apellido" className="form-label">Apellido</label>
                 <input
                   type="text"
-                  className="form-control"
+                  className={`form-control ${apellido && !apellidoValido ? 'is-invalid' : ''}`}
                   id="apellido"
                   placeholder="Pérez"
                   value={apellido}
-                  onChange={(e) => setApellido(e.target.value)}
+                  onChange={handleApellidoChange}
                 />
+                <div className="form-text">
+                  Debe empezar con mayúscula y solo contener letras.
+                </div>
+                {apellido && !apellidoValido && (
+                  <div className="invalid-feedback d-block">
+                    El apellido debe empezar con mayúscula y solo contener letras.
+                  </div>
+                )}
               </div>
               <div className="mb-3">
                 <label htmlFor="telefono" className="form-label">Teléfono</label>
                 <input
                   type="tel"
-                  className="form-control"
+                  className={`form-control ${telefono && !telefonoValido ? 'is-invalid' : ''}`}
                   id="telefono"
                   placeholder="0991234567"
                   value={telefono}
-                  onChange={(e) => setTelefono(e.target.value)}
+                  onChange={handleTelefonoChange}
+                  maxLength={10}
                 />
+                <div className="form-text">
+                  Debe tener exactamente 10 dígitos.
+                </div>
+                {telefono && !telefonoValido && (
+                  <div className="invalid-feedback d-block">
+                    El teléfono debe tener exactamente 10 dígitos.
+                  </div>
+                )}
               </div>
               <div className="mb-3">
                 <label htmlFor="carrera" className="form-label">Carrera</label>
@@ -233,7 +288,13 @@ const CrearPasswordPage = () => {
                 type="submit"
                 className="btn w-100"
                 style={{ backgroundColor: '#e94c4c', color: 'white' }}
-                disabled={!passwordValid || password !== confirmPassword}
+                disabled={
+                  !passwordValid ||
+                  password !== confirmPassword ||
+                  !nombreValido ||
+                  !apellidoValido ||
+                  !telefonoValido
+                }
               >
                 Guardar
               </button>
