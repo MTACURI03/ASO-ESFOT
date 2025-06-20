@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ModalMensaje from './ModalMensaje'; // Ajusta la ruta según tu estructura
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -8,8 +7,47 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [modal, setModal] = useState({ show: false, mensaje: '', tipo: 'success' });
 
+  // ModalMensaje embebido
+  const ModalMensaje = ({ show, mensaje, tipo = 'success', onClose }) => {
+    const colores = {
+      success: { bg: '#e94c4c', text: '#fff' },
+      error: { bg: '#007bff', text: '#fff' },
+      warning: { bg: '#ffc107', text: '#000' }
+    };
+    const color = colores[tipo] || colores.success;
+    if (!show) return null;
+    return (
+      <div className="modal fade show" style={{display: 'block', zIndex: 1055}} tabIndex="-1">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header" style={{ background: color.bg, color: color.text }}>
+              <h5 className="modal-title">
+                {tipo === 'success' && '¡Éxito!'}
+                {tipo === 'error' && 'Error'}
+                {tipo === 'warning' && 'Advertencia'}
+              </h5>
+            </div>
+            <div className="modal-body">
+              <p>{mensaje}</p>
+            </div>
+            <div className="modal-footer">
+              <button className="btn" style={{ background: color.bg, color: color.text }} onClick={onClose} autoFocus>
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="modal-backdrop fade show" style={{zIndex: 1040}}></div>
+      </div>
+    );
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (!correo || !password) {
+      setModal({ show: true, mensaje: 'Por favor ingresa tu correo y contraseña.', tipo: 'warning' });
+      return;
+    }
     const response = await fetch('https://aso-esfot-backend.onrender.com/api/usuarios/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -26,7 +64,7 @@ const LoginPage = () => {
   const handleCloseModal = () => {
     setModal({ ...modal, show: false });
     if (modal.tipo === 'success') {
-      navigate('/landing'); // Cambia la ruta según tu app
+      navigate('/landing');
     }
   };
 
@@ -100,7 +138,7 @@ const LoginPage = () => {
         &copy; 2025 ASO-ESFOT. Todos los derechos reservados.
       </footer>
 
-      {/* Modal de mensaje */}
+      {/* Modal de mensaje embebido */}
       <ModalMensaje
         show={modal.show}
         mensaje={modal.mensaje}

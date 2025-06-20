@@ -89,8 +89,8 @@ const VisualizarPage = () => {
     doc.setLineWidth(3);
     doc.rect(8, 8, 194, 281, 'S');
 
-    // Logo ESFOT (ajusta la ruta si es necesario)
-    const logoUrl = `${window.location.origin}/imagenes_asfot/logo.png`;
+    // Logo ESFOT
+    const logoUrl = `${window.location.origin}/imagenes_asoesfot/logo.png`;
     const getImageDataUrl = (url) =>
       fetch(url)
         .then(r => r.blob())
