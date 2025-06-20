@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import logo from '/imagenes_asoesfot/logo.png'; // Asegúrate de que la ruta sea correcta o usa una URL absoluta si es necesario
 
 const ReportesPage = () => {
   const [busqueda, setBusqueda] = useState('');
@@ -18,10 +17,24 @@ const ReportesPage = () => {
     `${ap.usuarioId?.nombre || ''} ${ap.usuarioId?.apellido || ''}`.toLowerCase().includes(busqueda.toLowerCase())
   );
 
-  // Generar reporte PDF tipo factura
+  // Generar reporte PDF tipo factura con logo desde public/
   const generarReportePDF = async () => {
     const { jsPDF } = await import('jspdf');
     const doc = new jsPDF();
+
+    // Cargar logo desde public/
+    const logoUrl = `${window.location.origin}/imagenes_asoesfot/logo.png`;
+    const getImageDataUrl = (url) =>
+      fetch(url)
+        .then(r => r.blob())
+        .then(blob => new Promise(resolve => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(blob);
+        }));
+
+    const logoDataUrl = await getImageDataUrl(logoUrl);
+    doc.addImage(logoDataUrl, 'PNG', 15, 10, 30, 30);
 
     doc.setFontSize(18);
     doc.text('Factura de Aportaciones ASO-ESFOT', 55, 22);
@@ -50,6 +63,11 @@ const ReportesPage = () => {
         y = 50;
       }
     });
+
+    // Pie de página
+    doc.setFontSize(10);
+    doc.setTextColor(150, 150, 150);
+    doc.text('ASO-ESFOT © 2025', 20, 285);
 
     doc.save('factura_aportaciones.pdf');
   };
