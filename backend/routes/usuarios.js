@@ -24,6 +24,13 @@ router.get('/verificar/:token', async (req, res) => {
 
 // POST /api/usuarios/registrar
 router.post('/registrar', async (req, res) => {
+
+  if (!/^[\w-.]+@epn\.edu\.ec$/.test(req.body.correo)) {
+    return res.status(400).json({ mensaje: 'El correo debe ser institucional (@epn.edu.ec).' });
+  }
+  if (req.body.password.length < 9 || !/[A-Z]/.test(req.body.password)) {
+    return res.status(400).json({ mensaje: 'La contraseña debe tener mínimo 9 caracteres y al menos una letra mayúscula.' });
+  }
   try {
     const tokenVerificacion = crypto.randomBytes(32).toString('hex');
     const { nombre, apellido, telefono, carrera, correo, password } = req.body;
