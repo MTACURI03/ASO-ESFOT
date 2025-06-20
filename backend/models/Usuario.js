@@ -10,6 +10,7 @@ const usuarioSchema = new mongoose.Schema({
   password: String,
   verificado: { type: Boolean, default: false },
   tokenVerificacion: { type: String },
+  activo: { type: Boolean, default: true }
 });
 
 module.exports = mongoose.model('Usuario', usuarioSchema);

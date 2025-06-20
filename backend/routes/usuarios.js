@@ -13,16 +13,39 @@ const transporter = nodemailer.createTransport({
 });
 
 router.get('/verificar/:token', async (req, res) => {
-  const usuario = await Usuario.findOne({ tokenVerificacion: req.params.token });
-  if (!usuario) return res.status(400).send('Token inválido');
-  usuario.verificado = true;
-  usuario.tokenVerificacion = undefined;
-  await usuario.save();
-  res.send('Cuenta verificada. Ya puedes iniciar sesión.');
+  const datos = registrosPendientes[req.params.token];
+  if (!datos) return res.status(400).send('Token inválido o expirado');
+
+  try {
+    // Guarda el usuario en la base de datos y lo marca como verificado
+    const nuevoUsuario = new Usuario({
+      ...datos,
+      verificado: true
+    });
+    await nuevoUsuario.save();
+
+    // Elimina los datos temporales
+    delete registrosPendientes[req.params.token];
+
+    res.send('Cuenta verificada y registrada. Ya puedes iniciar sesión.');
+  } catch (error) {
+    res.status(500).send('Error al guardar el usuario');
+  }
 });
 
+// GET /api/usuarios
+router.get('/', async (req, res) => {
+  try {
+    const usuarios = await Usuario.find();
+    res.json(usuarios);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error al obtener usuarios', error: error.message });
+  }
+});
 
-// POST /api/usuarios/registrar
+// Guardar temporalmente los datos de registro
+const registrosPendientes = {};
+
 router.post('/registrar', async (req, res) => {
 
   if (!/^[\w-.]+@epn\.edu\.ec$/.test(req.body.correo)) {
@@ -47,18 +70,11 @@ router.post('/registrar', async (req, res) => {
   try {
     const tokenVerificacion = crypto.randomBytes(32).toString('hex');
     const { nombre, apellido, telefono, carrera, semestre, correo, password } = req.body;
-    const nuevoUsuario = new Usuario({
-      nombre,
-      apellido,
-      telefono,
-      carrera,
-      semestre, // <-- agrega aquí
-      correo,
-      password,
-      verificado: false,
-      tokenVerificacion
-    });
-    await nuevoUsuario.save();
+
+    // Guarda los datos temporalmente
+    registrosPendientes[tokenVerificacion] = {
+      nombre, apellido, telefono, carrera, semestre, correo, password
+    };
 
     const url = `https://aso-esfot-p1kb.vercel.app/verificar/${tokenVerificacion}`;
     await transporter.sendMail({
@@ -80,7 +96,7 @@ router.post('/registrar', async (req, res) => {
 `
     });
     console.log('Correo enviado');
-    res.status(201).json({ mensaje: 'Usuario registrado con éxito' });
+    res.status(201).json({ mensaje: 'Revisa tu correo para verificar tu cuenta' });
   } catch (error) {
     console.error('Error en /registrar:', error);
     res.status(500).json({ mensaje: 'Error al registrar el usuario', error: error.message });
@@ -120,6 +136,20 @@ router.post('/login', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ mensaje: 'Error en el servidor', error: error.message });
+  }
+});
+
+router.put('/:id/activo', async (req, res) => {
+  try {
+    const usuario = await Usuario.findByIdAndUpdate(
+      req.params.id,
+      { activo: req.body.activo },
+      { new: true }
+    );
+    if (!usuario) return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    res.json({ mensaje: 'Estado actualizado', usuario });
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error al actualizar estado', error: error.message });
   }
 });
 
