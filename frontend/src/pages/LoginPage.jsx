@@ -2,40 +2,35 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
-  const navigate = useNavigate();
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
-  const [rol, setRol] = useState('estudiante'); // Agrega este estado
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [rol, setRol] = useState('estudiante');
+  const [mensaje, setMensaje] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    setMensaje('');
     try {
-      const response = await fetch('https://aso-esfot-backend.onrender.com/api/usuarios/login', {
+      const res = await fetch('https://aso-esfot-backend.onrender.com/api/usuarios/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ correo, password, rol }),
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Guarda el rol en localStorage si lo necesitas
-        localStorage.setItem('rol', data.usuario.rol);
+      const data = await res.json();
+      if (res.ok && data.usuario) {
         localStorage.setItem('usuario', JSON.stringify(data.usuario));
-
-        // Redirige según el rol
-        if (data.usuario.rol === 'admin') {
-          navigate('/adminpage');
+        if (data.usuario.activo === false) {
+          setMensaje('Tu cuenta está inactiva. Actualiza tus datos para reactivarla.');
+          setTimeout(() => navigate('/actualizar-datos'), 2000);
         } else {
           navigate('/landing');
         }
       } else {
-        alert(data.mensaje || "Error al iniciar sesión");
+        setMensaje(data.mensaje || 'Error al iniciar sesión.');
       }
-    } catch (err) {
-      alert("Error al iniciar sesión: " + err.message);
+    } catch {
+      setMensaje('Error de red.');
     }
   };
 
@@ -139,6 +134,9 @@ const LoginPage = () => {
                 Ingresar
               </button>
             </form>
+            {mensaje && (
+              <div className="alert alert-info text-center mt-3">{mensaje}</div>
+            )}
           </div>
         </div>
       </main>

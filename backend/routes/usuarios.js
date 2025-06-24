@@ -131,45 +131,25 @@ router.post('/registrar', async (req, res) => {
 
 // POST /api/usuarios/login
 router.post('/login', async (req, res) => {
-  const { correo, password, rol } = req.body;
+  const { correo, password } = req.body;
+  const usuario = await Usuario.findOne({ correo });
+  if (!usuario) return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
+  if (usuario.password !== password) return res.status(400).json({ mensaje: 'Contraseña incorrecta.' });
 
-  try {
-    let usuario;
-    if (rol === 'admin') {
-      usuario = await Admin.findOne({ correo });
-    } else {
-      usuario = await Usuario.findOne({ correo });
+  // No rechaces si usuario.activo === false
+  res.json({
+    usuario: {
+      id: usuario._id,
+      nombre: usuario.nombre,
+      apellido: usuario.apellido,
+      correo: usuario.correo,
+      activo: usuario.activo,
+      telefono: usuario.telefono,
+      carrera: usuario.carrera,
+      semestre: usuario.semestre,
+      rol: usuario.rol
     }
-
-    if (!usuario || !usuario.activo) {
-      return res.status(401).json({ mensaje: 'Usuario inactivo o no encontrado.' });
-    }
-
-    if (usuario.password !== password) {
-      return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
-    }
-
-    if (!usuario.verificado) {
-      return res.status(401).json({ mensaje: 'Debes verificar tu correo antes de iniciar sesión.' });
-    }
-
-    if (rol && usuario.rol !== rol) {
-      return res.status(401).json({ mensaje: 'Rol incorrecto.' });
-    }
-
-    res.status(200).json({
-      mensaje: 'Inicio de sesión exitoso',
-      usuario: {
-        id: usuario._id,
-        nombre: usuario.nombre,
-        apellido: usuario.apellido,
-        correo: usuario.correo,
-        rol: usuario.rol
-      }
-    });
-  } catch (error) {
-    res.status(500).json({ mensaje: 'Error en el servidor', error: error.message });
-  }
+  });
 });
 
 router.put('/:id/activo', async (req, res) => {

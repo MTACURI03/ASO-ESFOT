@@ -14,13 +14,19 @@ import UsuariosPage from '../pages/UsuariosPage'; // Agrega esta línea arriba
 import ActualizarPasswordPage from '../pages/ActualizarPasswordPage'; // Agrega esta línea
 import ActualizarPage from '../pages/ActualizarPage';
 import AdminSolicitudesPage from '../pages/AdminSolicitudesPage'; // Nueva importación
+import RutaProtegida from './components/RutaProtegida';
+
 const AppRouter = () => (
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route path="/landing" element={<LandingPage />} />
       <Route path="/registro" element={<RegistroPage />} />
-      <Route path="/visualizar" element={<VisualizarPage />} />
+      <Route path="/visualizar" element={
+        <RutaProtegida>
+          <VisualizarPage />
+        </RutaProtegida>
+      } />
       <Route path="/crear-password" element={<CrearPasswordPage />} />
       <Route path="/adminpage" element={<AdminPage/>} />
       <Route path="/adminpage/crudpage" element={<CrudPlanesPage/>} />

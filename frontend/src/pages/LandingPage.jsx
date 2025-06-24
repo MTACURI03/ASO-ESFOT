@@ -42,16 +42,32 @@ const LandingPage = () => {
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
         <div>
-          <Link to="/visualizar" className="btn btn-esfot me-2">Mis Aportaciones</Link>
-          <Link to="/registro" className="btn btn-esfot me-2">Planes de Aportaciones</Link>
-          <Link
-            to="/actualizar-datos"
-            className="btn btn-esfot me-2"
-            onClick={handleActualizarClick}
-          >
-            Actualizar datos
-          </Link>
-          <button onClick={handleLogout} className="btn btn-danger">Cerrar sesión</button>
+          {(() => {
+            const usuario = JSON.parse(localStorage.getItem('usuario'));
+            if (usuario && usuario.activo === false) {
+              return (
+                <>
+                  <Link to="/actualizar-datos" className="btn btn-esfot me-2">Actualizar datos</Link>
+                  <button onClick={handleLogout} className="btn btn-danger">Cerrar sesión</button>
+                </>
+              );
+            }
+            // Si el usuario está activo, muestra los otros botones normales:
+            return (
+              <>
+                <Link to="/visualizar" className="btn btn-esfot me-2">Mis Aportaciones</Link>
+                <Link to="/registro" className="btn btn-esfot me-2">Planes de Aportaciones</Link>
+                <Link
+                  to="/actualizar-datos"
+                  className="btn btn-esfot me-2"
+                  onClick={handleActualizarClick}
+                >
+                  Actualizar datos
+                </Link>
+                <button onClick={handleLogout} className="btn btn-danger">Cerrar sesión</button>
+              </>
+            );
+          })()}
         </div>
       </header>
 
