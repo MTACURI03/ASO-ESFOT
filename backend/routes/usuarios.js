@@ -90,7 +90,26 @@ router.post('/registrar', async (req, res) => {
       from: 'mateotacuri67@gmail.com',
       to: correo,
       subject: 'Verifica tu cuenta',
-      html: `<p>Haz clic en el siguiente enlace para verificar tu cuenta:</p><a href="${link}">${link}</a>`
+      html: `
+        <div style="font-family: Arial, sans-serif; text-align: center;">
+          <h2 style="color: #e94c4c;">ASO-ESFOT</h2>
+          <p>Haz clic en el botón para verificar tu cuenta:</p>
+          <a href="${link}" style="
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #e94c4c;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            margin: 16px 0;
+          ">Verificar cuenta</a>
+          <p style="font-size: 13px; color: #888;">Si el botón no funciona, copia y pega este enlace en tu navegador:</p>
+          <p style="font-size: 13px; color: #888;">${link}</p>
+          <hr style="margin: 24px 0;">
+          <p style="font-size: 12px; color: #aaa;">ASO-ESFOT &copy; 2025</p>
+        </div>
+      `
     });
 
     res.status(200).json({ mensaje: 'Revisa tu correo para verificar tu cuenta.' });
