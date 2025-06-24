@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
+  const [rol, setRol] = useState('estudiante'); // Agrega este estado
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleLogin = async (e) => {
@@ -12,19 +15,27 @@ const LoginPage = () => {
       const response = await fetch('https://aso-esfot-backend.onrender.com/api/usuarios/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ correo, password }),
+        body: JSON.stringify({ correo, password, rol }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('usuarioId', data.usuario.id);
-        setShowSuccessModal(true);
+        // Guarda el rol en localStorage si lo necesitas
+        localStorage.setItem('rol', data.usuario.rol);
+        localStorage.setItem('usuario', JSON.stringify(data.usuario));
+
+        // Redirige según el rol
+        if (data.usuario.rol === 'admin') {
+          navigate('/adminpage');
+        } else {
+          navigate('/landing');
+        }
       } else {
-        alert(data.mensaje);
+        alert(data.mensaje || "Error al iniciar sesión");
       }
-    } catch (error) {
-      alert('Error en el servidor');
+    } catch (err) {
+      alert("Error al iniciar sesión: " + err.message);
     }
   };
 
@@ -103,6 +114,19 @@ const LoginPage = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="rol" className="form-label">Rol</label>
+                <select
+                  id="rol"
+                  className="form-select"
+                  value={rol}
+                  onChange={e => setRol(e.target.value)}
+                  required
+                >
+                  <option value="estudiante">Estudiante</option>
+                  <option value="admin">Administrador</option>
+                </select>
               </div>
               <div className="mb-4 text-center">
                 <p className="mb-1">¿Cuentas con una cuenta? No?</p>

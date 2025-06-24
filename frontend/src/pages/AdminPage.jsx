@@ -1,9 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const AdminPage = () => {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  // Modal de bienvenida
+  const [showWelcomeModal, setShowWelcomeModal] = useState(true);
+  const [adminNombre, setAdminNombre] = useState('');
+  const [adminApellido, setAdminApellido] = useState('');
+
+  useEffect(() => {
+    // Obtén los datos del admin desde localStorage (ajusta según cómo guardes el usuario)
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (usuario) {
+      setAdminNombre(usuario.nombre || '');
+      setAdminApellido(usuario.apellido || '');
+    }
+  }, []);
 
   const handleLogout = () => {
     // Abrir modal
@@ -14,6 +28,8 @@ const AdminPage = () => {
     // Cerrar modal y realizar logout
     setShowLogoutModal(false);
     localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("usuario");
+    localStorage.removeItem("rol");
     navigate("/");
   };
 
@@ -24,6 +40,30 @@ const AdminPage = () => {
 
   return (
     <div className="d-flex flex-column min-vh-100">
+      {/* Modal de bienvenida */}
+      {showWelcomeModal && (
+        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content" style={{ borderColor: '#004A99' }}>
+              <div className="modal-header bg-esfot text-white">
+                <h5 className="modal-title">Bienvenido administrador</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={() => setShowWelcomeModal(false)}></button>
+              </div>
+              <div className="modal-body text-center">
+                <p className="mb-0">
+                  <strong>{adminNombre} {adminApellido}</strong>
+                </p>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-primary" onClick={() => setShowWelcomeModal(false)}>
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ENCABEZADO */}
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />

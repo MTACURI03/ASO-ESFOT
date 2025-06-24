@@ -73,11 +73,18 @@ router.post('/registrar', async (req, res) => {
 
   try {
     const tokenVerificacion = crypto.randomBytes(32).toString('hex');
-    const { nombre, apellido, telefono, carrera, semestre, correo, password } = req.body;
+    const { nombre, apellido, telefono, carrera, semestre, correo, password, rol } = req.body; // <-- agrega rol
 
-    // Guarda los datos temporalmente
+    // Guarda los datos temporalmente, incluye rol (por defecto estudiante)
     registrosPendientes[tokenVerificacion] = {
-      nombre, apellido, telefono, carrera, semestre, correo, password
+      nombre,
+      apellido,
+      telefono,
+      carrera,
+      semestre,
+      correo,
+      password,
+      rol: rol || 'estudiante' // <-- por defecto estudiante
     };
 
     const url = `https://aso-esfot-p1kb.vercel.app/verificar/${tokenVerificacion}`;
@@ -109,7 +116,7 @@ router.post('/registrar', async (req, res) => {
 
 // POST /api/usuarios/login
 router.post('/login', async (req, res) => {
-  const { correo, password } = req.body;
+  const { correo, password, rol } = req.body; // <-- agrega rol aquí
 
   try {
     // Buscar usuario por correo
@@ -129,6 +136,11 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ mensaje: 'Debes verificar tu correo antes de iniciar sesión.' });
     }
 
+    // Verificar rol
+    if (rol && usuario.rol !== rol) {
+      return res.status(401).json({ mensaje: 'Rol incorrecto.' });
+    }
+
     // Autenticación exitosa
     res.status(200).json({
       mensaje: 'Inicio de sesión exitoso',
@@ -136,6 +148,7 @@ router.post('/login', async (req, res) => {
         id: usuario._id,
         nombre: usuario.nombre,
         correo: usuario.correo,
+        rol: usuario.rol // <-- devuelve el rol aquí
       }
     });
   } catch (error) {
