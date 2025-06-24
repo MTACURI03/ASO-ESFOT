@@ -14,7 +14,7 @@ import UsuariosPage from '../pages/UsuariosPage'; // Agrega esta línea arriba
 import ActualizarPasswordPage from '../pages/ActualizarPasswordPage'; // Agrega esta línea
 import ActualizarPage from '../pages/ActualizarPage';
 import AdminSolicitudesPage from '../pages/AdminSolicitudesPage'; // Nueva importación
-import RutaProtegida from './components/RutaProtegida';
+import RutaProtegida from '../pages/RutaProtegida'; // Asegúrate de importar RutaProtegida
 
 const AppRouter = () => (
   <BrowserRouter>
