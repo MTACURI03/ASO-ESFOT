@@ -24,9 +24,10 @@ const LoginPage = () => {
         if (data.usuario.activo === false) {
           setMensaje('Tu cuenta está inactiva. Actualiza tus datos para reactivarla.');
           setTimeout(() => navigate('/actualizar-datos'), 2000);
+        } else if (data.usuario.rol === 'admin') {
+          navigate('/adminpage');
         } else {
-          setShowSuccessModal(true);
-          setTimeout(() => navigate('/landing'), 2000);
+          navigate('/landing');
         }
       } else {
         setMensaje(data.mensaje || 'Error al iniciar sesión.');
