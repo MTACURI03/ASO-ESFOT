@@ -85,7 +85,7 @@ router.post('/registrar', async (req, res) => {
     };
 
     // Envía correo de verificación
-    const link = `https://aso-esfot-frontend.onrender.com/verificar/${tokenVerificacion}`;
+    const link = `https://aso-esfot-ldw7.vercel.app/verificar/${tokenVerificacion}`;
     await transporter.sendMail({
       from: 'mateotacuri67@gmail.com',
       to: correo,
