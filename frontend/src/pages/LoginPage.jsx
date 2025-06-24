@@ -6,6 +6,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [rol, setRol] = useState('estudiante');
   const [mensaje, setMensaje] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -24,7 +25,8 @@ const LoginPage = () => {
           setMensaje('Tu cuenta está inactiva. Actualiza tus datos para reactivarla.');
           setTimeout(() => navigate('/actualizar-datos'), 2000);
         } else {
-          navigate('/landing');
+          setShowSuccessModal(true);
+          setTimeout(() => navigate('/landing'), 2000);
         }
       } else {
         setMensaje(data.mensaje || 'Error al iniciar sesión.');
