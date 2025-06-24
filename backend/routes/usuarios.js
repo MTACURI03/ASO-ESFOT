@@ -131,8 +131,8 @@ router.post('/registrar', async (req, res) => {
 
 // POST /api/usuarios/login
 router.post('/login', async (req, res) => {
-  const { correo, password } = req.body;
-  const usuario = await Usuario.findOne({ correo });
+  const { correo, password, rol } = req.body;
+  const usuario = await Usuario.findOne({ correo, rol }); // Asegúrate de buscar por rol también
   if (!usuario) return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
   if (usuario.password !== password) return res.status(400).json({ mensaje: 'Contraseña incorrecta.' });
 
