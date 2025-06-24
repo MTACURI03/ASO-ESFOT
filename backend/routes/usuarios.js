@@ -51,6 +51,7 @@ router.get('/', async (req, res) => {
 const registrosPendientes = {};
 
 router.post('/registrar', async (req, res) => {
+  const { nombre, apellido, telefono, carrera, semestre, correo, password, rol } = req.body;
 
   if (!/^[\w-.]+@epn\.edu\.ec$/.test(req.body.correo)) {
     return res.status(400).json({ mensaje: 'El correo debe ser institucional (@epn.edu.ec).' });
@@ -72,11 +73,7 @@ router.post('/registrar', async (req, res) => {
 }
 
   try {
-    const tokenVerificacion = crypto.randomBytes(32).toString('hex');
-    const { nombre, apellido, telefono, carrera, semestre, correo, password, rol } = req.body; // <-- agrega rol
-
-    // Guarda los datos temporalmente, incluye rol (por defecto estudiante)
-    registrosPendientes[tokenVerificacion] = {
+    const nuevoUsuario = new Usuario({
       nombre,
       apellido,
       telefono,
@@ -84,33 +81,15 @@ router.post('/registrar', async (req, res) => {
       semestre,
       correo,
       password,
-      rol: rol || 'estudiante' // <-- por defecto estudiante
-    };
-
-    const url = `https://aso-esfot-p1kb.vercel.app/verificar/${tokenVerificacion}`;
-    await transporter.sendMail({
-      from: 'tuusuario@gmail.com',
-      to: correo,
-      subject: 'Verifica tu cuenta',
-      html: `
-  <div style="font-family: Arial, sans-serif; text-align: center; padding: 24px;">
-    <h2 style="color: #b22222;">🐉 Verifícate en <span style="color: #007bff;">ASO-ESFOT</span></h2>
-    <p style="font-size: 1.1em;">¡Hola! Para activar tu cuenta y disfrutar de todos los beneficios, haz clic en el siguiente botón:</p>
-    <a href="${url}" style="display: inline-block; margin: 24px 0; padding: 12px 28px; background: #007bff; color: #fff; border-radius: 6px; text-decoration: none; font-size: 1.1em;">
-      Verificar mi cuenta 🐉
-    </a>
-    <p style="color: #888; font-size: 0.95em;">Si el botón no funciona, copia y pega este enlace en tu navegador:</p>
-    <p style="word-break: break-all;"><a href="${url}">${url}</a></p>
-    <hr style="margin: 32px 0;">
-    <p style="font-size: 0.9em; color: #aaa;">ASO-ESFOT &copy; 2025</p>
-  </div>
-`
+      rol: rol || 'estudiante', // <--- IMPORTANTE: aquí se guarda el rol
+      verificado: false,
+      activo: true
     });
-    console.log('Correo enviado');
-    res.status(201).json({ mensaje: 'Revisa tu correo para verificar tu cuenta' });
+
+    await nuevoUsuario.save();
+    res.status(201).json({ mensaje: 'Usuario registrado correctamente' });
   } catch (error) {
-    console.error('Error en /registrar:', error);
-    res.status(500).json({ mensaje: 'Error al registrar el usuario', error: error.message });
+    res.status(500).json({ mensaje: 'Error al registrar usuario', error: error.message });
   }
 });
 
