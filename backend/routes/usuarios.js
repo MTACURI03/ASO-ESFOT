@@ -13,6 +13,9 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// Guardar temporalmente los datos de registro
+const registrosPendientes = {};
+
 router.get('/verificar/:token', async (req, res) => {
   const datos = registrosPendientes[req.params.token];
   if (!datos) return res.status(400).send('Token inválido o expirado');
@@ -54,9 +57,6 @@ router.get('/', async (req, res) => {
     res.status(500).json({ mensaje: 'Error al obtener usuarios', error: error.message });
   }
 });
-
-// Guardar temporalmente los datos de registro
-const registrosPendientes = {};
 
 router.post('/registrar', async (req, res) => {
   const { nombre, apellido, telefono, carrera, semestre, correo, password, rol } = req.body;
