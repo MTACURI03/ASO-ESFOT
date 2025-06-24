@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Usuario = require('../models/Usuario');
 const Admin = require('../models/Admin'); // Importa el modelo Admin
+const SolicitudActualizacion = require('../models/SolicitudActualizacion'); // Asegúrate de tener este modelo
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
@@ -242,18 +243,119 @@ router.put('/:id/activo', async (req, res) => {
 router.put('/actualizar-password', async (req, res) => {
   const { correo, passwordActual, nuevoPassword } = req.body;
   try {
+    // Buscar usuario por correo
     const usuario = await Usuario.findOne({ correo });
     if (!usuario) {
-      return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
+      return res.status(404).json({ mensaje: 'El correo no está registrado.' });
     }
+
+    // Validar contraseña actual
     if (usuario.password !== passwordActual) {
-      return res.status(400).json({ mensaje: 'Contraseña actual incorrecta.' });
+      return res.status(400).json({ mensaje: 'La contraseña actual es incorrecta.' });
     }
+
+    // Validar que la nueva contraseña sea diferente
+    if (nuevoPassword === passwordActual) {
+      return res.status(400).json({ mensaje: 'La nueva contraseña debe ser diferente a la anterior.' });
+    }
+
+    // Validar longitud y mayúscula
+    const tieneMayuscula = /[A-Z]/.test(nuevoPassword);
+    if (nuevoPassword.length < 9 || !tieneMayuscula) {
+      return res.status(400).json({ mensaje: 'La nueva contraseña debe tener al menos 9 caracteres y una letra mayúscula.' });
+    }
+
+    // Actualizar contraseña
     usuario.password = nuevoPassword;
     await usuario.save();
+
     res.json({ mensaje: 'Contraseña actualizada correctamente.' });
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al actualizar la contraseña.' });
+  }
+});
+
+router.post('/solicitar-actualizacion', async (req, res) => {
+  const { id, telefono, carrera, semestre } = req.body;
+  try {
+    const usuario = await Usuario.findById(id);
+    if (!usuario) return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
+    if (usuario.activo) return res.status(400).json({ mensaje: 'Solo puedes actualizar datos si tu cuenta está inactiva.' });
+
+    // Guarda la solicitud pendiente
+    const solicitud = await SolicitudActualizacion.create({
+      usuarioId: id,
+      telefono,
+      carrera,
+      semestre,
+      estado: 'pendiente'
+    });
+
+    // Correo al usuario
+    await transporter.sendMail({
+      from: 'ASO-ESFOT <mateotacuri67@gmail.com>',
+      to: usuario.correo,
+      subject: 'Solicitud de actualización de datos recibida',
+      html: `
+        <h3>¡Solicitud recibida!</h3>
+        <p>Tu solicitud de actualización de datos ha sido registrada. Un administrador la revisará pronto.</p>
+      `
+    });
+
+    // Correo al admin
+    await transporter.sendMail({
+      from: 'ASO-ESFOT <mateotacuri67@gmail.com>',
+      to: 'admin@esfot.edu.ec', // Cambia por el correo real del admin
+      subject: 'Solicitud de actualización de datos de estudiante',
+      html: `
+        <h3>Actualización de datos solicitada</h3>
+        <p>El estudiante <b>${usuario.nombre} ${usuario.apellido}</b> (${usuario.correo}) ha solicitado actualizar sus datos:</p>
+        <ul>
+          <li>Teléfono: ${telefono}</li>
+          <li>Carrera: ${carrera}</li>
+          <li>Semestre: ${semestre}</li>
+        </ul>
+        <p>Revisa y aprueba la solicitud en el panel de administración.</p>
+      `
+    });
+
+    res.json({ mensaje: 'Solicitud enviada. Un administrador revisará tu actualización.' });
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error al solicitar actualización.' });
+  }
+});
+
+router.post('/aprobar-actualizacion/:solicitudId', async (req, res) => {
+  try {
+    const solicitud = await SolicitudActualizacion.findById(req.params.solicitudId);
+    if (!solicitud || solicitud.estado !== 'pendiente') {
+      return res.status(404).json({ mensaje: 'Solicitud no encontrada o ya procesada.' });
+    }
+    // Actualiza los datos del usuario
+    const usuario = await Usuario.findById(solicitud.usuarioId);
+    usuario.telefono = solicitud.telefono;
+    usuario.carrera = solicitud.carrera;
+    usuario.semestre = solicitud.semestre;
+    usuario.activo = true; // Reactiva la cuenta
+    await usuario.save();
+
+    solicitud.estado = 'aprobada';
+    await solicitud.save();
+
+    // Notifica al usuario
+    await transporter.sendMail({
+      from: 'ASO-ESFOT <mateotacuri67@gmail.com>',
+      to: usuario.correo,
+      subject: 'Actualización de datos aprobada',
+      html: `
+        <h3>¡Tus datos han sido actualizados!</h3>
+        <p>Tu cuenta ha sido reactivada y tus datos han sido actualizados correctamente. Ya puedes iniciar sesión.</p>
+      `
+    });
+
+    res.json({ mensaje: 'Datos actualizados y cuenta reactivada.' });
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error al aprobar la actualización.' });
   }
 });
 

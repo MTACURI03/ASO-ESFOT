@@ -27,24 +27,37 @@ const ActualizarPasswordPage = () => {
   };
 
   return (
-    <div className="container py-5">
-      <h2 className="mb-4">Actualizar Contraseña</h2>
-      <form onSubmit={handleActualizar} style={{ maxWidth: 400 }}>
-        <div className="mb-3">
-          <label className="form-label">Correo institucional</label>
-          <input type="email" className="form-control" value={correo} onChange={e => setCorreo(e.target.value)} required />
+    <div className="d-flex flex-column min-vh-100" style={{ background: '#f8f9fa' }}>
+      <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center" style={{ background: '#e94c4c' }}>
+        <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
+        <h3 className="mb-0" style={{ color: '#fff', fontWeight: 'bold', letterSpacing: 1 }}>ASO-ESFOT</h3>
+      </header>
+      <main className="flex-grow-1 d-flex align-items-center justify-content-center">
+        <div className="card shadow" style={{ maxWidth: 420, width: '100%', borderTop: '5px solid #2986f5' }}>
+          <div className="card-body">
+            <h2 className="mb-4 text-center" style={{ color: '#e94c4c', fontWeight: 'bold' }}>Actualizar Contraseña</h2>
+            <form onSubmit={handleActualizar}>
+              <div className="mb-3">
+                <label className="form-label" style={{ color: '#2986f5', fontWeight: 'bold' }}>Correo institucional</label>
+                <input type="email" className="form-control" value={correo} onChange={e => setCorreo(e.target.value)} required />
+              </div>
+              <div className="mb-3">
+                <label className="form-label" style={{ color: '#2986f5', fontWeight: 'bold' }}>Contraseña actual</label>
+                <input type="password" className="form-control" value={passwordActual} onChange={e => setPasswordActual(e.target.value)} required />
+              </div>
+              <div className="mb-3">
+                <label className="form-label" style={{ color: '#2986f5', fontWeight: 'bold' }}>Nueva contraseña</label>
+                <input type="password" className="form-control" value={nuevoPassword} onChange={e => setNuevoPassword(e.target.value)} required />
+              </div>
+              <button type="submit" className="btn w-100" style={{ background: '#e94c4c', color: '#fff', fontWeight: 'bold' }}>Actualizar</button>
+              {mensaje && <div className="mt-3 alert alert-info text-center">{mensaje}</div>}
+            </form>
+          </div>
         </div>
-        <div className="mb-3">
-          <label className="form-label">Contraseña actual</label>
-          <input type="password" className="form-control" value={passwordActual} onChange={e => setPasswordActual(e.target.value)} required />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Nueva contraseña</label>
-          <input type="password" className="form-control" value={nuevoPassword} onChange={e => setNuevoPassword(e.target.value)} required />
-        </div>
-        <button type="submit" className="btn btn-primary">Actualizar</button>
-        {mensaje && <div className="mt-3 alert alert-info">{mensaje}</div>}
-      </form>
+      </main>
+      <footer className="bg-esfot text-white text-center py-3" style={{ background: '#2986f5' }}>
+        &copy; 2025 ASO-ESFOT. Todos los derechos reservados.
+      </footer>
     </div>
   );
 };

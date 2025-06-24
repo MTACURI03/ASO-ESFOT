@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 const LandingPage = () => {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showActualizarModal, setShowActualizarModal] = useState(false);
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
 
   const handleLogout = () => {
     setShowLogoutModal(true);
@@ -19,6 +21,21 @@ const LandingPage = () => {
     setShowLogoutModal(false);
   };
 
+  // Nuevo: Modal para advertencia de actualización de datos
+  const handleActualizarClick = (e) => {
+    e.preventDefault();
+    setShowActualizarModal(true);
+  };
+
+  const confirmActualizar = () => {
+    setShowActualizarModal(false);
+    navigate('/actualizar-datos');
+  };
+
+  const cancelActualizar = () => {
+    setShowActualizarModal(false);
+  };
+
   return (
     <div className="d-flex flex-column min-vh-100">
       {/* ENCABEZADO */}
@@ -27,11 +44,39 @@ const LandingPage = () => {
         <div>
           <Link to="/visualizar" className="btn btn-esfot me-2">Mis Aportaciones</Link>
           <Link to="/registro" className="btn btn-esfot me-2">Planes de Aportaciones</Link>
+          <Link
+            to="/actualizar-datos"
+            className="btn btn-esfot me-2"
+            onClick={handleActualizarClick}
+          >
+            Actualizar datos
+          </Link>
           <button onClick={handleLogout} className="btn btn-danger">Cerrar sesión</button>
         </div>
       </header>
 
-      {/* Modal de confirmación */}
+      {/* Modal de advertencia para actualizar datos */}
+      {showActualizarModal && (
+        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content" style={{ borderColor: '#e94c4c' }}>
+              <div className="modal-header bg-esfot text-white">
+                <h5 className="modal-title">Atención</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={cancelActualizar}></button>
+              </div>
+              <div className="modal-body">
+                <p>Solo actualiza tus datos si es realmente necesario.</p>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={cancelActualizar}>Cancelar</button>
+                <button type="button" className="btn btn-esfot" style={{ background: '#e94c4c', color: '#fff' }} onClick={confirmActualizar}>Continuar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de confirmación de cierre de sesión */}
       {showLogoutModal && (
         <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -135,7 +180,7 @@ const LandingPage = () => {
             </div>
             <div className="col-md-6 order-md-1">
               <p className="lead text-secondary fw-semibold">
-                Promoviendo la participación estudiantil, al tener diferentes torneos en diferentes disciplinas
+                Promoviendo la participación estudiantil, al tener diferentes torneos in diferentes disciplinas
                 deportivas,se centra en la ayuda a los deportistas y colabora en el camino hacia la excelencia y el trinunfo.🏆
               </p>
             </div>

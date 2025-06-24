@@ -20,6 +20,7 @@ app.use('/api/usuarios', usuariosRouter);
 app.use('/api/planes', planesRouter);
 app.use('/api/finanzas', finanzasRouter);
 app.use('/api/planescrud', planesCrudRouter);
+app.use('/api/solicitudes', require('./routes/solicitudes'));
 
 // Conexión a MongoDB Atlas
 const mongoURI = 'mongodb+srv://Mtacuri03:paula2012TRR@asoesfot2.yebpp0c.mongodb.net/asoesfot?retryWrites=true&w=majority&appName=asoesfot2';
@@ -36,7 +37,6 @@ app.get('*', (req, res) => {
 
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
-
 
 // Iniciar servidor
 app.listen(PORT, () => {

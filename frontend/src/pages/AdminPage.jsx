@@ -127,6 +127,7 @@ const AdminPage = () => {
           <Link to="/adminpage/usuariospage" className="btn btn-esfot me-2">Gestión de Usuarios</Link>
           <Link to="/adminpage/reportespage" className="btn btn-esfot me-2">Gestionar Aportantes</Link>
           <Link to="/adminpage/finanzaspage" className="btn btn-esfot me-2">Finanzas</Link>
+          <Link to="/admin/solicitudes" className="btn btn-esfot me-2">Solicitudes de Actualización</Link>
           <button onClick={handleLogout} className="btn btn-danger">Cerrar sesión</button>
         </div>
       </header>
