@@ -91,23 +91,34 @@ router.post('/registrar', async (req, res) => {
       to: correo,
       subject: 'Verifica tu cuenta',
       html: `
-        <div style="font-family: Arial, sans-serif; text-align: center;">
-          <h2 style="color: #e94c4c;">ASO-ESFOT</h2>
-          <p>Haz clic en el botón para verificar tu cuenta:</p>
+        <div style="background: #232323; color: #fff; font-family: Arial, sans-serif; text-align: center; padding: 40px 0; min-height: 100vh;">
+          <h2 style="color: #ff5e5e; margin-bottom: 16px;">
+            <span style="font-size: 1.5em;">🐍</span>
+            <span style="color: #ff5e5e;">Verifícate en</span>
+            <span style="color: #4da3ff;">ASO-ESFOT</span>
+          </h2>
+          <p style="font-size: 1.1em; margin-bottom: 32px;">
+            ¡Hola! Para activar tu cuenta y disfrutar de todos los beneficios, haz clic en el siguiente botón:
+          </p>
           <a href="${link}" style="
             display: inline-block;
-            padding: 12px 24px;
-            background-color: #e94c4c;
+            padding: 14px 32px;
+            background-color: #2986f5;
             color: #fff;
             text-decoration: none;
-            border-radius: 6px;
+            border-radius: 8px;
+            font-size: 1.1em;
             font-weight: bold;
-            margin: 16px 0;
-          ">Verificar cuenta</a>
-          <p style="font-size: 13px; color: #888;">Si el botón no funciona, copia y pega este enlace en tu navegador:</p>
-          <p style="font-size: 13px; color: #888;">${link}</p>
-          <hr style="margin: 24px 0;">
-          <p style="font-size: 12px; color: #aaa;">ASO-ESFOT &copy; 2025</p>
+            margin: 24px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: background 0.2s;
+          ">
+            Verificar mi cuenta 🐍
+          </a>
+          <p style="font-size: 13px; color: #bbb; margin-top: 40px;">
+            Si el botón no funciona, copia y pega este enlace en tu navegador:<br>
+            <span style="color: #4da3ff;">${link}</span>
+          </p>
         </div>
       `
     });

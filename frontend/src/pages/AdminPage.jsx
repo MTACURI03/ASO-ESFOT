@@ -10,6 +10,9 @@ const AdminPage = () => {
   const [adminNombre, setAdminNombre] = useState('');
   const [adminApellido, setAdminApellido] = useState('');
 
+  // Modal para crear cuenta de usuario
+  const [showCrearUsuarioModal, setShowCrearUsuarioModal] = useState(false);
+
   useEffect(() => {
     // Solo mostrar el modal si no se ha mostrado en esta sesión
     if (!sessionStorage.getItem('adminWelcomeShown')) {
@@ -23,6 +26,13 @@ const AdminPage = () => {
       setAdminApellido(usuario.apellido || '');
     }
   }, []);
+
+  useEffect(() => {
+    // Cuando se cierra el modal de bienvenida, mostrar el de crear usuario
+    if (!showWelcomeModal) {
+      setTimeout(() => setShowCrearUsuarioModal(true), 300); // pequeño delay para transición
+    }
+  }, [showWelcomeModal]);
 
   const handleLogout = () => {
     // Abrir modal
@@ -62,6 +72,34 @@ const AdminPage = () => {
               <div className="modal-footer">
                 <button type="button" className="btn btn-primary" onClick={() => setShowWelcomeModal(false)}>
                   Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para crear cuenta de usuario */}
+      {!showWelcomeModal && showCrearUsuarioModal && (
+        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content" style={{ borderColor: '#004A99' }}>
+              <div className="modal-header bg-esfot text-white">
+                <h5 className="modal-title">¿Quieres crear una cuenta de usuario?</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={() => setShowCrearUsuarioModal(false)}></button>
+              </div>
+              <div className="modal-body text-center">
+                <p className="mb-0">Como administrador puedes registrar un nuevo usuario estudiante.</p>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowCrearUsuarioModal(false)}>
+                  No
+                </button>
+                <button type="button" className="btn btn-success" onClick={() => {
+                  setShowCrearUsuarioModal(false);
+                  navigate('/crear-password');
+                }}>
+                  Sí
                 </button>
               </div>
             </div>
