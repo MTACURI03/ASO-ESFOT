@@ -11,6 +11,8 @@ import ReportesPage from '../pages/ReportesPage';
 import FinanzasPage from '../pages/FinanzasPage';
 import VerificarCuenta from '../pages/VerificarCuenta';
 import UsuariosPage from '../pages/UsuariosPage'; // Agrega esta línea arriba
+import ActualizarPasswordPage from '../pages/ActualizarPasswordPage'; // Agrega esta línea
+
 const AppRouter = () => (
   <BrowserRouter>
     <Routes>
@@ -25,6 +27,7 @@ const AppRouter = () => (
       <Route path="/adminpage/reportespage" element={<ReportesPage/>} />
       <Route path="/adminpage/finanzaspage" element={<FinanzasPage/>} />
       <Route path="/verificar/:token" element={<VerificarCuenta />} />
+      <Route path="/actualizar-password" element={<ActualizarPasswordPage />} /> {/* Nueva ruta */}
     </Routes>
   </BrowserRouter>
 );

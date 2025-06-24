@@ -101,48 +101,27 @@ router.get('/aportaciones', async (req, res) => {
 router.put('/aportaciones/:id/estado', async (req, res) => {
   const { estado } = req.body;
   try {
+    // Busca la aportación antes de actualizar para saber su estado anterior
+    const aportacionPrev = await PlanAportacion.findById(req.params.id);
+
     const aportacion = await PlanAportacion.findByIdAndUpdate(
       req.params.id,
       { estado },
       { new: true }
     ).populate('usuarioId');
+
     if (!aportacion) return res.status(404).json({ mensaje: 'Aportación no encontrada' });
 
-    // Si el nuevo estado es "Pagado", enviar correo al usuario
-    if (estado === 'Pagado' && aportacion.usuarioId && aportacion.usuarioId.correo) {
-      const transporter = require('nodemailer').createTransport({
-        service: 'gmail',
-        auth: {
-          user: 'mateotacuri67@gmail.com',
-          pass: 'bzrtsqptiholqdgt'
-        }
-      });
-
-      const mailOptions = {
-        from: 'mateotacuri67@gmail.com',
-        to: aportacion.usuarioId.correo,
-        subject: '¡Tu pago ha sido registrado en ASO-ESFOT!',
-        html: `
-          <div style="font-family: Arial, sans-serif; background: #f8f8f8; padding: 24px;">
-            <h2 style="color: #e94c4c;">¡Pago registrado!</h2>
-            <p>Hola <b>${aportacion.usuarioId.nombre} ${aportacion.usuarioId.apellido}</b>,</p>
-            <p>Te informamos que tu pago del plan <b>${aportacion.nombrePlan}</b> ha sido registrado exitosamente el <b>${new Date(aportacion.fechaSeleccion).toLocaleDateString()}</b>.</p>
-            <ul>
-              <li><b>Nombre:</b> ${aportacion.usuarioId.nombre} ${aportacion.usuarioId.apellido}</li>
-              <li><b>Correo:</b> ${aportacion.usuarioId.correo}</li>
-              <li><b>Plan:</b> ${aportacion.nombrePlan}</li>
-              <li><b>Fecha de selección:</b> ${new Date(aportacion.fechaSeleccion).toLocaleDateString()}</li>
-              <li><b>Estado:</b> Pagado</li>
-            </ul>
-            <p>Ya puedes acercarte a las oficinas de la asociación para disfrutar de tus beneficios.</p>
-            <p style="color: #2986f5; font-weight: bold;">Puedes imprimir tu factura en el apartado de <b>Mis Aportaciones</b> en tu cuenta de ASO-ESFOT.</p>
-            <hr>
-            <p style="font-size: 12px; color: #888;">ASO-ESFOT &copy; 2025</p>
-          </div>
-        `
-      };
-
-      await transporter.sendMail(mailOptions);
+    // Sumar al saldo solo si pasa de pendiente a pagado
+    if (
+      aportacionPrev &&
+      aportacionPrev.estado !== 'Pagado' &&
+      estado === 'Pagado'
+    ) {
+      let finanza = await Finanza.findOne();
+      if (!finanza) finanza = await Finanza.create({ saldo: 0 });
+      finanza.saldo += aportacion.precio;
+      await finanza.save();
     }
 
     res.json({ mensaje: 'Estado actualizado', aportacion });

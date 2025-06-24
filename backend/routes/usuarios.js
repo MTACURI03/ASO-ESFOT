@@ -239,4 +239,22 @@ router.put('/:id/activo', async (req, res) => {
   }
 });
 
+router.put('/actualizar-password', async (req, res) => {
+  const { correo, passwordActual, nuevoPassword } = req.body;
+  try {
+    const usuario = await Usuario.findOne({ correo });
+    if (!usuario) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
+    }
+    if (usuario.password !== passwordActual) {
+      return res.status(400).json({ mensaje: 'Contraseña actual incorrecta.' });
+    }
+    usuario.password = nuevoPassword;
+    await usuario.save();
+    res.json({ mensaje: 'Contraseña actualizada correctamente.' });
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error al actualizar la contraseña.' });
+  }
+});
+
 module.exports = router;

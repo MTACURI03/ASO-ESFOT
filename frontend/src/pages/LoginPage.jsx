@@ -132,6 +132,9 @@ const LoginPage = () => {
                 <p className="mb-1">¿Cuentas con una cuenta? No?</p>
                 <a href="/crear-password" className="text-decoration-none">Puedes crearla aquí</a>
               </div>
+              <div className="mb-2 text-center">
+                <a href="/actualizar-password" className="text-decoration-none">¿Olvidaste o quieres cambiar tu contraseña?</a>
+              </div>
               <button type="submit" className="btn w-100" style={{ backgroundColor: '#e94c4c', color: 'white' }}>
                 Ingresar
               </button>
