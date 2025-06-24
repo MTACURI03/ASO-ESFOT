@@ -64,8 +64,8 @@ router.post('/registrar', async (req, res) => {
   try {
     // Verifica si el correo ya existe en usuarios o admins
     const existeUsuario = await Usuario.findOne({ correo });
-    const existeAdmin = await Admin.findOne({ correo });
-    if (existeUsuario || existeAdmin) {
+    // const existeAdmin = await Admin.findOne({ correo }); // <-- Elimina o comenta esta línea
+    if (existeUsuario) { // <-- Solo valida en la colección de usuarios
       return res.status(400).json({ mensaje: 'El correo ya está registrado.' });
     }
 
