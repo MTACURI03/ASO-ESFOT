@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Usuario = require('../models/Usuario');
+const Admin = require('../models/Admin'); // Importa el modelo Admin
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
@@ -17,12 +18,19 @@ router.get('/verificar/:token', async (req, res) => {
   if (!datos) return res.status(400).send('Token inválido o expirado');
 
   try {
-    // Guarda el usuario en la base de datos y lo marca como verificado
-    const nuevoUsuario = new Usuario({
-      ...datos,
-      verificado: true
-    });
-    await nuevoUsuario.save();
+    if (datos.rol === 'admin') {
+      const nuevoAdmin = new Admin({
+        ...datos,
+        verificado: true
+      });
+      await nuevoAdmin.save();
+    } else {
+      const nuevoUsuario = new Usuario({
+        ...datos,
+        verificado: true
+      });
+      await nuevoUsuario.save();
+    }
 
     // Elimina los datos temporales
     delete registrosPendientes[req.params.token];
@@ -53,27 +61,17 @@ const registrosPendientes = {};
 router.post('/registrar', async (req, res) => {
   const { nombre, apellido, telefono, carrera, semestre, correo, password, rol } = req.body;
 
-  if (!/^[\w-.]+@epn\.edu\.ec$/.test(req.body.correo)) {
-    return res.status(400).json({ mensaje: 'El correo debe ser institucional (@epn.edu.ec).' });
-  }
-  if (req.body.password.length < 9 || !/[A-Z]/.test(req.body.password)) {
-    return res.status(400).json({ mensaje: 'La contraseña debe tener mínimo 9 caracteres y al menos una letra mayúscula.' });
-  }
-
-  if (!/^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*$/.test(req.body.nombre)) {
-  return res.status(400).json({ mensaje: 'El nombre debe empezar con mayúscula y solo contener letras.' });
-}
-
-  if (!/^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*$/.test(req.body.apellido)) {
-  return res.status(400).json({ mensaje: 'El apellido debe empezar con mayúscula y solo contener letras.' });
-}
-
-  if (!/^\d{10}$/.test(req.body.telefono)) {
-  return res.status(400).json({ mensaje: 'El teléfono debe tener exactamente 10 dígitos.' });
-}
-
   try {
-    const nuevoUsuario = new Usuario({
+    // Verifica si el correo ya existe en usuarios o admins
+    const existeUsuario = await Usuario.findOne({ correo });
+    const existeAdmin = await Admin.findOne({ correo });
+    if (existeUsuario || existeAdmin) {
+      return res.status(400).json({ mensaje: 'El correo ya está registrado.' });
+    }
+
+    // Guarda los datos temporalmente, incluyendo el rol
+    const tokenVerificacion = crypto.randomBytes(32).toString('hex');
+    registrosPendientes[tokenVerificacion] = {
       nombre,
       apellido,
       telefono,
@@ -81,13 +79,21 @@ router.post('/registrar', async (req, res) => {
       semestre,
       correo,
       password,
-      rol: rol || 'estudiante', // <--- IMPORTANTE: aquí se guarda el rol
+      rol: rol === 'admin' ? 'admin' : 'estudiante',
       verificado: false,
       activo: true
+    };
+
+    // Envía correo de verificación
+    const link = `https://aso-esfot-frontend.onrender.com/verificar/${tokenVerificacion}`;
+    await transporter.sendMail({
+      from: 'mateotacuri67@gmail.com',
+      to: correo,
+      subject: 'Verifica tu cuenta',
+      html: `<p>Haz clic en el siguiente enlace para verificar tu cuenta:</p><a href="${link}">${link}</a>`
     });
 
-    await nuevoUsuario.save();
-    res.status(201).json({ mensaje: 'Usuario registrado correctamente' });
+    res.status(200).json({ mensaje: 'Revisa tu correo para verificar tu cuenta.' });
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al registrar usuario', error: error.message });
   }
@@ -95,39 +101,40 @@ router.post('/registrar', async (req, res) => {
 
 // POST /api/usuarios/login
 router.post('/login', async (req, res) => {
-  const { correo, password, rol } = req.body; // <-- agrega rol aquí
+  const { correo, password, rol } = req.body;
 
   try {
-    // Buscar usuario por correo
-    const usuario = await Usuario.findOne({ correo });
+    let usuario;
+    if (rol === 'admin') {
+      usuario = await Admin.findOne({ correo });
+    } else {
+      usuario = await Usuario.findOne({ correo });
+    }
 
     if (!usuario || !usuario.activo) {
       return res.status(401).json({ mensaje: 'Usuario inactivo o no encontrado.' });
     }
 
-    // Verificar contraseña
     if (usuario.password !== password) {
       return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
     }
 
-    // Verificar si el usuario está verificado
     if (!usuario.verificado) {
       return res.status(401).json({ mensaje: 'Debes verificar tu correo antes de iniciar sesión.' });
     }
 
-    // Verificar rol
     if (rol && usuario.rol !== rol) {
       return res.status(401).json({ mensaje: 'Rol incorrecto.' });
     }
 
-    // Autenticación exitosa
     res.status(200).json({
       mensaje: 'Inicio de sesión exitoso',
       usuario: {
         id: usuario._id,
         nombre: usuario.nombre,
+        apellido: usuario.apellido,
         correo: usuario.correo,
-        rol: usuario.rol // <-- devuelve el rol aquí
+        rol: usuario.rol
       }
     });
   } catch (error) {

@@ -6,12 +6,17 @@ const AdminPage = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   // Modal de bienvenida
-  const [showWelcomeModal, setShowWelcomeModal] = useState(true);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [adminNombre, setAdminNombre] = useState('');
   const [adminApellido, setAdminApellido] = useState('');
 
   useEffect(() => {
-    // Obtén los datos del admin desde localStorage (ajusta según cómo guardes el usuario)
+    // Solo mostrar el modal si no se ha mostrado en esta sesión
+    if (!sessionStorage.getItem('adminWelcomeShown')) {
+      setShowWelcomeModal(true);
+      sessionStorage.setItem('adminWelcomeShown', 'true');
+    }
+    // Obtén los datos del admin desde localStorage
     const usuario = JSON.parse(localStorage.getItem('usuario'));
     if (usuario) {
       setAdminNombre(usuario.nombre || '');

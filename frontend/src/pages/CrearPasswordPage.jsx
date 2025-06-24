@@ -16,6 +16,11 @@ const CrearPasswordPage = () => {
   const [semestre, setSemestre] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [modal, setModal] = useState({ show: false, title: '', message: '', error: false });
+  const [rol, setRol] = useState('estudiante');
+
+  const usuarioActual = JSON.parse(localStorage.getItem('usuario'));
+  const esAdmin = usuarioActual && usuarioActual.rol === 'admin';
 
   // Validaciones
   const nombreValido = /^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*$/.test(nombre);
@@ -92,7 +97,8 @@ const CrearPasswordPage = () => {
       carrera,
       semestre,
       correo: email,
-      password
+      password,
+      ...(esAdmin && { rol }) // Solo agrega el rol si es admin
     };
 
     try {
@@ -101,15 +107,18 @@ const CrearPasswordPage = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(nuevoUsuario),
       });
-
       const data = await response.json();
-
-      if (response.ok) {
-        setSuccessMessage(data.mensaje || "Registrado con éxito ✅");
-        setShowSuccessModal(true);
-      } else {
-        alert(data.mensaje || "Error al registrar el usuario");
+      if (!response.ok) {
+        setModal({
+          show: true,
+          title: 'Error',
+          message: data.mensaje || 'Error al registrar usuario',
+          error: true,
+        });
+        return;
       }
+      setSuccessMessage(data.mensaje || "Registrado con éxito ✅");
+      setShowSuccessModal(true);
     } catch (err) {
       alert("Error al registrar: " + err.message);
     }
@@ -333,6 +342,23 @@ const CrearPasswordPage = () => {
                   </div>
                 )}
               </div>
+              {esAdmin && (
+                <div className="mb-3">
+                  <label htmlFor="rol" className="form-label">Rol</label>
+                  <select
+                    className="form-select"
+                    id="rol"
+                    value={rol}
+                    onChange={e => setRol(e.target.value)}
+                    disabled // El admin no puede cambiar su propio rol
+                  >
+                    <option value="estudiante">Estudiante</option>
+                  </select>
+                  <div className="form-text">
+                    Como administrador solo puedes registrar usuarios con rol estudiante.
+                  </div>
+                </div>
+              )}
               <button
                 type="submit"
                 className="btn w-100"

@@ -122,8 +122,11 @@ const UsuariosPage = () => {
               {usuarios.length > 0 ? (
                 usuarios
                   .filter(u =>
-                    !busqueda ||
-                    (u.semestre && u.semestre.toLowerCase() === busqueda.toLowerCase())
+                    u.rol === 'estudiante' && // Solo mostrar usuarios con rol estudiante
+                    (
+                      !busqueda ||
+                      (u.semestre && u.semestre.toLowerCase() === busqueda.toLowerCase())
+                    )
                   )
                   .map((u, i) => (
                     <tr key={u._id}>
