@@ -19,16 +19,10 @@ const UsuariosPage = () => {
       .catch(() => setUsuarios([]));
   }, [busqueda]);
 
-  // Mostrar modal de confirmación
-  const mostrarModal = (id, activoActual) => {
-    setModal({ show: true, id, activoActual, loading: false });
-  };
-
   // Confirmar cambio de estado activo/inactivo
-  const confirmarCambioActivo = () => {
+  const confirmarCambioActivo = (nuevoActivo) => {
     setModal(modal => ({ ...modal, loading: true }));
     const id = modal.id;
-    const nuevoActivo = false;
     fetch(`https://aso-esfot-backend.onrender.com/api/usuarios/${id}/activo`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -45,6 +39,11 @@ const UsuariosPage = () => {
       });
   };
 
+  // Mostrar modal de confirmación
+  const mostrarModal = (id, activoActual) => {
+    setModal({ show: true, id, activoActual, loading: false });
+  };
+
   // Cerrar modal
   const cerrarModal = () => setModal({ show: false, id: null, activoActual: true, loading: false });
 
@@ -56,16 +55,26 @@ const UsuariosPage = () => {
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header bg-warning text-dark">
-                <h5 className="modal-title">Confirmar inactivación</h5>
+                <h5 className="modal-title">
+                  {modal.activoActual ? 'Confirmar inactivación' : 'Confirmar activación'}
+                </h5>
                 <button type="button" className="btn-close" onClick={cerrarModal}></button>
               </div>
               <div className="modal-body">
-                ¿Seguro que quieres inactivar este usuario? No podrá iniciar sesión.
+                {modal.activoActual
+                  ? '¿Seguro que quieres inactivar este usuario? No podrá iniciar sesión.'
+                  : '¿Seguro que quieres activar este usuario? Podrá iniciar sesión.'}
               </div>
               <div className="modal-footer">
                 <button className="btn btn-secondary" onClick={cerrarModal} disabled={modal.loading}>No</button>
-                <button className="btn btn-danger" onClick={confirmarCambioActivo} disabled={modal.loading}>
-                  {modal.loading ? 'Inactivando...' : 'Sí'}
+                <button
+                  className={`btn ${modal.activoActual ? 'btn-danger' : 'btn-success'}`}
+                  onClick={() => confirmarCambioActivo(!modal.activoActual)}
+                  disabled={modal.loading}
+                >
+                  {modal.loading
+                    ? (modal.activoActual ? 'Inactivando...' : 'Activando...')
+                    : 'Sí'}
                 </button>
               </div>
             </div>
@@ -141,18 +150,13 @@ const UsuariosPage = () => {
                         </span>
                       </td>
                       <td>
-                        {u.activo ? (
-                          <button
-                            className="btn btn-sm btn-outline-danger"
-                            onClick={() => mostrarModal(u._id, u.activo)}
-                          >
-                            Desactivar
-                          </button>
-                        ) : (
-                          <button className="btn btn-sm btn-outline-secondary" disabled>
-                            Inactivo
-                          </button>
-                        )}
+                        <button
+                          className={`btn btn-sm ${u.activo ? 'btn-outline-danger' : 'btn-outline-success'}`}
+                          onClick={() => mostrarModal(u._id, u.activo)}
+                          disabled={modal.loading}
+                        >
+                          {u.activo ? 'Desactivar' : 'Activar'}
+                        </button>
                       </td>
                     </tr>
                   ))

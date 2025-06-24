@@ -4,7 +4,6 @@ const Usuario = require('../models/Usuario');
 const Admin = require('../models/Admin'); // Importa el modelo Admin
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
-
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -174,15 +173,69 @@ router.post('/login', async (req, res) => {
 
 router.put('/:id/activo', async (req, res) => {
   try {
+    // Busca el usuario antes de actualizar para saber su estado anterior
+    const usuarioPrevio = await Usuario.findById(req.params.id);
+
     const usuario = await Usuario.findByIdAndUpdate(
       req.params.id,
       { activo: req.body.activo },
       { new: true }
     );
-    if (!usuario) return res.status(404).json({ mensaje: 'Usuario no encontrado' });
-    res.json({ mensaje: 'Estado actualizado', usuario });
+
+    // Si se inactiva la cuenta, enviar notificación
+    if (usuario && req.body.activo === false) {
+      await transporter.sendMail({
+        from: 'ASO-ESFOT <mateotacuri67@gmail.com>',
+        to: usuario.correo,
+        subject: 'Tu cuenta ha sido inactivada en ASO-ESFOT',
+        html: `
+          <div style="font-family: Arial, sans-serif; background: #fff3cd; padding: 24px;">
+            <h2 style="color: #b22222;">Cuenta inactivada</h2>
+            <p>Hola <b>${usuario.nombre} ${usuario.apellido}</b>,</p>
+            <p>Tu cuenta en ASO-ESFOT ha sido <b>inactivada</b> por una de las siguientes razones:</p>
+            <ul>
+              <li>No actualizaste tus datos personales.</li>
+              <li>Has culminado el quinto semestre.</li>
+            </ul>
+            <div style="margin: 18px 0; padding: 14px; background: #ffeeba; border-radius: 6px; color: #856404;">
+              <b>Nota:</b> Por favor, acércate a las oficinas de la Asociación de Estudiantes de la ESFOT para solucionar tu situación y poder reactivar tu cuenta.
+            </div>
+            <hr>
+            <p style="font-size: 12px; color: #888;">ASO-ESFOT &copy; 2025</p>
+          </div>
+        `
+      });
+    }
+
+    // Si la cuenta pasa de inactiva a activa (pero no en el registro inicial)
+    if (
+      usuario &&
+      req.body.activo === true &&
+      usuarioPrevio &&
+      usuarioPrevio.activo === false // Solo si antes estaba inactiva
+    ) {
+      await transporter.sendMail({
+        from: 'ASO-ESFOT <mateotacuri67@gmail.com>',
+        to: usuario.correo,
+        subject: '¡Tu cuenta ha sido activada en ASO-ESFOT!',
+        html: `
+          <div style="font-family: Arial, sans-serif; background: #d4edda; padding: 24px;">
+            <h2 style="color: #155724;">Cuenta activada</h2>
+            <p>Hola <b>${usuario.nombre} ${usuario.apellido}</b>,</p>
+            <p>¡Tu cuenta en ASO-ESFOT ha sido <b>activada</b> nuevamente! Ya puedes iniciar sesión y disfrutar de todos los servicios y beneficios de la asociación.</p>
+            <div style="margin: 18px 0; padding: 14px; background: #c3e6cb; border-radius: 6px; color: #155724;">
+              <b>Recuerda:</b> Si tienes dudas o problemas, acércate a las oficinas de la Asociación de Estudiantes de la ESFOT.
+            </div>
+            <hr>
+            <p style="font-size: 12px; color: #888;">ASO-ESFOT &copy; 2025</p>
+          </div>
+        `
+      });
+    }
+
+    res.json(usuario);
   } catch (error) {
-    res.status(500).json({ mensaje: 'Error al actualizar estado', error: error.message });
+    res.status(500).json({ mensaje: 'Error al actualizar usuario', error: error.message });
   }
 });
 
