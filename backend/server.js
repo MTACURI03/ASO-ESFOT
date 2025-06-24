@@ -22,6 +22,7 @@ app.use('/api/finanzas', finanzasRouter);
 app.use('/api/planescrud', planesCrudRouter);
 app.use('/api/solicitudes', require('./routes/solicitudes'));
 
+
 // Conexión a MongoDB Atlas
 const mongoURI = 'mongodb+srv://Mtacuri03:paula2012TRR@asoesfot2.yebpp0c.mongodb.net/asoesfot?retryWrites=true&w=majority&appName=asoesfot2';
 
@@ -31,7 +32,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 // Servir frontend (React)
 app.use(express.static(path.join(__dirname, '../frontend/build')));
-app.get('*', (req, res) => {
+app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
 });
 
