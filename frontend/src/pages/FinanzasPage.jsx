@@ -137,7 +137,7 @@ const FinanzasPage = () => {
           <Link to="/adminpage" className="btn btn-esfot me-2">Menú</Link>
           <Link to="/adminpage/usuariospage" className="btn btn-esfot me-2">Gestionar Usuarios</Link>
           <Link to="/adminpage/reportespage" className="btn btn-esfot me-2">Gestionar Aportantes</Link>
-          <Link to="/adminpage/crudpage" className="btn btn-esfot me-2">Gestionar Gastos</Link>
+          <Link to="/adminpage/crudpage" className="btn btn-esfot me-2">Gestionar Planes</Link>
         </div>
       </header>
       <main className="flex-grow-1 container py-4">

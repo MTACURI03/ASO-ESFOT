@@ -99,66 +99,55 @@ router.get('/aportaciones', async (req, res) => {
 });
 
 router.put('/aportaciones/:id/estado', async (req, res) => {
+  const { estado } = req.body;
   try {
-    const { estado } = req.body;
-    const aportacion = await PlanAportacion.findById(req.params.id).populate('usuarioId');
-    if (!aportacion) {
-      return res.status(404).json({ mensaje: 'Aportación no encontrada.' });
+    const aportacion = await PlanAportacion.findByIdAndUpdate(
+      req.params.id,
+      { estado },
+      { new: true }
+    ).populate('usuarioId');
+    if (!aportacion) return res.status(404).json({ mensaje: 'Aportación no encontrada' });
+
+    // Si el nuevo estado es "Pagado", enviar correo al usuario
+    if (estado === 'Pagado' && aportacion.usuarioId && aportacion.usuarioId.correo) {
+      const transporter = require('nodemailer').createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'mateotacuri67@gmail.com',
+          pass: 'bzrtsqptiholqdgt'
+        }
+      });
+
+      const mailOptions = {
+        from: 'mateotacuri67@gmail.com',
+        to: aportacion.usuarioId.correo,
+        subject: '¡Tu pago ha sido registrado en ASO-ESFOT!',
+        html: `
+          <div style="font-family: Arial, sans-serif; background: #f8f8f8; padding: 24px;">
+            <h2 style="color: #e94c4c;">¡Pago registrado!</h2>
+            <p>Hola <b>${aportacion.usuarioId.nombre} ${aportacion.usuarioId.apellido}</b>,</p>
+            <p>Te informamos que tu pago del plan <b>${aportacion.nombrePlan}</b> ha sido registrado exitosamente el <b>${new Date(aportacion.fechaSeleccion).toLocaleDateString()}</b>.</p>
+            <ul>
+              <li><b>Nombre:</b> ${aportacion.usuarioId.nombre} ${aportacion.usuarioId.apellido}</li>
+              <li><b>Correo:</b> ${aportacion.usuarioId.correo}</li>
+              <li><b>Plan:</b> ${aportacion.nombrePlan}</li>
+              <li><b>Fecha de selección:</b> ${new Date(aportacion.fechaSeleccion).toLocaleDateString()}</li>
+              <li><b>Estado:</b> Pagado</li>
+            </ul>
+            <p>Ya puedes acercarte a las oficinas de la asociación para disfrutar de tus beneficios.</p>
+            <p style="color: #2986f5; font-weight: bold;">Puedes imprimir tu factura en el apartado de <b>Mis Aportaciones</b> en tu cuenta de ASO-ESFOT.</p>
+            <hr>
+            <p style="font-size: 12px; color: #888;">ASO-ESFOT &copy; 2025</p>
+          </div>
+        `
+      };
+
+      await transporter.sendMail(mailOptions);
     }
 
-    // No permitir cambiar el estado si ya es "Pagado"
-    if (aportacion.estado === 'Pagado') {
-      return res.status(400).json({ mensaje: 'El estado ya es Pagado y no puede cambiarse.' });
-    }
-
-    // Si el estado cambia de Pendiente a Pagado, suma al saldo y envía correo
-    if (aportacion.estado === 'Pendiente' && estado === 'Pagado') {
-      let finanza = await Finanza.findOne();
-      if (!finanza) finanza = await Finanza.create({ saldo: 0 });
-      finanza.saldo += Number(aportacion.precio);
-      await finanza.save();
-
-      // Enviar correo de confirmación de pago al usuario
-      if (aportacion.usuarioId && aportacion.usuarioId.correo) {
-        await transporter.sendMail({
-          from: 'ASO-ESFOT <mateotacuri67@gmail.com>',
-          to: aportacion.usuarioId.correo,
-          subject: '¡Tu plan ha sido cancelado exitosamente!',
-          html: `
-            <div style="font-family: Arial, sans-serif; padding: 24px;">
-              <h2 style="color: #28a745;">¡Pago recibido!</h2>
-              <p>Hola <b>${aportacion.usuarioId.nombre}</b>,</p>
-              <p>Te informamos que tu pago del plan <b>${aportacion.nombrePlan}</b> ha sido registrado correctamente.</p>
-              <ul style="font-size: 1.1em;">
-                <li><b>Plan:</b> ${aportacion.nombrePlan}</li>
-                <li><b>Fecha de pago:</b> ${new Date().toLocaleDateString()}</li>
-                <li><b>Monto:</b> $${aportacion.precio}</li>
-              </ul>
-              <div style="margin: 24px 0; padding: 16px; background: #d4edda; border-radius: 6px; color: #155724;">
-                ¡Ya puedes disfrutar de todos los beneficios de tu plan!
-              </div>
-              <hr style="margin: 32px 0;">
-              <p style="font-size: 0.9em; color: #aaa;">ASO-ESFOT &copy; 2025</p>
-            </div>
-          `
-        });
-      }
-    }
-
-    // Si el estado cambia de Pagado a Pendiente, resta del saldo (opcional)
-    if (aportacion.estado === 'Pagado' && estado === 'Pendiente') {
-      let finanza = await Finanza.findOne();
-      if (!finanza) finanza = await Finanza.create({ saldo: 0 });
-      finanza.saldo -= Number(aportacion.precio);
-      await finanza.save();
-    }
-
-    aportacion.estado = estado;
-    await aportacion.save();
-
-    res.json({ mensaje: 'Estado actualizado.', aportacion });
+    res.json({ mensaje: 'Estado actualizado', aportacion });
   } catch (error) {
-    res.status(500).json({ mensaje: 'Error al actualizar el estado', error: error.message });
+    res.status(500).json({ mensaje: 'Error al actualizar estado', error: error.message });
   }
 });
 
