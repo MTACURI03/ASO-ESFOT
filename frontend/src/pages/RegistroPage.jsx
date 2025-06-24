@@ -26,8 +26,10 @@ const RegistroPage = () => {
     const { nombrePlan, precio } = confirmModal;
     closeConfirmModal();
     try {
-      const usuarioId = localStorage.getItem('usuarioId');
-      const nombreUsuario = localStorage.getItem('nombreUsuario') || 'Usuario';
+      // Obtén el usuario desde localStorage (como objeto)
+      const usuario = JSON.parse(localStorage.getItem('usuario'));
+      const usuarioId = usuario?.id;
+      const nombreUsuario = usuario ? `${usuario.nombre} ${usuario.apellido}` : 'Usuario';
 
       if (!usuarioId) {
         setModal({

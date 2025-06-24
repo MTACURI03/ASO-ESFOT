@@ -53,7 +53,8 @@ const VisualizarPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const usuarioId = localStorage.getItem('usuarioId');
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    const usuarioId = usuario?.id;
     if (!usuarioId) {
       setAportaciones([]);
       setLoading(false);

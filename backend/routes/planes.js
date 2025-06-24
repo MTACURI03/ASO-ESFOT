@@ -48,8 +48,8 @@ router.post('/seleccionar', async (req, res) => {
 
     // Busca el usuario
     const usuario = await Usuario.findById(usuarioId);
-    if (!usuario) {
-      return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
+    if (!usuario || usuario.rol !== 'estudiante') {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado o no autorizado.' });
     }
 
     // Guarda la aportación
