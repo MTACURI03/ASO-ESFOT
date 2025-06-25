@@ -7,6 +7,7 @@ const LoginPage = () => {
   const [rol, setRol] = useState('estudiante');
   const [mensaje, setMensaje] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -103,15 +104,24 @@ const LoginPage = () => {
               </div>
               <div className="mb-3">
                 <label htmlFor="password" className="form-label">Contraseña</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  id="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+                <div className="input-group">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="form-control"
+                    id="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <span
+                    className="input-group-text"
+                    style={{ background: 'transparent', border: 'none', paddingLeft: 6, cursor: 'pointer', color: 'black' }}
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? "🙈" : "👁️"} {/* Ícono de ojo */}
+                  </span>
+                </div>
               </div>
               <div className="mb-3">
                 <label htmlFor="rol" className="form-label">Rol</label>
