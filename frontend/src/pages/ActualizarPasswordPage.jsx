@@ -66,16 +66,16 @@ const ActualizarPasswordPage = () => {
         <Link to="/" className="btn btn-esfot me-2">Volver</Link>
       </header>
       <main className="flex-grow-1 d-flex align-items-center justify-content-center">
-        <div className="card shadow" style={{ maxWidth: 420, width: '100%', borderTop: '5px solid #e94c4c' }}>
+        <div className="card shadow" style={{ maxWidth: 420, width: '100%', borderTop: '5px solidrgb(2, 2, 2)' }}>
           <div className="card-body">
-            <h2 className="mb-4 text-center" style={{ color: '#e94c4c', fontWeight: 'bold' }}>Actualizar Contraseña</h2>
+            <h2 className="text-center mb-4">Actualizar Contraseña</h2>
             <form onSubmit={handleActualizar}>
               <div className="mb-3">
-                <label className="form-label" style={labelStyle}>Correo institucional</label>
+                <label className="text-center mb-4">Correo institucional</label>
                 <input type="email" className="form-control" style={inputStyle} value={correo} onChange={e => setCorreo(e.target.value)} required />
               </div>
               <div className="mb-3">
-                <label className="form-label" style={labelStyle}>Contraseña actual</label>
+                <label className="text-center mb-4">Contraseña actual</label>
                 <div className="input-group">
                   <input
                     type={showPasswordActual ? "text" : "password"}
@@ -95,7 +95,7 @@ const ActualizarPasswordPage = () => {
                 </div>
               </div>
               <div className="mb-3">
-                <label className="form-label" style={labelStyle}>Nueva contraseña</label>
+                <label className="text-center mb-4">Nueva contraseña</label>
                 <div className="input-group">
                   <input
                     type={showNuevoPassword ? "text" : "password"}
@@ -114,7 +114,7 @@ const ActualizarPasswordPage = () => {
                   </span>
                 </div>
               </div>
-              <button type="submit" className="btn w-100" style={{ background: '#e94c4c', color: '#fff', fontWeight: 'bold' }}>Actualizar</button>
+              <button type="submit" className="text-center mb-4" >Actualizar</button>
               {mensaje && <div className="mt-3 alert alert-info text-center">{mensaje}</div>}
             </form>
           </div>
@@ -128,3 +128,4 @@ const ActualizarPasswordPage = () => {
 };
 
 export default ActualizarPasswordPage;
+
