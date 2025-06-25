@@ -44,7 +44,7 @@ const ActualizarPage = () => {
         setShowSuccessModal(true);
         setTimeout(() => {
           setShowSuccessModal(false);
-          navigate('/login');
+          navigate('/');
         }, 2500);
       } else {
         setMensaje(data.mensaje || 'Error al solicitar actualización.');
@@ -67,17 +67,57 @@ const ActualizarPage = () => {
         <form onSubmit={handleActualizar} style={{ maxWidth: 400 }}>
           <div className="mb-3">
             <label className="form-label">Teléfono</label>
-            <input type="text" className="form-control" value={telefono} onChange={e => setTelefono(e.target.value)} required />
+            <input
+              type="text"
+              className={`form-control ${telefono && !/^\d{10}$/.test(telefono) ? 'is-invalid' : ''}`}
+              value={telefono}
+              onChange={e => setTelefono(e.target.value)}
+              required
+            />
+            <div className="form-text">Debe tener exactamente 10 dígitos.</div>
+            {telefono && !/^\d{10}$/.test(telefono) && (
+              <div className="invalid-feedback d-block">
+                El teléfono debe tener exactamente 10 dígitos.
+              </div>
+            )}
           </div>
           <div className="mb-3">
             <label className="form-label">Carrera</label>
-            <input type="text" className="form-control" value={carrera} onChange={e => setCarrera(e.target.value)} required />
+            <select
+              className="form-select"
+              value={carrera}
+              onChange={e => setCarrera(e.target.value)}
+              required
+            >
+              <option value="">Selecciona una carrera</option>
+              <option value="Software">Desarrollo de Software</option>
+              <option value="Agua y Saneamiento Ambiental">Agua y Saneamiento Ambiental</option>
+              <option value="Electromecánica">Electromecánica</option>
+              <option value="Redes y Telecomunicaciones">Redes y Telecomunicaciones</option>
+              <option value="Procesamiento de Alimentos">Procesamiento de Alimentos</option>
+              <option value="Procesamiento Industrial de Madera">Procesamiento Industrial de Madera</option>
+            </select>
           </div>
           <div className="mb-3">
             <label className="form-label">Semestre</label>
-            <input type="text" className="form-control" value={semestre} onChange={e => setSemestre(e.target.value)} required />
+            <select
+              className="form-select"
+              value={semestre}
+              onChange={e => setSemestre(e.target.value)}
+              required
+            >
+              <option value="">Selecciona un semestre</option>
+              <option value="Nivelación">Nivelación</option>
+              <option value="Primer semestre">Primer semestre</option>
+              <option value="Segundo semestre">Segundo semestre</option>
+              <option value="Tercer semestre">Tercer semestre</option>
+              <option value="Cuarto semestre">Cuarto semestre</option>
+              <option value="Quinto semestre">Quinto semestre</option>
+            </select>
           </div>
-          <button type="submit" className="btn" style={{ background: '#e94c4c', color: '#fff', fontWeight: 'bold' }}>Solicitar actualización</button>
+          <button type="submit" className="btn" style={{ background: '#e94c4c', color: '#fff', fontWeight: 'bold' }}>
+            Solicitar actualización
+          </button>
           {mensaje && <div className="mt-3 alert alert-info">{mensaje}</div>}
         </form>
       )}

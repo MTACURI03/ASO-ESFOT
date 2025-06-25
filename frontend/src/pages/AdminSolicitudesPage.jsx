@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AdminSolicitudesPage = () => {
   const [solicitudes, setSolicitudes] = useState([]);
   const [mensaje, setMensaje] = useState('');
+  const navigate = useNavigate();
 
   // Cargar solicitudes pendientes al montar
   useEffect(() => {
@@ -32,44 +34,71 @@ const AdminSolicitudesPage = () => {
   };
 
   return (
-    <div className="container py-5">
-      <h2 className="mb-4" style={{ color: '#e94c4c' }}>Solicitudes de Actualización de Datos</h2>
-      {mensaje && <div className="alert alert-info">{mensaje}</div>}
-      {solicitudes.length === 0 ? (
-        <div className="alert alert-success">No hay solicitudes pendientes.</div>
-      ) : (
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th>Estudiante</th>
-              <th>Correo</th>
-              <th>Teléfono</th>
-              <th>Carrera</th>
-              <th>Semestre</th>
-              <th>Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            {solicitudes.map(s => (
-              <tr key={s._id}>
-                <td>{s.usuario?.nombre} {s.usuario?.apellido}</td>
-                <td>{s.usuario?.correo}</td>
-                <td>{s.telefono}</td>
-                <td>{s.carrera}</td>
-                <td>{s.semestre}</td>
-                <td>
-                  <button
-                    className="btn btn-success btn-sm"
-                    onClick={() => aprobarSolicitud(s._id)}
-                  >
-                    Aprobar y activar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+    <div className="d-flex flex-column min-vh-100">
+      {/* ENCABEZADO */}
+      <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
+        <div className="d-flex align-items-center">
+          <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px', marginRight: '16px' }} />
+          <span className="fs-4 fw-bold">Panel de Administración de Solicitudes</span>
+        </div>
+        <div>
+          <button
+            className="btn btn-light me-2"
+            style={{ color: '#e94c4c', fontWeight: 'bold' }}
+            onClick={() => navigate('/adminpage')}
+          >
+            Menu
+          </button>
+        </div>
+      </header>
+
+      {/* CONTENIDO */}
+      <main className="container flex-grow-1 py-5">
+        <h2 className="mb-4" style={{ color: '#e94c4c', fontWeight: 'bold' }}>Solicitudes de Actualización de Datos</h2>
+        {mensaje && <div className="alert alert-info">{mensaje}</div>}
+        {solicitudes.length === 0 ? (
+          <div className="alert alert-success">No hay solicitudes pendientes.</div>
+        ) : (
+          <div className="table-responsive">
+            <table className="table table-bordered align-middle">
+              <thead className="table-light">
+                <tr>
+                  <th>Estudiante</th>
+                  <th>Correo</th>
+                  <th>Teléfono</th>
+                  <th>Carrera</th>
+                  <th>Semestre</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                {solicitudes.map(s => (
+                  <tr key={s._id}>
+                    <td>{s.usuario?.nombre} {s.usuario?.apellido}</td>
+                    <td>{s.usuario?.correo}</td>
+                    <td>{s.telefono}</td>
+                    <td>{s.carrera}</td>
+                    <td>{s.semestre}</td>
+                    <td>
+                      <button
+                        className="btn btn-success btn-sm"
+                        onClick={() => aprobarSolicitud(s._id)}
+                      >
+                        Aprobar y activar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </main>
+
+      {/* PIE DE PÁGINA */}
+      <footer className="bg-esfot text-white text-center py-3 mt-auto">
+        &copy; 2025 ASO-ESFOT. Todos los derechos reservados.
+      </footer>
     </div>
   );
 };
