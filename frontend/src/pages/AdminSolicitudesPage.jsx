@@ -43,8 +43,8 @@ const AdminSolicitudesPage = () => {
         </div>
         <div>
           <button
-            className="btn btn-light me-2"
-            style={{ color: '#e94c4c', fontWeight: 'bold' }}
+            className="btn btn-esfot me-2"
+            style={{ fontWeight: 'bold' }}
             onClick={() => navigate('/adminpage')}
           >
             Menu
@@ -54,7 +54,9 @@ const AdminSolicitudesPage = () => {
 
       {/* CONTENIDO */}
       <main className="container flex-grow-1 py-5">
-        <h2 className="mb-4" style={{ color: '#e94c4c', fontWeight: 'bold' }}>Solicitudes de Actualización de Datos</h2>
+        <h2 className="mb-4" style={{ color: '#e94c4c', fontWeight: 'bold', fontFamily: 'Arial, sans-serif' }}>
+          Solicitudes de Actualización de Datos
+        </h2>
         {mensaje && <div className="alert alert-info">{mensaje}</div>}
         {solicitudes.length === 0 ? (
           <div className="alert alert-success">No hay solicitudes pendientes.</div>
@@ -81,7 +83,8 @@ const AdminSolicitudesPage = () => {
                     <td>{s.semestre}</td>
                     <td>
                       <button
-                        className="btn btn-success btn-sm"
+                        className="btn btn-dark btn-sm"
+                        style={{ fontWeight: 'bold' }}
                         onClick={() => aprobarSolicitud(s._id)}
                       >
                         Aprobar y activar

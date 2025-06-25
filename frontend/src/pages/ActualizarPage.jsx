@@ -58,69 +58,78 @@ const ActualizarPage = () => {
     return <div className="container py-5">Debes iniciar sesión para actualizar tus datos.</div>;
   }
 
+  if (usuario.activo) {
+    setTimeout(() => {
+      navigate('/landing'); // Redirige al landing
+    }, 2000); // Espera 2 segundos antes de redirigir
+    return (
+      <div className="container py-5">
+        <div className="alert alert-info">
+          Tu cuenta está activa. Solo puedes actualizar datos si tu cuenta está inactiva.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container py-5">
       <h2 className="mb-4" style={{ color: '#e94c4c' }}>Actualizar Datos Personales</h2>
-      {usuario.activo ? (
-        <div className="alert alert-info">Tu cuenta está activa. Solo puedes actualizar datos si tu cuenta está inactiva.</div>
-      ) : (
-        <form onSubmit={handleActualizar} style={{ maxWidth: 400 }}>
-          <div className="mb-3">
-            <label className="form-label">Teléfono</label>
-            <input
-              type="text"
-              className={`form-control ${telefono && !/^\d{10}$/.test(telefono) ? 'is-invalid' : ''}`}
-              value={telefono}
-              onChange={e => setTelefono(e.target.value)}
-              required
-            />
-            <div className="form-text">Debe tener exactamente 10 dígitos.</div>
-            {telefono && !/^\d{10}$/.test(telefono) && (
-              <div className="invalid-feedback d-block">
-                El teléfono debe tener exactamente 10 dígitos.
-              </div>
-            )}
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Carrera</label>
-            <select
-              className="form-select"
-              value={carrera}
-              onChange={e => setCarrera(e.target.value)}
-              required
-            >
-              <option value="">Selecciona una carrera</option>
-              <option value="Software">Desarrollo de Software</option>
-              <option value="Agua y Saneamiento Ambiental">Agua y Saneamiento Ambiental</option>
-              <option value="Electromecánica">Electromecánica</option>
-              <option value="Redes y Telecomunicaciones">Redes y Telecomunicaciones</option>
-              <option value="Procesamiento de Alimentos">Procesamiento de Alimentos</option>
-              <option value="Procesamiento Industrial de Madera">Procesamiento Industrial de Madera</option>
-            </select>
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Semestre</label>
-            <select
-              className="form-select"
-              value={semestre}
-              onChange={e => setSemestre(e.target.value)}
-              required
-            >
-              <option value="">Selecciona un semestre</option>
-              <option value="Nivelación">Nivelación</option>
-              <option value="Primer semestre">Primer semestre</option>
-              <option value="Segundo semestre">Segundo semestre</option>
-              <option value="Tercer semestre">Tercer semestre</option>
-              <option value="Cuarto semestre">Cuarto semestre</option>
-              <option value="Quinto semestre">Quinto semestre</option>
-            </select>
-          </div>
-          <button type="submit" className="btn" style={{ background: '#e94c4c', color: '#fff', fontWeight: 'bold' }}>
-            Solicitar actualización
-          </button>
-          {mensaje && <div className="mt-3 alert alert-info">{mensaje}</div>}
-        </form>
-      )}
+      <form onSubmit={handleActualizar} style={{ maxWidth: 400 }}>
+        <div className="mb-3">
+          <label className="form-label">Teléfono</label>
+          <input
+            type="text"
+            className={`form-control ${telefono && !/^\d{10}$/.test(telefono) ? 'is-invalid' : ''}`}
+            value={telefono}
+            onChange={e => setTelefono(e.target.value)}
+            required
+          />
+          <div className="form-text">Debe tener exactamente 10 dígitos.</div>
+          {telefono && !/^\d{10}$/.test(telefono) && (
+            <div className="invalid-feedback d-block">
+              El teléfono debe tener exactamente 10 dígitos.
+            </div>
+          )}
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Carrera</label>
+          <select
+            className="form-select"
+            value={carrera}
+            onChange={e => setCarrera(e.target.value)}
+            required
+          >
+            <option value="">Selecciona una carrera</option>
+            <option value="Software">Desarrollo de Software</option>
+            <option value="Agua y Saneamiento Ambiental">Agua y Saneamiento Ambiental</option>
+            <option value="Electromecánica">Electromecánica</option>
+            <option value="Redes y Telecomunicaciones">Redes y Telecomunicaciones</option>
+            <option value="Procesamiento de Alimentos">Procesamiento de Alimentos</option>
+            <option value="Procesamiento Industrial de Madera">Procesamiento Industrial de Madera</option>
+          </select>
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Semestre</label>
+          <select
+            className="form-select"
+            value={semestre}
+            onChange={e => setSemestre(e.target.value)}
+            required
+          >
+            <option value="">Selecciona un semestre</option>
+            <option value="Nivelación">Nivelación</option>
+            <option value="Primer semestre">Primer semestre</option>
+            <option value="Segundo semestre">Segundo semestre</option>
+            <option value="Tercer semestre">Tercer semestre</option>
+            <option value="Cuarto semestre">Cuarto semestre</option>
+            <option value="Quinto semestre">Quinto semestre</option>
+          </select>
+        </div>
+        <button type="submit" className="btn" style={{ background: '#e94c4c', color: '#fff', fontWeight: 'bold' }}>
+          Solicitar actualización
+        </button>
+        {mensaje && <div className="mt-3 alert alert-info">{mensaje}</div>}
+      </form>
 
       {/* Modal de éxito */}
       {showSuccessModal && (
