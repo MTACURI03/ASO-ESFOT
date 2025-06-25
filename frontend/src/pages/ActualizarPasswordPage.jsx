@@ -114,7 +114,9 @@ const ActualizarPasswordPage = () => {
                   </span>
                 </div>
               </div>
-              <button type="submit" className="text-center mb-4" >Actualizar</button>
+              <button type="submit" className="btn w-100" style={{ backgroundColor: '#e94c4c', color: 'white' }}>
+                Actualizar
+              </button>
               {mensaje && <div className="mt-3 alert alert-info text-center">{mensaje}</div>}
             </form>
           </div>
