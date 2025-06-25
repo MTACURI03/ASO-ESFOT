@@ -61,11 +61,11 @@ const ActualizarPage = () => {
   if (usuario.activo) {
     setTimeout(() => {
       navigate('/landing'); // Redirige al landing
-    }, 2000); // Espera 2 segundos antes de redirigir
+    }, 4000); // Espera 2 segundos antes de redirigir
     return (
       <div className="container py-5">
         <div className="alert alert-info">
-          Tu cuenta está activa. Solo puedes actualizar datos si tu cuenta está inactiva.
+          Tu cuenta está activa. Solo puedes actualizar datos si tu cuenta está inactiva.Volveras el Menu....
         </div>
       </div>
     );

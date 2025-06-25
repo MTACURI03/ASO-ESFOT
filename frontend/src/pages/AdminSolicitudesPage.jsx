@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const AdminSolicitudesPage = () => {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -39,24 +39,18 @@ const AdminSolicitudesPage = () => {
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center">
           <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px', marginRight: '16px' }} />
-          <span className="fs-4 fw-bold">Panel de Administración de Solicitudes</span>
+          <h2 className="text-center mb-4">Panel de Administración de Solicitudes</h2>
         </div>
         <div>
-          <button
-            className="btn btn-esfot me-2"
-            style={{ fontWeight: 'bold' }}
-            onClick={() => navigate('/adminpage')}
-          >
+          <Link to="/adminpage" className="btn btn-esfot me-2">
             Menu
-          </button>
+          </Link>
         </div>
       </header>
 
       {/* CONTENIDO */}
       <main className="container flex-grow-1 py-5">
-        <h2 className="mb-4" style={{ color: '#e94c4c', fontWeight: 'bold', fontFamily: 'Arial, sans-serif' }}>
-          Solicitudes de Actualización de Datos
-        </h2>
+        <h2 className="text-center mb-4">Solicitudes de Actualizacion de Datos</h2>
         {mensaje && <div className="alert alert-info">{mensaje}</div>}
         {solicitudes.length === 0 ? (
           <div className="alert alert-success">No hay solicitudes pendientes.</div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const ActualizarPasswordPage = () => {
   const [correo, setCorreo] = useState('');
@@ -63,7 +63,7 @@ const ActualizarPasswordPage = () => {
     <div className="d-flex flex-column min-vh-100" style={{ background: '#f8f9fa' }}>
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center" style={{ background: '#e94c4c' }}>
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
-        <h3 className="mb-0" style={{ color: '#fff', fontWeight: 'bold', letterSpacing: 1 }}>ASO-ESFOT</h3>
+        <Link to="/" className="btn btn-esfot me-2">Volver</Link>
       </header>
       <main className="flex-grow-1 d-flex align-items-center justify-content-center">
         <div className="card shadow" style={{ maxWidth: 420, width: '100%', borderTop: '5px solid #e94c4c' }}>
