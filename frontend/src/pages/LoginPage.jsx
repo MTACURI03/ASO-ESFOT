@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 const LoginPage = () => {
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
+  const [rol, setRol] = useState('estudiante'); // Por defecto, estudiante
   const [mensaje, setMensaje] = useState('');
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
@@ -16,28 +16,22 @@ const LoginPage = () => {
       const res = await fetch('https://aso-esfot-backend.onrender.com/api/usuarios/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ correo, password }),
+        body: JSON.stringify({ correo, password, rol }), // Incluye el rol en la solicitud
       });
       const data = await res.json();
       if (res.ok && data.usuario) {
         const usuario = data.usuario;
-        const usuarioActualizado = localStorage.getItem('usuarioActualizado');
 
         if (usuario.activo === false) {
-          if (usuarioActualizado === 'true') {
-            setMensaje('Espera a la solicitud.');
-          } else {
-            localStorage.setItem('usuario', JSON.stringify(usuario));
-            localStorage.setItem('usuarioActualizado', 'true');
-            setMensaje('Tu cuenta está inactiva. Actualiza tus datos para reactivarla.');
-            setTimeout(() => navigate('/actualizar-datos'), 2000);
-          }
-        } else if (usuario.rol === 'admin') {
+          setMensaje('Tu cuenta está inactiva. Contacta al administrador.');
+        } else if (usuario.rol === 'admin' && rol === 'admin') {
           localStorage.setItem('usuario', JSON.stringify(usuario));
           navigate('/adminpage');
-        } else {
+        } else if (usuario.rol === 'estudiante' && rol === 'estudiante') {
           localStorage.setItem('usuario', JSON.stringify(usuario));
           navigate('/landing');
+        } else {
+          setMensaje('El rol seleccionado no coincide con el rol asignado a tu cuenta.');
         }
       } else {
         setMensaje(data.mensaje || 'Error al iniciar sesión.');
@@ -49,29 +43,6 @@ const LoginPage = () => {
 
   return (
     <div className="d-flex flex-column min-vh-100">
-      {/* Modal de éxito */}
-      {showSuccessModal && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-          background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999
-        }}>
-          <div style={{
-            background: 'white', padding: 32, borderRadius: 12, minWidth: 300, textAlign: 'center', boxShadow: '0 2px 16px #0002'
-          }}>
-            <h4>Inicio de sesión exitoso</h4>
-            <button
-              className="btn mt-3"
-              style={{ backgroundColor: '#e94c4c', color: 'white', border: 'none' }}
-              onClick={() => {
-                setShowSuccessModal(false);
-                window.location.href = '/landing';
-              }}
-            >
-              Aceptar
-            </button>
-          </div>
-        </div>
-      )}
       {/* ENCABEZADO */}
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
@@ -132,12 +103,18 @@ const LoginPage = () => {
                   </span>
                 </div>
               </div>
-              <div className="mb-4 text-center">
-                <p className="mb-1">¿Cuentas con una cuenta? No?</p>
-                <a href="/crear-password" className="text-decoration-none">Puedes crearla aquí</a>
-              </div>
-              <div className="mb-2 text-center">
-                <a href="/actualizar-password" className="text-decoration-none">¿Olvidaste o quieres cambiar tu contraseña?</a>
+              <div className="mb-3">
+                <label htmlFor="rol" className="form-label">Selecciona tu rol</label>
+                <select
+                  id="rol"
+                  className="form-select"
+                  value={rol}
+                  onChange={(e) => setRol(e.target.value)}
+                  required
+                >
+                  <option value="estudiante">Estudiante</option>
+                  <option value="admin">Administrativo</option>
+                </select>
               </div>
               <button type="submit" className="btn w-100" style={{ backgroundColor: '#e94c4c', color: 'white' }}>
                 Ingresar
