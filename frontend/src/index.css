@@ -29,3 +29,17 @@ code {
 .btn-esfot:hover {
   background-color: #cabb68;
 }
+.nav-link-custom {
+  color: #fff !important;
+  text-decoration: underline;
+  padding: 4px 12px;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+  cursor: pointer;
+  display: inline-block;
+}
+.nav-link-custom:hover {
+  background: #222;
+  color: #fff !important;
+  text-decoration: underline;
+}

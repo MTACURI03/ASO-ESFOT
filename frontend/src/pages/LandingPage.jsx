@@ -48,12 +48,11 @@ const LandingPage = () => {
             if (usuario && usuario.activo === false) {
               return (
                 <>
-                  <Link to="/actualizar-datos" className="text-white me-3" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+                  <Link to="/actualizar-datos" className="nav-link-custom me-3">
                     Actualizar datos
                   </Link>
                   <span
-                    className="text-white"
-                    style={{ cursor: 'pointer' }}
+                    className="nav-link-custom"
                     onClick={handleLogout}
                   >
                     Cerrar sesión
@@ -64,22 +63,20 @@ const LandingPage = () => {
             // Si el usuario está activo, muestra los otros links normales:
             return (
               <>
-                <Link to="/visualizar" className="text-white me-3" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+                <Link to="/visualizar" className="nav-link-custom me-3">
                   Mis Aportaciones
                 </Link>
-                <Link to="/registro" className="text-white me-3" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+                <Link to="/registro" className="nav-link-custom me-3">
                   Planes de Aportaciones
                 </Link>
                 <span
-                  className="text-white me-3"
-                  style={{ textDecoration: 'none', cursor: 'pointer' }}
+                  className="nav-link-custom me-3"
                   onClick={handleActualizarClick}
                 >
                   Actualizar datos
                 </span>
                 <span
-                  className="text-white"
-                  style={{ cursor: 'pointer' }}
+                  className="nav-link-custom"
                   onClick={handleLogout}
                 >
                   Cerrar sesión
