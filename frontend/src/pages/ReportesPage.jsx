@@ -17,17 +17,14 @@ const ReportesPage = () => {
     `${ap.usuarioId?.nombre || ''} ${ap.usuarioId?.apellido || ''}`.toLowerCase().includes(busqueda.toLowerCase())
   );
 
-  // Generar reporte PDF tipo factura con logo desde public/
   const generarReportePDF = async () => {
     const { jsPDF } = await import('jspdf');
     const doc = new jsPDF();
 
-    // Dibuja margen rojo
-    doc.setDrawColor(233, 76, 76); // Rojo
+    doc.setDrawColor(233, 76, 76);
     doc.setLineWidth(3);
-    doc.rect(8, 8, 194, 281, 'S'); // Margen para A4
+    doc.rect(8, 8, 194, 281, 'S');
 
-    // Cargar logo desde public/
     const logoUrl = `${window.location.origin}/imagenes_asoesfot/logo.png`;
     const getImageDataUrl = (url) =>
       fetch(url)
@@ -62,10 +59,8 @@ const ReportesPage = () => {
 
       y += 38;
 
-      // Salto de página si es necesario
       if (y > margenInferior) {
         doc.addPage();
-        // Redibuja margen y logo en nueva página
         doc.setDrawColor(233, 76, 76);
         doc.setLineWidth(3);
         doc.rect(8, 8, 194, 281, 'S');
@@ -74,7 +69,6 @@ const ReportesPage = () => {
       }
     });
 
-    // Pie de página
     doc.setFontSize(10);
     doc.setTextColor(150, 150, 150);
     doc.text('ASO-ESFOT © 2025', 20, 285);
@@ -82,12 +76,10 @@ const ReportesPage = () => {
     doc.save('factura_aportaciones.pdf');
   };
 
-  // Mostrar modal de confirmación
   const mostrarModal = (id, estadoActual) => {
     setModal({ show: true, id, estadoActual, loading: false });
   };
 
-  // Confirmar cambio de estado
   const confirmarCambioEstado = () => {
     setModal(modal => ({ ...modal, loading: true }));
     const id = modal.id;
@@ -109,7 +101,6 @@ const ReportesPage = () => {
       });
   };
 
-  // Cerrar modal
   const cerrarModal = () => setModal({ show: false, id: null, estadoActual: '', loading: false });
 
   return (
@@ -141,16 +132,41 @@ const ReportesPage = () => {
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
         <div>
-          <Link to="/adminpage" className="btn btn-esfot me-2">Menú</Link>
-          <Link to="/adminpage/usuariospage" className="btn btn-esfot me-2">Gestionar Usuarios</Link>
-          <Link to="/adminpage/crudpage" className="btn btn-esfot me-2">Gestionar Planes</Link>
-          <Link to="/adminpage/finanzaspage" className="btn btn-esfot me-2">Finanzas</Link>
+          <Link to="/adminpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Menú
+          </Link>
+          <Link to="/adminpage/crudpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Gestionar Planes
+          </Link>
+          <Link to="/adminpage/usuariospage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Gestión de Usuarios
+          </Link>
+          <Link to="/adminpage/reportespage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Gestionar Aportantes
+          </Link>
+          <Link to="/adminpage/finanzaspage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Finanzas
+          </Link>
+          <Link to="/admin/solicitudes" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Solicitudes de Actualización
+          </Link>
+          <span
+            className="nav-link-custom"
+            onClick={() => {
+              localStorage.removeItem("isAuthenticated");
+              localStorage.removeItem("usuario");
+              window.location.href = "/";
+            }}
+            style={{ fontSize: '1.25rem', cursor: 'pointer' }}
+          >
+            Cerrar sesión
+          </span>
         </div>
       </header>
 
       {/* Cuerpo */}
       <main className="flex-grow-1 container py-5">
-        <h2 className="text-center mb-4">Gestion de Aportantes</h2>
+        <h2 className="text-center mb-4">Gestión de Aportantes</h2>
 
         {/* Búsqueda y botón de reporte */}
         <div className="input-group mb-4">

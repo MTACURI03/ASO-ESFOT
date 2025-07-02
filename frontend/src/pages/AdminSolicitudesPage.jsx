@@ -37,20 +37,40 @@ const AdminSolicitudesPage = () => {
     <div className="d-flex flex-column min-vh-100">
       {/* ENCABEZADO */}
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
-        <div className="d-flex align-items-center">
-          <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px', marginRight: '16px' }} />
-          <h2 className="text-center mb-4">Panel de Administración de Solicitudes</h2>
-        </div>
+        <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px', marginRight: '16px' }} />
         <div>
-          <Link to="/adminpage" className="btn btn-esfot me-2">
-            Menu
+          <Link to="/adminpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Menú
           </Link>
+          <Link to="/adminpage/crudpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Gestionar Planes
+          </Link>
+          <Link to="/adminpage/usuariospage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Gestión de Usuarios
+          </Link>
+          <Link to="/adminpage/reportespage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Gestionar Aportantes
+          </Link>
+          <Link to="/adminpage/finanzaspage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Finanzas
+          </Link>
+          <span
+            className="nav-link-custom"
+            onClick={() => {
+              localStorage.removeItem("isAuthenticated");
+              localStorage.removeItem("usuario");
+              navigate("/");
+            }}
+            style={{ fontSize: '1.25rem', cursor: 'pointer' }}
+          >
+            Cerrar sesión
+          </span>
         </div>
       </header>
 
       {/* CONTENIDO */}
       <main className="container flex-grow-1 py-5">
-        <h2 className="text-center mb-4">Solicitudes de Actualizacion de Datos</h2>
+        <h2 className="text-center mb-4">Solicitudes de Actualización de Datos</h2>
         {mensaje && <div className="alert alert-info">{mensaje}</div>}
         {solicitudes.length === 0 ? (
           <div className="alert alert-success">No hay solicitudes pendientes.</div>

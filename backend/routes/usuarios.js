@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Usuario = require('../models/Usuario');
-const Admin = require('../models/Admin'); // Importa el modelo Admin
-const SolicitudActualizacion = require('../models/SolicitudActualizacion'); // Asegúrate de tener este modelo
+const Admin = require('../models/Admin');
+const SolicitudActualizacion = require('../models/SolicitudActualizacion');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -12,6 +13,16 @@ const transporter = nodemailer.createTransport({
     pass: 'bzrtsqptiholqdgt'
   }
 });
+
+// Diseño de notificaciones con dragón y colores
+const dragonNotification = (title, message, color) => `
+  <div style="font-family: Arial, sans-serif; background: ${color.background}; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <h2 style="color: ${color.text}; text-align: center;">🐉 ${title}</h2>
+    <p>${message}</p>
+    <hr>
+    <p style="font-size: 12px; color: #888; text-align: center;">ASO-ESFOT &copy; 2025</p>
+  </div>
+`;
 
 // Guardar temporalmente los datos de registro
 const registrosPendientes = {};
@@ -62,14 +73,11 @@ router.post('/registrar', async (req, res) => {
   const { nombre, apellido, telefono, carrera, semestre, correo, password, rol } = req.body;
 
   try {
-    // Verifica si el correo ya existe en usuarios o admins
     const existeUsuario = await Usuario.findOne({ correo });
-    // const existeAdmin = await Admin.findOne({ correo }); // <-- Elimina o comenta esta línea
-    if (existeUsuario) { // <-- Solo valida en la colección de usuarios
+    if (existeUsuario) {
       return res.status(400).json({ mensaje: 'El correo ya está registrado.' });
     }
 
-    // Guarda los datos temporalmente, incluyendo el rol
     const tokenVerificacion = crypto.randomBytes(32).toString('hex');
     registrosPendientes[tokenVerificacion] = {
       nombre,
@@ -84,43 +92,18 @@ router.post('/registrar', async (req, res) => {
       activo: true
     };
 
-    // Envía correo de verificación
     const link = `https://aso-esfot-ldw7.vercel.app/verificar/${tokenVerificacion}`;
     await transporter.sendMail({
-      from: 'mateotacuri67@gmail.com',
+      from: 'ASO-ESFOT <mateotacuri67@gmail.com>',
       to: correo,
       subject: 'Verifica tu cuenta',
-      html: `
-        <div style="background: #232323; color: #fff; font-family: Arial, sans-serif; text-align: center; padding: 40px 0; min-height: 100vh;">
-          <h2 style="color: #ff5e5e; margin-bottom: 16px;">
-            <span style="font-size: 1.5em;">🐍</span>
-            <span style="color: #ff5e5e;">Verifícate en</span>
-            <span style="color: #4da3ff;">ASO-ESFOT</span>
-          </h2>
-          <p style="font-size: 1.1em; margin-bottom: 32px;">
-            ¡Hola! Para activar tu cuenta y disfrutar de todos los beneficios, haz clic en el siguiente botón:
-          </p>
-          <a href="${link}" style="
-            display: inline-block;
-            padding: 14px 32px;
-            background-color: #2986f5;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: bold;
-            margin: 24px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            transition: background 0.2s;
-          ">
-            Verificar mi cuenta 🐍
-          </a>
-          <p style="font-size: 13px; color: #bbb; margin-top: 40px;">
-            Si el botón no funciona, copia y pega este enlace en tu navegador:<br>
-            <span style="color: #4da3ff;">${link}</span>
-          </p>
-        </div>
-      `
+      html: dragonNotification(
+        'Verifica tu cuenta',
+        `¡Hola! Para activar tu cuenta y disfrutar de todos los beneficios, haz clic en el siguiente botón:<br>
+        <a href="${link}" style="display: inline-block; padding: 14px 32px; background-color: #2986f5; color: #fff; text-decoration: none; border-radius: 8px; font-size: 1.1em; font-weight: bold; margin: 24px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: background 0.2s;">Verificar mi cuenta 🐉</a><br>
+        Si el botón no funciona, copia y pega este enlace en tu navegador:<br><span style="color: #4da3ff;">${link}</span>`,
+        { background: '#232323', text: '#ff5e5e' }
+      )
     });
 
     res.status(200).json({ mensaje: 'Revisa tu correo para verificar tu cuenta.' });
@@ -135,15 +118,9 @@ router.post('/login', async (req, res) => {
   let usuario = null;
 
   if (rol.trim() === 'admin') {
-    usuario = await Admin.findOne({
-      correo: correo.trim(),
-      rol: rol.trim()
-    });
+    usuario = await Admin.findOne({ correo: correo.trim(), rol: rol.trim() });
   } else {
-    usuario = await Usuario.findOne({
-      correo: correo.trim(),
-      rol: rol.trim()
-    });
+    usuario = await Usuario.findOne({ correo: correo.trim(), rol: rol.trim() });
   }
 
   if (!usuario) return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
@@ -166,63 +143,44 @@ router.post('/login', async (req, res) => {
 
 router.put('/:id/activo', async (req, res) => {
   try {
-    // Busca el usuario antes de actualizar para saber su estado anterior
     const usuarioPrevio = await Usuario.findById(req.params.id);
+    const usuario = await Usuario.findByIdAndUpdate(req.params.id, { activo: req.body.activo }, { new: true });
 
-    const usuario = await Usuario.findByIdAndUpdate(
-      req.params.id,
-      { activo: req.body.activo },
-      { new: true }
-    );
-
-    // Si se inactiva la cuenta, enviar notificación
     if (usuario && req.body.activo === false) {
       await transporter.sendMail({
         from: 'ASO-ESFOT <mateotacuri67@gmail.com>',
         to: usuario.correo,
         subject: 'Tu cuenta ha sido inactivada en ASO-ESFOT',
-        html: `
-          <div style="font-family: Arial, sans-serif; background: #fff3cd; padding: 24px;">
-            <h2 style="color: #b22222;">Cuenta inactivada</h2>
-            <p>Hola <b>${usuario.nombre} ${usuario.apellido}</b>,</p>
-            <p>Tu cuenta en ASO-ESFOT ha sido <b>inactivada</b> por una de las siguientes razones:</p>
-            <ul>
-              <li>No actualizaste tus datos personales.</li>
-              <li>Has culminado el quinto semestre.</li>
-            </ul>
-            <div style="margin: 18px 0; padding: 14px; background: #ffeeba; border-radius: 6px; color: #856404;">
-              <b>Nota:</b> Por favor, acércate a las oficinas de la Asociación de Estudiantes de la ESFOT para solucionar tu situación y poder reactivar tu cuenta.
-            </div>
-            <hr>
-            <p style="font-size: 12px; color: #888;">ASO-ESFOT &copy; 2025</p>
-          </div>
-        `
+        html: dragonNotification(
+          'Cuenta inactivada',
+          `Hola <b>${usuario.nombre} ${usuario.apellido}</b>,<br>
+          Tu cuenta en ASO-ESFOT ha sido <b>inactivada</b> por una de las siguientes razones:<br>
+          <ul>
+            <li>No actualizaste tus datos personales.</li>
+            <li>Has culminado el quinto semestre.</li>
+          </ul>
+          <div style="margin: 18px 0; padding: 14px; background: #ffeeba; border-radius: 6px; color: #856404;">
+            <b>Nota:</b> Por favor, acércate a las oficinas de la Asociación de Estudiantes de la ESFOT para solucionar tu situación y poder reactivar tu cuenta.
+          </div>`,
+          { background: '#fff3cd', text: '#b22222' }
+        )
       });
     }
 
-    // Si la cuenta pasa de inactiva a activa (pero no en el registro inicial)
-    if (
-      usuario &&
-      req.body.activo === true &&
-      usuarioPrevio &&
-      usuarioPrevio.activo === false // Solo si antes estaba inactiva
-    ) {
+    if (usuario && req.body.activo === true && usuarioPrevio && usuarioPrevio.activo === false) {
       await transporter.sendMail({
         from: 'ASO-ESFOT <mateotacuri67@gmail.com>',
         to: usuario.correo,
         subject: '¡Tu cuenta ha sido activada en ASO-ESFOT!',
-        html: `
-          <div style="font-family: Arial, sans-serif; background: #d4edda; padding: 24px;">
-            <h2 style="color: #155724;">Cuenta activada</h2>
-            <p>Hola <b>${usuario.nombre} ${usuario.apellido}</b>,</p>
-            <p>¡Tu cuenta en ASO-ESFOT ha sido <b>activada</b> nuevamente! Ya puedes iniciar sesión y disfrutar de todos los servicios y beneficios de la asociación.</p>
-            <div style="margin: 18px 0; padding: 14px; background: #c3e6cb; border-radius: 6px; color: #155724;">
-              <b>Recuerda:</b> Si tienes dudas o problemas, acércate a las oficinas de la Asociación de Estudiantes de la ESFOT.
-            </div>
-            <hr>
-            <p style="font-size: 12px; color: #888;">ASO-ESFOT &copy; 2025</p>
-          </div>
-        `
+        html: dragonNotification(
+          'Cuenta activada',
+          `Hola <b>${usuario.nombre} ${usuario.apellido}</b>,<br>
+          ¡Tu cuenta en ASO-ESFOT ha sido <b>activada</b> nuevamente! Ya puedes iniciar sesión y disfrutar de todos los servicios y beneficios de la asociación.<br>
+          <div style="margin: 18px 0; padding: 14px; background: #c3e6cb; border-radius: 6px; color: #155724;">
+            <b>Recuerda:</b> Si tienes dudas o problemas, acércate a las oficinas de la Asociación de Estudiantes de la ESFOT.
+          </div>`,
+          { background: '#d4edda', text: '#155724' }
+        )
       });
     }
 

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const SEMESTRES = [
-  'Nivelacion','Primer semestre', 'Segundo semestre', 'Tercer semestre', 'Cuarto semestre', 'Quinto semestre',];
+  'Nivelacion', 'Primer semestre', 'Segundo semestre', 'Tercer semestre', 'Cuarto semestre', 'Quinto semestre',
+];
 
 const UsuariosPage = () => {
   const [busqueda, setBusqueda] = useState('');
@@ -19,7 +20,6 @@ const UsuariosPage = () => {
       .catch(() => setUsuarios([]));
   }, [busqueda]);
 
-  // Confirmar cambio de estado activo/inactivo
   const confirmarCambioActivo = (nuevoActivo) => {
     setModal(modal => ({ ...modal, loading: true }));
     const id = modal.id;
@@ -39,12 +39,10 @@ const UsuariosPage = () => {
       });
   };
 
-  // Mostrar modal de confirmación
   const mostrarModal = (id, activoActual) => {
     setModal({ show: true, id, activoActual, loading: false });
   };
 
-  // Cerrar modal
   const cerrarModal = () => setModal({ show: false, id: null, activoActual: true, loading: false });
 
   return (
@@ -86,10 +84,35 @@ const UsuariosPage = () => {
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
         <div>
-          <Link to="/adminpage" className="btn btn-esfot me-2">Menú</Link>
-          <Link to="/adminpage/reportespage" className="btn btn-esfot me-2">Gestionar Aportantes</Link>
-          <Link to="/adminpage/crudpage" className="btn btn-esfot me-2">Gestionar Planes</Link>
-          <Link to="/adminpage/finanzaspage" className="btn btn-esfot me-2">Finanzas</Link>
+          <Link to="/adminpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Menú
+          </Link>
+          <Link to="/adminpage/crudpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Gestionar Planes
+          </Link>
+          <Link to="/adminpage/usuariospage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Gestión de Usuarios
+          </Link>
+          <Link to="/adminpage/reportespage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Gestionar Aportantes
+          </Link>
+          <Link to="/adminpage/finanzaspage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Finanzas
+          </Link>
+          <Link to="/admin/solicitudes" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Solicitudes de Actualización
+          </Link>
+          <span
+            className="nav-link-custom"
+            onClick={() => {
+              localStorage.removeItem("isAuthenticated");
+              localStorage.removeItem("usuario");
+              window.location.href = "/";
+            }}
+            style={{ fontSize: '1.25rem', cursor: 'pointer' }}
+          >
+            Cerrar sesión
+          </span>
         </div>
       </header>
 
@@ -131,7 +154,7 @@ const UsuariosPage = () => {
               {usuarios.length > 0 ? (
                 usuarios
                   .filter(u =>
-                    u.rol === 'estudiante' && // Solo mostrar usuarios con rol estudiante
+                    u.rol === 'estudiante' &&
                     (
                       !busqueda ||
                       (u.semestre && u.semestre.toLowerCase() === busqueda.toLowerCase())

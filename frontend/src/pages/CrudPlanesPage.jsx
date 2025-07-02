@@ -11,20 +11,17 @@ const CrudPlanesPage = () => {
   });
   const [editId, setEditId] = useState(null);
 
-  // Cargar planes desde la base de datos
   useEffect(() => {
     fetch('https://aso-esfot-backend.onrender.com/api/planescrud')
       .then(res => res.json())
       .then(data => setPlanes(data));
   }, []);
 
-  // Manejar cambios en el formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  // Crear o actualizar plan
   const handleSubmit = async (e) => {
     e.preventDefault();
     const beneficiosArray = form.beneficios.split(',').map(item => item.trim());
@@ -34,24 +31,21 @@ const CrudPlanesPage = () => {
       imagen: form.imagen,
       precio: Number(form.precio)
     };
-    console.log('Datos enviados:', planData); // <-- Agrega esto
 
     if (editId) {
-      // Actualizar
       await fetch(`https://aso-esfot-backend.onrender.com/api/planescrud/${editId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(planData)
       });
     } else {
-      // Crear
       await fetch('https://aso-esfot-backend.onrender.com/api/planescrud', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(planData)
       });
     }
-    // Recargar planes
+
     fetch('https://aso-esfot-backend.onrender.com/api/planescrud')
       .then(res => res.json())
       .then(data => setPlanes(data));
@@ -59,7 +53,6 @@ const CrudPlanesPage = () => {
     setEditId(null);
   };
 
-  // Editar plan
   const handleEdit = (plan) => {
     setForm({
       titulo: plan.titulo,
@@ -70,7 +63,6 @@ const CrudPlanesPage = () => {
     setEditId(plan._id);
   };
 
-  // Eliminar plan
   const handleDelete = async (id) => {
     if (window.confirm('¿Estás seguro de eliminar este plan?')) {
       await fetch(`https://aso-esfot-backend.onrender.com/api/planescrud/${id}`, { method: 'DELETE' });
@@ -80,14 +72,39 @@ const CrudPlanesPage = () => {
 
   return (
     <div className="d-flex flex-column min-vh-100">
-      {/* Encabezado */}
+      {/* ENCABEZADO */}
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
         <div>
-          <Link to="/adminpage" className="btn btn-esfot me-2">Menú</Link>
-          <Link to="/adminpage/usuariospage" className="btn btn-esfot me-2">Gestionar Usuarios</Link>
-          <Link to="/adminpage/reportespage" className="btn btn-esfot me-2">Gestionar Aportantes</Link>
-          <Link to="/adminpage/finanzaspage" className="btn btn-esfot me-2">Finanzas</Link>
+          <Link to="/adminpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Menú
+          </Link>
+          <Link to="/adminpage/crudpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Gestionar Planes
+          </Link>
+          <Link to="/adminpage/usuariospage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Gestión de Usuarios
+          </Link>
+          <Link to="/adminpage/reportespage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Gestionar Aportantes
+          </Link>
+          <Link to="/adminpage/finanzaspage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Finanzas
+          </Link>
+          <Link to="/admin/solicitudes" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Solicitudes de Actualización
+          </Link>
+          <span
+            className="nav-link-custom"
+            onClick={() => {
+              localStorage.removeItem("isAuthenticated");
+              localStorage.removeItem("usuario");
+              window.location.href = "/";
+            }}
+            style={{ fontSize: '1.25rem', cursor: 'pointer' }}
+          >
+            Cerrar sesión
+          </span>
         </div>
       </header>
 
@@ -238,4 +255,3 @@ const CrudPlanesPage = () => {
 };
 
 export default CrudPlanesPage;
-

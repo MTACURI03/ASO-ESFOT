@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 const LoginPage = () => {
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
-  const [rol, setRol] = useState('estudiante');
   const [mensaje, setMensaje] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -17,17 +16,27 @@ const LoginPage = () => {
       const res = await fetch('https://aso-esfot-backend.onrender.com/api/usuarios/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ correo, password, rol }),
+        body: JSON.stringify({ correo, password }),
       });
       const data = await res.json();
       if (res.ok && data.usuario) {
-        localStorage.setItem('usuario', JSON.stringify(data.usuario));
-        if (data.usuario.activo === false) {
-          setMensaje('Tu cuenta está inactiva. Actualiza tus datos para reactivarla.');
-          setTimeout(() => navigate('/actualizar-datos'), 2000);
-        } else if (data.usuario.rol === 'admin') {
+        const usuario = data.usuario;
+        const usuarioActualizado = localStorage.getItem('usuarioActualizado');
+
+        if (usuario.activo === false) {
+          if (usuarioActualizado === 'true') {
+            setMensaje('Espera a la solicitud.');
+          } else {
+            localStorage.setItem('usuario', JSON.stringify(usuario));
+            localStorage.setItem('usuarioActualizado', 'true');
+            setMensaje('Tu cuenta está inactiva. Actualiza tus datos para reactivarla.');
+            setTimeout(() => navigate('/actualizar-datos'), 2000);
+          }
+        } else if (usuario.rol === 'admin') {
+          localStorage.setItem('usuario', JSON.stringify(usuario));
           navigate('/adminpage');
         } else {
+          localStorage.setItem('usuario', JSON.stringify(usuario));
           navigate('/landing');
         }
       } else {
@@ -122,19 +131,6 @@ const LoginPage = () => {
                     {showPassword ? "🙈" : "👁️"} {/* Ícono de ojo */}
                   </span>
                 </div>
-              </div>
-              <div className="mb-3">
-                <label htmlFor="rol" className="form-label">Rol</label>
-                <select
-                  id="rol"
-                  className="form-select"
-                  value={rol}
-                  onChange={e => setRol(e.target.value)}
-                  required
-                >
-                  <option value="estudiante">Estudiante</option>
-                  <option value="admin">Administrador</option>
-                </select>
               </div>
               <div className="mb-4 text-center">
                 <p className="mb-1">¿Cuentas con una cuenta? No?</p>

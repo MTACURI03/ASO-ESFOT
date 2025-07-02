@@ -131,15 +131,43 @@ const FinanzasPage = () => {
 
   return (
     <div className="d-flex flex-column min-vh-100">
+      {/* ENCABEZADO */}
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
-        <img src="/imagenes_asoesfot/logo.png" alt="Logo" style={{ height: '60px' }} />
+        <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
         <div>
-          <Link to="/adminpage" className="btn btn-esfot me-2">Menú</Link>
-          <Link to="/adminpage/usuariospage" className="btn btn-esfot me-2">Gestionar Usuarios</Link>
-          <Link to="/adminpage/reportespage" className="btn btn-esfot me-2">Gestionar Aportantes</Link>
-          <Link to="/adminpage/crudpage" className="btn btn-esfot me-2">Gestionar Planes</Link>
+          <Link to="/adminpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Menú
+          </Link>
+          <Link to="/adminpage/crudpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Gestionar Planes
+          </Link>
+          <Link to="/adminpage/usuariospage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Gestión de Usuarios
+          </Link>
+          <Link to="/adminpage/reportespage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Gestionar Aportantes
+          </Link>
+          <Link to="/adminpage/finanzaspage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Finanzas
+          </Link>
+          <Link to="/admin/solicitudes" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
+            Solicitudes de Actualización
+          </Link>
+          <span
+            className="nav-link-custom"
+            onClick={() => {
+              localStorage.removeItem("isAuthenticated");
+              localStorage.removeItem("usuario");
+              window.location.href = "/";
+            }}
+            style={{ fontSize: '1.25rem', cursor: 'pointer' }}
+          >
+            Cerrar sesión
+          </span>
         </div>
       </header>
+
+      {/* CUERPO */}
       <main className="flex-grow-1 container py-4">
         <h2 className="text-center mb-4">Gestión Financiera - ASO ESFOT</h2>
         <div className="alert alert-info text-center fs-5 fw-bold">
@@ -229,6 +257,8 @@ const FinanzasPage = () => {
           </tbody>
         </table>
       </main>
+
+      {/* PIE DE PÁGINA */}
       <footer className="bg-esfot text-white text-center py-3">
         &copy; 2025 ASO-ESFOT. Todos los derechos reservados.
       </footer>
