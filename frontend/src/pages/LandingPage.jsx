@@ -136,9 +136,10 @@ const LandingPage = () => {
           id="asoCarousel"
           className="carousel slide w-100"
           data-bs-ride="carousel"
+          data-bs-interval="3000" // Reproducción automática cada 3 segundos
           style={{
-            maxWidth: '600px', // Más grande y responsivo
-            maxHeight: '350px',
+            maxWidth: '800px', // Ajusta el tamaño del carrusel
+            maxHeight: '500px',
             width: '100%',
             height: 'auto'
           }}
@@ -148,7 +149,7 @@ const LandingPage = () => {
               <img
                 src="/imagenes_asoesfot/Logo_ESFOT.png"
                 className="d-block w-100 h-100"
-                style={{ objectFit: 'contain', maxHeight: '350px' }}
+                style={{ objectFit: 'cover', maxHeight: '500px' }}
                 alt="Logo"
               />
             </div>
@@ -156,7 +157,7 @@ const LandingPage = () => {
               <img
                 src="/imagenes_asoesfot/directiva.jpeg"
                 className="d-block w-100 h-100"
-                style={{ objectFit: 'contain', maxHeight: '350px' }}
+                style={{ objectFit: 'cover', maxHeight: '500px' }}
                 alt="Directiva"
               />
             </div>
@@ -164,26 +165,31 @@ const LandingPage = () => {
               <img
                 src="/imagenes_asoesfot/finalistas.jpg"
                 className="d-block w-100 h-100"
-                style={{ objectFit: 'contain', maxHeight: '350px' }}
+                style={{ objectFit: 'cover', maxHeight: '500px' }}
                 alt="Finalistas"
               />
             </div>
           </div>
 
+          {/* Botón anterior */}
           <button
             className="carousel-control-prev"
             type="button"
             data-bs-target="#asoCarousel"
             data-bs-slide="prev"
+            style={{ backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: '50%' }}
           >
             <span className="carousel-control-prev-icon" aria-hidden="true"></span>
             <span className="visually-hidden">Anterior</span>
           </button>
+
+          {/* Botón siguiente */}
           <button
             className="carousel-control-next"
             type="button"
             data-bs-target="#asoCarousel"
             data-bs-slide="next"
+            style={{ backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: '50%' }}
           >
             <span className="carousel-control-next-icon" aria-hidden="true"></span>
             <span className="visually-hidden">Siguiente</span>

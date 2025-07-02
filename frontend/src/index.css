@@ -43,3 +43,8 @@ code {
   color: #fff !important;
   text-decoration: underline;
 }
+/* Estilo para las flechas del carrusel */
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+  background-color: rgba(0, 0, 0, 0.7); /* Fondo más oscuro al pasar el mouse */
+}
