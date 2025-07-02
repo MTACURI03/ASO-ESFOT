@@ -7,107 +7,87 @@ const LandingPage = () => {
   const [showActualizarModal, setShowActualizarModal] = useState(false);
   const usuario = JSON.parse(localStorage.getItem('usuario'));
 
-  const handleLogout = () => setShowLogoutModal(true);
+  const handleLogout = () => {
+    setShowLogoutModal(true);
+  };
+
   const confirmLogout = () => {
     setShowLogoutModal(false);
     localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("usuario");
+    localStorage.removeItem("usuario"); // <-- necesario para cerrar sesión correctamente
     navigate("/");
   };
-  const cancelLogout = () => setShowLogoutModal(false);
 
+  const cancelLogout = () => {
+    setShowLogoutModal(false);
+  };
+
+  // Nuevo: Modal para advertencia de actualización de datos
   const handleActualizarClick = (e) => {
     e.preventDefault();
     setShowActualizarModal(true);
   };
+
   const confirmActualizar = () => {
     setShowActualizarModal(false);
     navigate('/actualizar-datos');
   };
-  const cancelActualizar = () => setShowActualizarModal(false);
+
+  const cancelActualizar = () => {
+    setShowActualizarModal(false);
+  };
 
   return (
-    <div className="d-flex flex-column min-vh-100" style={{ background: "linear-gradient(135deg, #004A99 0%, #e94c4c 100%)" }}>
-      {/* HEADER */}
-      <header className="py-3 px-4 d-flex flex-column flex-md-row justify-content-between align-items-center" style={{ background: "rgba(0,0,0,0.45)", borderBottom: "2px solid #e94c4c" }}>
-        <div className="d-flex align-items-center mb-3 mb-md-0">
-          <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px', marginRight: 16 }} />
-          <span className="fs-3 fw-bold text-white" style={{ letterSpacing: 2 }}>ASO-ESFOT</span>
+    <div className="d-flex flex-column min-vh-100">
+      {/* ENCABEZADO */}
+      <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
+        <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
+        <div>
+          {(() => {
+            const usuario = JSON.parse(localStorage.getItem('usuario'));
+            if (usuario && usuario.activo === false) {
+              return (
+                <>
+                  <Link to="/actualizar-datos" className="nav-link-custom me-3">
+                    Actualizar datos
+                  </Link>
+                  <span
+                    className="nav-link-custom"
+                    onClick={handleLogout}
+                  >
+                    Cerrar sesión
+                  </span>
+                </>
+              );
+            }
+            // Si el usuario está activo, muestra los otros links normales:
+            return (
+              <>
+                <Link to="/visualizar" className="nav-link-custom me-3">
+                  Mis Aportaciones
+                </Link>
+                <Link to="/registro" className="nav-link-custom me-3">
+                  Planes de Aportaciones
+                </Link>
+                <span
+                  className="nav-link-custom me-3"
+                  onClick={handleActualizarClick}
+                >
+                  Actualizar datos
+                </span>
+                <span
+                  className="nav-link-custom"
+                  onClick={handleLogout}
+                >
+                  Cerrar sesión
+                </span>
+              </>
+            );
+          })()}
         </div>
-        <nav>
-          {usuario && usuario.activo === false ? (
-            <>
-              <Link to="/actualizar-datos" className="nav-link-custom me-3">Actualizar datos</Link>
-              <span className="nav-link-custom" onClick={handleLogout}>Cerrar sesión</span>
-            </>
-          ) : (
-            <>
-              <Link to="/visualizar" className="nav-link-custom me-3">Mis Aportaciones</Link>
-              <Link to="/registro" className="nav-link-custom me-3">Planes de Aportaciones</Link>
-              <span className="nav-link-custom me-3" onClick={handleActualizarClick}>Actualizar datos</span>
-              <span className="nav-link-custom" onClick={handleLogout}>Cerrar sesión</span>
-            </>
-          )}
-        </nav>
       </header>
 
-      {/* HERO */}
-      <section className="d-flex flex-column align-items-center justify-content-center text-center py-5" style={{
-        background: "linear-gradient(120deg, #004A99 60%, #e94c4c 100%)",
-        minHeight: 350
-      }}>
-        <img src="/imagenes_asoesfot/Logo_ESFOT.png" alt="Logo" style={{ width: 120, height: 120, objectFit: 'contain', marginBottom: 24 }} />
-        <h1 className="display-4 fw-bold text-white mb-2" style={{ textShadow: "0 2px 8px #0008" }}>APORTACIONES ASO-ESFOT</h1>
-        <p className="lead text-white-50 mb-0" style={{ fontWeight: 500, textShadow: "0 1px 4px #0006" }}>
-          Facilitando la gestión de aportes estudiantiles
-        </p>
-      </section>
-
-      {/* CARDS */}
-      <main className="container my-5 flex-grow-1">
-        <div className="row g-4">
-          <div className="col-md-4">
-            <div className="card h-100 shadow-lg border-0" style={{ borderRadius: 18 }}>
-              <img src="/imagenes_asoesfot/asotele.jpg" className="card-img-top" alt="img1" style={{ borderTopLeftRadius: 18, borderTopRightRadius: 18, height: 220, objectFit: 'cover' }} />
-              <div className="card-body bg-light" style={{ borderBottomLeftRadius: 18, borderBottomRightRadius: 18 }}>
-                <h5 className="card-title fw-bold text-esfot mb-2">Modernización de la Asociación</h5>
-                <p className="card-text text-secondary">
-                  Empleando la modernización de la Asociación de Estudiantes de la ESFOT, mejorando instalaciones, infraestructura y servicios para los estudiantes. 👷‍♂️
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="card h-100 shadow-lg border-0" style={{ borderRadius: 18 }}>
-              <img src="/imagenes_asoesfot/campeones.jpg" className="card-img-top" alt="img2" style={{ borderTopLeftRadius: 18, borderTopRightRadius: 18, height: 220, objectFit: 'cover' }} />
-              <div className="card-body bg-light" style={{ borderBottomLeftRadius: 18, borderBottomRightRadius: 18 }}>
-                <h5 className="card-title fw-bold text-esfot mb-2">Participación Estudiantil</h5>
-                <p className="card-text text-secondary">
-                  Promoviendo la participación estudiantil con torneos en diferentes disciplinas deportivas, apoyando a los deportistas hacia la excelencia y el triunfo. 🏆
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="card h-100 shadow-lg border-0" style={{ borderRadius: 18 }}>
-              <img src="/imagenes_asoesfot/amigos.jpg" className="card-img-top" alt="img3" style={{ borderTopLeftRadius: 18, borderTopRightRadius: 18, height: 220, objectFit: 'cover' }} />
-              <div className="card-body bg-light" style={{ borderBottomLeftRadius: 18, borderBottomRightRadius: 18 }}>
-                <h5 className="card-title fw-bold text-esfot mb-2">Integración y Desarrollo</h5>
-                <p className="card-text text-secondary">
-                  Apoyando actividades académicas y sociales, la asociación organiza eventos que fomentan la integración y el desarrollo integral de los estudiantes. 🙌
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* FOOTER */}
-      <footer className="bg-esfot text-white text-center py-3 mt-auto" style={{ letterSpacing: 1 }}>
-        &copy; 2025 ASO-ESFOT. Todos los derechos reservados.
-      </footer>
-
-      {/* MODALS */}
+      {/* Modal de advertencia para actualizar datos */}
       {showActualizarModal && (
         <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -127,6 +107,8 @@ const LandingPage = () => {
           </div>
         </div>
       )}
+
+      {/* Modal de confirmación de cierre de sesión */}
       {showLogoutModal && (
         <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -147,26 +129,119 @@ const LandingPage = () => {
         </div>
       )}
 
-      {/* ESTILOS EXTRA PARA NAV-LINKS */}
-      <style>{`
-        .nav-link-custom {
-          color: #fff !important;
-          text-decoration: underline;
-          padding: 4px 12px;
-          border-radius: 6px;
-          transition: background 0.2s, color 0.2s;
-          cursor: pointer;
-          display: inline-block;
-        }
-        .nav-link-custom:hover {
-          background: #222;
-          color: #fff !important;
-          text-decoration: underline;
-        }
-        .text-esfot {
-          color: #e94c4c;
-        }
-      `}</style>
+      <div className="bg-light py-3"></div>
+
+      <div className="container mt-4 d-flex justify-content-center">
+        <div
+          id="asoCarousel"
+          className="carousel slide w-100"
+          data-bs-ride="carousel"
+          style={{
+            maxWidth: '400px', // Cambia el tamaño máximo aquí
+            maxHeight: '280px', // Cambia el tamaño máximo aquí
+            width: '100%',
+            height: 'auto'
+          }}
+        >
+          <div className="carousel-inner rounded shadow" style={{ width: '100%', height: '100%' }}>
+            <div className="carousel-item active">
+              <img
+                src="/imagenes_asoesfot/Logo_ESFOT.png"
+                className="d-block w-100 h-100"
+                style={{ objectFit: 'contain', maxHeight: '280px' }}
+                alt="Logo"
+              />
+            </div>
+            <div className="carousel-item">
+              <img
+                src="/imagenes_asoesfot/directiva.jpeg"
+                className="d-block w-100 h-100"
+                style={{ objectFit: 'contain', maxHeight: '280px' }}
+                alt="Directiva"
+              />
+            </div>
+            <div className="carousel-item">
+              <img
+                src="/imagenes_asoesfot/finalistas.jpg"
+                className="d-block w-100 h-100"
+                style={{ objectFit: 'contain', maxHeight: '280px' }}
+                alt="Finalistas"
+              />
+            </div>
+          </div>
+
+          <button
+            className="carousel-control-prev"
+            type="button"
+            data-bs-target="#asoCarousel"
+            data-bs-slide="prev"
+          >
+            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span className="visually-hidden">Anterior</span>
+          </button>
+          <button
+            className="carousel-control-next"
+            type="button"
+            data-bs-target="#asoCarousel"
+            data-bs-slide="next"
+          >
+            <span className="carousel-control-next-icon" aria-hidden="true"></span>
+            <span className="visually-hidden">Siguiente</span>
+          </button>
+        </div>
+      </div>
+
+      {/* CUERPO PRINCIPAL */}
+      <main className="flex-grow-1 container text-center py-5">
+        <h1 className="display-4 fw-bold mb-3">APORTACIONES ASO-ESFOT</h1>
+        <p className="lead mb-5 text-secondary fw-semibold">Facilitando la gestión de aportes estudiantiles</p>
+        <div className="container my-5">
+          {/* Fila 1 */}
+          <div className="row align-items-center mb-4">
+            <div className="col-md-6">
+              <img src="/imagenes_asoesfot/asotele.jpg" alt="img1" className="img-fluid rounded shadow-sm" />
+            </div>
+            <div className="col-md-6">
+              <p className="lead text-secondary fw-semibold">
+                Empleando la modernizacion de la Asociacion
+                de Estudiantes de la ESFOT, modernizando sus instalaciones ademas de mejorar la infraestructura
+                y los servicios que ofrece a los estudiantes.👷‍♂️
+              </p>
+            </div>
+          </div>
+
+          {/* Fila 2 */}
+          <div className="row align-items-center mb-4">
+            <div className="col-md-6 order-md-2">
+              <img src="/imagenes_asoesfot/campeones.jpg" alt="img2" className="img-fluid rounded shadow-sm" />
+            </div>
+            <div className="col-md-6 order-md-1">
+              <p className="lead text-secondary fw-semibold">
+                Promoviendo la participación estudiantil, al tener diferentes torneos in diferentes disciplinas
+                deportivas,se centra en la ayuda a los deportistas y colabora en el camino hacia la excelencia y el trinunfo.🏆
+              </p>
+            </div>
+          </div>
+
+          {/* Fila 3 */}
+          <div className="row align-items-center mb-4">
+            <div className="col-md-6">
+              <img src="/imagenes_asoesfot/amigos.jpg" alt="img3" className="img-fluid rounded shadow-sm" />
+            </div>
+            <div className="col-md-6">
+              <p className="lead text-secondary fw-semibold">
+                Apoyando actividades académicas y sociales, la asociación organiza eventos que fomentan la integración
+                y el desarrollo integral de los estudiantes, creando un ambiente propicio para el aprendizaje y la convivencia.🙌
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* PIE DE PÁGINA */}
+      <footer className="bg-esfot text-white text-center py-3">
+        &copy; 2025 ASO-ESFOT. Todos los derechos reservados.
+      </footer>
     </div>
   );
 };
