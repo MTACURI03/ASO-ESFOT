@@ -23,7 +23,14 @@ const LoginPage = () => {
         const usuario = data.usuario;
 
         if (usuario.activo === false) {
-          setMensaje('Tu cuenta está inactiva. Contacta al administrador.');
+          const yaAccedio = localStorage.getItem('actualizacionRealizada');
+          if (yaAccedio === 'true') {
+            setMensaje('Solicitud enviada. Espera la activación de tu cuenta.');
+          } else {
+            localStorage.setItem('actualizacionRealizada', 'true');
+            localStorage.setItem('usuario', JSON.stringify(usuario));
+            navigate('/actualizar-datos'); // Redirige al formulario de actualización de datos
+          }
         } else if (usuario.rol === 'admin' && rol === 'admin') {
           localStorage.setItem('usuario', JSON.stringify(usuario));
           navigate('/adminpage');
@@ -123,6 +130,12 @@ const LoginPage = () => {
             {mensaje && (
               <div className="alert alert-info text-center mt-3">{mensaje}</div>
             )}
+            <div className="mt-4 text-center">
+              <a href="/crear-password" className="text-decoration-none">¿No tienes cuenta? Crea una aquí</a>
+            </div>
+            <div className="mt-2 text-center">
+              <a href="/actualizar-password" className="text-decoration-none">¿Olvidaste tu contraseña? Actualízala aquí</a>
+            </div>
           </div>
         </div>
       </main>

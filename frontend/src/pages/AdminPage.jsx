@@ -3,15 +3,24 @@ import { useNavigate, Link } from 'react-router-dom';
 
 const AdminPage = () => {
   const navigate = useNavigate();
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [showAccountModal, setShowAccountModal] = useState(false);
   const [adminNombre, setAdminNombre] = useState('');
   const [adminApellido, setAdminApellido] = useState('');
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
     const usuario = JSON.parse(localStorage.getItem('usuario'));
     if (usuario) {
       setAdminNombre(usuario.nombre || '');
       setAdminApellido(usuario.apellido || '');
+
+      // Mostrar los modales solo una vez al iniciar sesión
+      const modalesMostrados = localStorage.getItem('modalesMostrados');
+      if (!modalesMostrados) {
+        setShowWelcomeModal(true);
+        localStorage.setItem('modalesMostrados', 'true');
+      }
     }
   }, []);
 
@@ -23,6 +32,7 @@ const AdminPage = () => {
     setShowLogoutModal(false);
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("usuario");
+    localStorage.removeItem("modalesMostrados");
     navigate("/");
   };
 
@@ -30,8 +40,68 @@ const AdminPage = () => {
     setShowLogoutModal(false);
   };
 
+  const handleWelcomeModalClose = () => {
+    setShowWelcomeModal(false);
+    setShowAccountModal(true); // Mostrar el segundo modal
+  };
+
+  const handleAccountModalClose = () => {
+    setShowAccountModal(false);
+  };
+
+  const handleCreateAccount = () => {
+    navigate('/crear-password'); // Redirige a la página de registro
+  };
+
   return (
     <div className="d-flex flex-column min-vh-100">
+      {/* Modal de bienvenida */}
+      {showWelcomeModal && (
+        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header bg-esfot text-white">
+                <h5 className="modal-title">¡Hola Administrador!</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={handleWelcomeModalClose}></button>
+              </div>
+              <div className="modal-body">
+                <p>Bienvenido, {adminNombre} {adminApellido}. ¡Esperamos que tengas un excelente día!</p>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-primary" onClick={handleWelcomeModalClose}>
+                  Continuar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de cuenta de usuario */}
+      {showAccountModal && (
+        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header bg-esfot text-white">
+                <h5 className="modal-title">¿Deseas crear una cuenta de usuario?</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={handleAccountModalClose}></button>
+              </div>
+              <div className="modal-body">
+                <p>¿Ya tienes una cuenta de usuario o deseas crear una nueva?</p>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-primary" onClick={handleCreateAccount}>
+                  Crear cuenta
+                </button>
+                <button type="button" className="btn btn-secondary" onClick={handleAccountModalClose}>
+                  Ya tengo una cuenta
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ENCABEZADO */}
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
