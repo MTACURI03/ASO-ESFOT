@@ -14,6 +14,7 @@ const LandingPage = () => {
   const confirmLogout = () => {
     setShowLogoutModal(false);
     localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("usuario"); // <-- necesario para cerrar sesión correctamente
     navigate("/");
   };
 
@@ -47,24 +48,42 @@ const LandingPage = () => {
             if (usuario && usuario.activo === false) {
               return (
                 <>
-                  <Link to="/actualizar-datos" className="btn btn-esfot me-2">Actualizar datos</Link>
-                  <button onClick={handleLogout} className="btn btn-danger">Cerrar sesión</button>
+                  <Link to="/actualizar-datos" className="text-white me-3" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+                    Actualizar datos
+                  </Link>
+                  <span
+                    className="text-white"
+                    style={{ cursor: 'pointer' }}
+                    onClick={handleLogout}
+                  >
+                    Cerrar sesión
+                  </span>
                 </>
               );
             }
-            // Si el usuario está activo, muestra los otros botones normales:
+            // Si el usuario está activo, muestra los otros links normales:
             return (
               <>
-                <Link to="/visualizar" className="btn btn-esfot me-2">Mis Aportaciones</Link>
-                <Link to="/registro" className="btn btn-esfot me-2">Planes de Aportaciones</Link>
-                <Link
-                  to="/actualizar-datos"
-                  className="btn btn-esfot me-2"
+                <Link to="/visualizar" className="text-white me-3" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+                  Mis Aportaciones
+                </Link>
+                <Link to="/registro" className="text-white me-3" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+                  Planes de Aportaciones
+                </Link>
+                <span
+                  className="text-white me-3"
+                  style={{ textDecoration: 'none', cursor: 'pointer' }}
                   onClick={handleActualizarClick}
                 >
                   Actualizar datos
-                </Link>
-                <button onClick={handleLogout} className="btn btn-danger">Cerrar sesión</button>
+                </span>
+                <span
+                  className="text-white"
+                  style={{ cursor: 'pointer' }}
+                  onClick={handleLogout}
+                >
+                  Cerrar sesión
+                </span>
               </>
             );
           })()}

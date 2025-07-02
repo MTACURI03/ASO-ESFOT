@@ -97,8 +97,9 @@ const CrudPlanesPage = () => {
 
         <form onSubmit={handleSubmit} className="card p-4 mb-5 shadow-sm">
           <div className="mb-3">
-            <label className="form-label">Título del Plan</label>
+            <label htmlFor="titulo" className="form-label">Título del Plan</label>
             <input
+              id="titulo"
               type="text"
               name="titulo"
               className="form-control"
@@ -109,8 +110,9 @@ const CrudPlanesPage = () => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Beneficios (separados por coma)</label>
+            <label htmlFor="beneficios" className="form-label">Beneficios (separados por coma)</label>
             <textarea
+              id="beneficios"
               name="beneficios"
               className="form-control"
               value={form.beneficios}
@@ -121,8 +123,9 @@ const CrudPlanesPage = () => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Imagen</label>
+            <label htmlFor="imagen" className="form-label">Imagen</label>
             <input
+              id="imagen"
               type="file"
               accept="image/*"
               className="form-control"
@@ -131,7 +134,6 @@ const CrudPlanesPage = () => {
                 if (file) {
                   const reader = new FileReader();
                   reader.onloadend = () => {
-                    console.log('Imagen base64:', reader.result); // <-- Agrega esto
                     setForm(prev => ({ ...prev, imagen: reader.result }));
                   };
                   reader.readAsDataURL(file);
@@ -147,8 +149,9 @@ const CrudPlanesPage = () => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Precio</label>
+            <label htmlFor="precio" className="form-label">Precio</label>
             <input
+              id="precio"
               type="number"
               name="precio"
               className="form-control"
