@@ -85,8 +85,47 @@ const RegistroPage = () => {
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
         <div>
-          <Link to="/landing" className="btn btn-esfot me-2">Menú</Link>
-          <Link to="/visualizar" className="btn btn-esfot me-2">Mis Aportaciones</Link>
+          {(() => {
+            const usuario = JSON.parse(localStorage.getItem('usuario'));
+            if (usuario && usuario.activo === false) {
+              return (
+                <>
+                  <Link to="/actualizar-datos" className="nav-link-custom me-3">
+                    Actualizar datos
+                  </Link>
+                  <span
+                    className="nav-link-custom"
+                    onClick={handleLogout}
+                  >
+                    Cerrar sesión
+                  </span>
+                </>
+              );
+            }
+            // Si el usuario está activo, muestra los otros links normales:
+            return (
+              <>
+                <Link to="/visualizar" className="nav-link-custom me-3">
+                  Mis Aportaciones
+                </Link>
+                <Link to="/registro" className="nav-link-custom me-3">
+                  Planes de Aportaciones
+                </Link>
+                <span
+                  className="nav-link-custom me-3"
+                  onClick={handleActualizarClick}
+                >
+                  Actualizar datos
+                </span>
+                <span
+                  className="nav-link-custom"
+                  onClick={handleLogout}
+                >
+                  Cerrar sesión
+                </span>
+              </>
+            );
+          })()}
         </div>
       </header>
 

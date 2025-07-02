@@ -41,7 +41,13 @@ const LandingPage = () => {
     <div className="d-flex flex-column min-vh-100">
       {/* ENCABEZADO */}
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
-        <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
+        <div className="d-flex align-items-center">
+          <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
+          <div className="ms-3 d-flex align-items-center">
+            <i className="bi bi-person-circle" style={{ fontSize: '1.5rem', color: 'white' }}></i> {/* Ícono de usuario */}
+            <span className="ms-2">Hola, {usuario?.nombre || 'Usuario'}</span> {/* Mensaje con el nombre del usuario */}
+          </div>
+        </div>
         <div>
           {(() => {
             const usuario = JSON.parse(localStorage.getItem('usuario'));
