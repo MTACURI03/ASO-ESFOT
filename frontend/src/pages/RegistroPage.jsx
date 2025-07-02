@@ -79,6 +79,17 @@ const RegistroPage = () => {
       .then(data => setSecciones(data));
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("usuario");
+    window.location.href = "/"; // Redirige al inicio
+  };
+
+  const handleActualizarClick = (e) => {
+    e.preventDefault();
+    window.location.href = "/actualizar-datos"; // Redirige a la página de actualización
+  };
+
   return (
     <div className="d-flex flex-column min-vh-100">
       {/* ENCABEZADO */}
