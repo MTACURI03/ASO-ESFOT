@@ -44,8 +44,8 @@ const LandingPage = () => {
         <div className="d-flex align-items-center">
           <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
           <div className="ms-3 d-flex align-items-center">
-            <i className="bi bi-person-circle" style={{ fontSize: '1.5rem', color: 'white' }}></i> {/* Ícono de usuario */}
-            <span className="ms-2">Hola, {usuario?.nombre || 'Usuario'}</span> {/* Mensaje con el nombre del usuario */}
+            <i className="bi bi-person-circle" style={{ fontSize: '2rem', color: 'white' }}></i> {/* Ícono de usuario */}
+            <span className="ms-2" style={{ fontSize: '1.25rem' }}>Hola, {usuario?.nombre || 'Usuario'}</span> {/* Mensaje con el nombre del usuario */}
           </div>
         </div>
         <div>
@@ -54,12 +54,13 @@ const LandingPage = () => {
             if (usuario && usuario.activo === false) {
               return (
                 <>
-                  <Link to="/actualizar-datos" className="nav-link-custom me-3">
+                  <Link to="/actualizar-datos" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
                     Actualizar datos
                   </Link>
                   <span
                     className="nav-link-custom"
                     onClick={handleLogout}
+                    style={{ fontSize: '1.25rem' }}
                   >
                     Cerrar sesión
                   </span>
@@ -69,21 +70,23 @@ const LandingPage = () => {
             // Si el usuario está activo, muestra los otros links normales:
             return (
               <>
-                <Link to="/visualizar" className="nav-link-custom me-3">
+                <Link to="/visualizar" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
                   Mis Aportaciones
                 </Link>
-                <Link to="/registro" className="nav-link-custom me-3">
+                <Link to="/registro" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
                   Planes de Aportaciones
                 </Link>
                 <span
                   className="nav-link-custom me-3"
                   onClick={handleActualizarClick}
+                  style={{ fontSize: '1.25rem' }}
                 >
                   Actualizar datos
                 </span>
                 <span
                   className="nav-link-custom"
                   onClick={handleLogout}
+                  style={{ fontSize: '1.25rem' }}
                 >
                   Cerrar sesión
                 </span>
@@ -183,7 +186,7 @@ const LandingPage = () => {
             type="button"
             data-bs-target="#asoCarousel"
             data-bs-slide="prev"
-            style={{ backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: '50%' }}
+            style={{ borderRadius: '50%' }} // Eliminado el fondo negro
           >
             <span className="carousel-control-prev-icon" aria-hidden="true"></span>
             <span className="visually-hidden">Anterior</span>
@@ -195,7 +198,7 @@ const LandingPage = () => {
             type="button"
             data-bs-target="#asoCarousel"
             data-bs-slide="next"
-            style={{ backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: '50%' }}
+            style={{ borderRadius: '50%' }} // Eliminado el fondo negro
           >
             <span className="carousel-control-next-icon" aria-hidden="true"></span>
             <span className="visually-hidden">Siguiente</span>

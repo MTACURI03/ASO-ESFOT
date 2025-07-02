@@ -200,6 +200,9 @@ const VisualizarPage = () => {
                 <Link to="/registro" className="nav-link-custom me-3">
                   Planes de Aportaciones
                 </Link>
+                <Link to="/landing" className="nav-link-custom me-3"> {/* Nuevo enlace al menú */}
+                  Menú
+                </Link>
                 <span
                   className="nav-link-custom me-3"
                   onClick={handleActualizarClick}
