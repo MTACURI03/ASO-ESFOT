@@ -137,8 +137,8 @@ const LandingPage = () => {
           className="carousel slide w-100"
           data-bs-ride="carousel"
           style={{
-            maxWidth: '400px', // Cambia el tamaño máximo aquí
-            maxHeight: '280px', // Cambia el tamaño máximo aquí
+            maxWidth: '600px', // Más grande y responsivo
+            maxHeight: '350px',
             width: '100%',
             height: 'auto'
           }}
@@ -148,7 +148,7 @@ const LandingPage = () => {
               <img
                 src="/imagenes_asoesfot/Logo_ESFOT.png"
                 className="d-block w-100 h-100"
-                style={{ objectFit: 'contain', maxHeight: '280px' }}
+                style={{ objectFit: 'contain', maxHeight: '350px' }}
                 alt="Logo"
               />
             </div>
@@ -156,7 +156,7 @@ const LandingPage = () => {
               <img
                 src="/imagenes_asoesfot/directiva.jpeg"
                 className="d-block w-100 h-100"
-                style={{ objectFit: 'contain', maxHeight: '280px' }}
+                style={{ objectFit: 'contain', maxHeight: '350px' }}
                 alt="Directiva"
               />
             </div>
@@ -164,7 +164,7 @@ const LandingPage = () => {
               <img
                 src="/imagenes_asoesfot/finalistas.jpg"
                 className="d-block w-100 h-100"
-                style={{ objectFit: 'contain', maxHeight: '280px' }}
+                style={{ objectFit: 'contain', maxHeight: '350px' }}
                 alt="Finalistas"
               />
             </div>
