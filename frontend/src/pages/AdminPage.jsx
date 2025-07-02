@@ -25,7 +25,7 @@ const AdminPage = () => {
   }, []);
 
   const handleLogout = () => {
-    setShowLogoutModal(true);
+    setShowLogoutModal(true); // Siempre muestra el modal de cierre de sesión
   };
 
   const confirmLogout = () => {

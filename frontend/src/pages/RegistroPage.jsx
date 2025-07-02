@@ -16,17 +16,14 @@ const RegistroPage = () => {
   const closeModal = () => setModal({ ...modal, show: false });
   const closeConfirmModal = () => setConfirmModal({ show: false, nombrePlan: '', precio: 0 });
 
-  // Nueva función para mostrar el modal de confirmación
   const handleElegirPlan = (nombrePlan, precio) => {
     setConfirmModal({ show: true, nombrePlan, precio });
   };
 
-  // Esta función solo se llama después de confirmar en el modal
   const confirmarElegirPlan = async () => {
     const { nombrePlan, precio } = confirmModal;
     closeConfirmModal();
     try {
-      // Obtén el usuario desde localStorage (como objeto)
       const usuario = JSON.parse(localStorage.getItem('usuario'));
       const usuarioId = usuario?.id;
       const nombreUsuario = usuario ? `${usuario.nombre} ${usuario.apellido}` : 'Usuario';
@@ -79,15 +76,9 @@ const RegistroPage = () => {
       .then(data => setSecciones(data));
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("usuario");
-    window.location.href = "/"; // Redirige al inicio
-  };
-
   const handleActualizarClick = (e) => {
     e.preventDefault();
-    window.location.href = "/actualizar-datos"; // Redirige a la página de actualización
+    window.location.href = "/actualizar-datos";
   };
 
   return (
@@ -104,16 +95,9 @@ const RegistroPage = () => {
                   <Link to="/actualizar-datos" className="nav-link-custom me-3">
                     Actualizar datos
                   </Link>
-                  <span
-                    className="nav-link-custom"
-                    onClick={handleLogout}
-                  >
-                    Cerrar sesión
-                  </span>
                 </>
               );
             }
-            // Si el usuario está activo, muestra los otros links normales:
             return (
               <>
                 <Link to="/visualizar" className="nav-link-custom me-3">
@@ -122,7 +106,7 @@ const RegistroPage = () => {
                 <Link to="/registro" className="nav-link-custom me-3">
                   Planes de Aportaciones
                 </Link>
-                <Link to="/landing" className="nav-link-custom me-3"> {/* Nuevo enlace al menú */}
+                <Link to="/landing" className="nav-link-custom me-3">
                   Menú
                 </Link>
                 <span
@@ -130,12 +114,6 @@ const RegistroPage = () => {
                   onClick={handleActualizarClick}
                 >
                   Actualizar datos
-                </span>
-                <span
-                  className="nav-link-custom"
-                  onClick={handleLogout}
-                >
-                  Cerrar sesión
                 </span>
               </>
             );
@@ -213,7 +191,6 @@ const RegistroPage = () => {
                         </ul>
                       </div>
                     )}
-                    {/* Botón Elegir Plan */}
                     <button
                       className="btn btn-primary mt-3"
                       onClick={() => handleElegirPlan(item.titulo, item.precio)}

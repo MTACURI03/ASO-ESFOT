@@ -157,12 +157,6 @@ const VisualizarPage = () => {
     doc.save('factura_aportaciones.pdf');
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("usuario");
-    window.location.href = "/"; // Redirige al inicio
-  };
-
   const handleActualizarClick = (e) => {
     e.preventDefault();
     window.location.href = "/actualizar-datos"; // Redirige a la página de actualización
@@ -182,12 +176,6 @@ const VisualizarPage = () => {
                   <Link to="/actualizar-datos" className="nav-link-custom me-3">
                     Actualizar datos
                   </Link>
-                  <span
-                    className="nav-link-custom"
-                    onClick={handleLogout}
-                  >
-                    Cerrar sesión
-                  </span>
                 </>
               );
             }
@@ -208,12 +196,6 @@ const VisualizarPage = () => {
                   onClick={handleActualizarClick}
                 >
                   Actualizar datos
-                </span>
-                <span
-                  className="nav-link-custom"
-                  onClick={handleLogout}
-                >
-                  Cerrar sesión
                 </span>
               </>
             );

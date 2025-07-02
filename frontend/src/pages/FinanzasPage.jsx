@@ -153,17 +153,6 @@ const FinanzasPage = () => {
           <Link to="/admin/solicitudes" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
             Solicitudes de Actualización
           </Link>
-          <span
-            className="nav-link-custom"
-            onClick={() => {
-              localStorage.removeItem("isAuthenticated");
-              localStorage.removeItem("usuario");
-              window.location.href = "/";
-            }}
-            style={{ fontSize: '1.25rem', cursor: 'pointer' }}
-          >
-            Cerrar sesión
-          </span>
         </div>
       </header>
 

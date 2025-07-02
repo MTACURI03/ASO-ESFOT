@@ -54,17 +54,6 @@ const AdminSolicitudesPage = () => {
           <Link to="/adminpage/finanzaspage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
             Finanzas
           </Link>
-          <span
-            className="nav-link-custom"
-            onClick={() => {
-              localStorage.removeItem("isAuthenticated");
-              localStorage.removeItem("usuario");
-              navigate("/");
-            }}
-            style={{ fontSize: '1.25rem', cursor: 'pointer' }}
-          >
-            Cerrar sesión
-          </span>
         </div>
       </header>
 
