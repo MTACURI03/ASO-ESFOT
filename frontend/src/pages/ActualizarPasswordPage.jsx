@@ -130,4 +130,3 @@ const ActualizarPasswordPage = () => {
 };
 
 export default ActualizarPasswordPage;
-

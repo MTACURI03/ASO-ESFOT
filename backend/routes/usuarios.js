@@ -9,8 +9,8 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'mateotacuri67@gmail.com',
-    pass: 'bzrtsqptiholqdgt'
+    user: 'asoesfot@gmail.com',
+    pass: 'erkobvndueuotaot'
   }
 });
 
@@ -94,7 +94,7 @@ router.post('/registrar', async (req, res) => {
 
     const link = `https://aso-esfot-ldw7.vercel.app/verificar/${tokenVerificacion}`;
     await transporter.sendMail({
-      from: 'ASO-ESFOT <mateotacuri67@gmail.com>',
+      from: 'ASO-ESFOT <asoesfot@gmail.com>',
       to: correo,
       subject: 'Verifica tu cuenta',
       html: dragonNotification(
@@ -148,7 +148,7 @@ router.put('/:id/activo', async (req, res) => {
 
     if (usuario && req.body.activo === false) {
       await transporter.sendMail({
-        from: 'ASO-ESFOT <mateotacuri67@gmail.com>',
+        from: 'ASO-ESFOT <asoesfot@gmail.com>',
         to: usuario.correo,
         subject: 'Tu cuenta ha sido inactivada en ASO-ESFOT',
         html: dragonNotification(
@@ -169,7 +169,7 @@ router.put('/:id/activo', async (req, res) => {
 
     if (usuario && req.body.activo === true && usuarioPrevio && usuarioPrevio.activo === false) {
       await transporter.sendMail({
-        from: 'ASO-ESFOT <mateotacuri67@gmail.com>',
+        from: 'ASO-ESFOT <asoesfot@gmail.com>',
         to: usuario.correo,
         subject: '¡Tu cuenta ha sido activada en ASO-ESFOT!',
         html: dragonNotification(
@@ -243,7 +243,7 @@ router.post('/solicitar-actualizacion', async (req, res) => {
 
     // Correo al usuario
     await transporter.sendMail({
-      from: 'ASO-ESFOT <mateotacuri67@gmail.com>',
+      from: 'ASO-ESFOT <asoesfot@gmail.com>',
       to: usuario.correo,
       subject: 'Solicitud de actualización de datos recibida',
       html: `
@@ -254,7 +254,7 @@ router.post('/solicitar-actualizacion', async (req, res) => {
 
     // Correo al admin
     await transporter.sendMail({
-      from: 'ASO-ESFOT <mateotacuri67@gmail.com>',
+      from: 'ASO-ESFOT <asoesfot@gmail.com>',
       to: 'admin@esfot.edu.ec', // Cambia por el correo real del admin
       subject: 'Solicitud de actualización de datos de estudiante',
       html: `
@@ -294,7 +294,7 @@ router.post('/aprobar-actualizacion/:solicitudId', async (req, res) => {
 
     // Notifica al usuario
     await transporter.sendMail({
-      from: 'ASO-ESFOT <mateotacuri67@gmail.com>',
+      from: 'ASO-ESFOT <asoesfot@gmail.com>',
       to: usuario.correo,
       subject: 'Actualización de datos aprobada',
       html: `

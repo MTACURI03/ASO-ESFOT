@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 const LoginPage = () => {
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
-  const [rol, setRol] = useState('estudiante'); // Por defecto, estudiante
   const [mensaje, setMensaje] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -16,7 +15,7 @@ const LoginPage = () => {
       const res = await fetch('https://aso-esfot-backend.onrender.com/api/usuarios/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ correo, password, rol }), // Incluye el rol en la solicitud
+        body: JSON.stringify({ correo, password }),
       });
       const data = await res.json();
       if (res.ok && data.usuario) {
@@ -29,16 +28,16 @@ const LoginPage = () => {
           } else {
             localStorage.setItem('actualizacionRealizada', 'true');
             localStorage.setItem('usuario', JSON.stringify(usuario));
-            navigate('/actualizar-datos'); // Redirige al formulario de actualización de datos
+            navigate('/actualizar-datos');
           }
-        } else if (usuario.rol === 'admin' && rol === 'admin') {
+        } else if (usuario.rol === 'admin') {
           localStorage.setItem('usuario', JSON.stringify(usuario));
           navigate('/adminpage');
-        } else if (usuario.rol === 'estudiante' && rol === 'estudiante') {
+        } else if (usuario.rol === 'estudiante') {
           localStorage.setItem('usuario', JSON.stringify(usuario));
           navigate('/landing');
         } else {
-          setMensaje('El rol seleccionado no coincide con el rol asignado a tu cuenta.');
+          setMensaje('Tu cuenta no tiene un rol válido.');
         }
       } else {
         setMensaje(data.mensaje || 'Error al iniciar sesión.');
@@ -109,19 +108,6 @@ const LoginPage = () => {
                     {showPassword ? "🙈" : "👁️"} {/* Ícono de ojo */}
                   </span>
                 </div>
-              </div>
-              <div className="mb-3">
-                <label htmlFor="rol" className="form-label">Selecciona tu rol</label>
-                <select
-                  id="rol"
-                  className="form-select"
-                  value={rol}
-                  onChange={(e) => setRol(e.target.value)}
-                  required
-                >
-                  <option value="estudiante">Estudiante</option>
-                  <option value="admin">Administrativo</option>
-                </select>
               </div>
               <button type="submit" className="btn w-100" style={{ backgroundColor: '#e94c4c', color: 'white' }}>
                 Ingresar

@@ -9,15 +9,15 @@ const Finanza = require('../models/Finanza');
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'mateotacuri67@gmail.com',
-    pass: 'bzrtsqptiholqdgt'
+    user: 'asoesfot@gmail.com',
+    pass: 'erkobvndueuotaot'
   }
 });
 
 // Función para enviar notificación
 async function enviarNotificacionAportacion({ correo, nombre, nombrePlan, fechaSeleccion, precio, estado }) {
   return transporter.sendMail({
-    from: 'ASO-ESFOT <mateotacuri67@gmail.com>',
+    from: 'ASO-ESFOT <asoesfot@gmail.com>',
     to: correo,
     subject: `Detalles de tu aportación en ASO-ESFOT`,
     html: `
