@@ -12,11 +12,7 @@ const LoginPage = () => {
     e.preventDefault();
     setMensaje('');
     try {
-      // Si el correo es el del admin general, agrega rol: 'admin'
-      const isAdmin = correo.trim().toLowerCase() === 'admin.general@epn.edu.ec'; // Cambia por el correo real del admin
-      const body = isAdmin
-        ? { correo, password, rol: 'admin' }
-        : { correo, password };
+      const body = { correo, password };
 
       const res = await fetch('https://aso-esfot-backend.onrender.com/api/usuarios/login', {
         method: 'POST',

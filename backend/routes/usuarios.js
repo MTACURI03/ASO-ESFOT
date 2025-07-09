@@ -114,13 +114,11 @@ router.post('/registrar', async (req, res) => {
 
 // POST /api/usuarios/login
 router.post('/login', async (req, res) => {
-  const { correo, password, rol } = req.body;
-  let usuario = null;
+  const { correo, password } = req.body;
+  let usuario = await Admin.findOne({ correo: correo.trim() });
 
-  if (rol && rol.trim() === 'admin') {
-    usuario = await Admin.findOne({ correo: correo.trim(), rol: rol.trim() });
-  } else {
-    usuario = await Usuario.findOne({ correo: correo.trim(), rol: rol ? rol.trim() : 'estudiante' });
+  if (!usuario) {
+    usuario = await Usuario.findOne({ correo: correo.trim() });
   }
 
   if (!usuario) return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
