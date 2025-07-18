@@ -121,24 +121,24 @@ const FinanzasPage = () => {
               38, y
             );
             doc.text(
-              (pagos[i].nombrePlan || '').slice(0, 15),
-              80, y
+              (pagos[i].nombrePlan || '').slice(0, 12), // Recorta para evitar cruces
+              70, y // Ajusta posición para más espacio
             );
             doc.text(
               `$${pagos[i].precio}`,
-              100, y
+              95, y
             );
           }
 
-          // Gastos (derecha) - AJUSTA columnas para que no se crucen
+          // Gastos (derecha)
           if (gastos[i]) {
             doc.text(
               gastos[i].fecha || '',
               120, y
             );
             doc.text(
-              (gastos[i].descripcion || '').slice(0, 20),
-              140, y
+              (gastos[i].descripcion || '').slice(0, 15), // Recorta para evitar cruces
+              150, y // Ajusta posición para más espacio
             );
             doc.text(
               `$${gastos[i].monto}`,
