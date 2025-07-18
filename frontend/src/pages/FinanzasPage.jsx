@@ -41,6 +41,11 @@ const FinanzasPage = () => {
     import('jspdf').then(jsPDF => {
       const doc = new jsPDF.jsPDF();
 
+      // Margen rojo alrededor de toda la hoja
+      doc.setDrawColor(233, 76, 76); // Color rojo
+      doc.setLineWidth(1); // Grosor del margen
+      doc.rect(5, 5, 200, 287); // Rectángulo que cubre toda la hoja
+
       // Logo y encabezado
       const img = '/imagenes_asoesfot/logo.png'; // Ruta del logo
       doc.addImage(img, 'PNG', 15, 10, 30, 30);
