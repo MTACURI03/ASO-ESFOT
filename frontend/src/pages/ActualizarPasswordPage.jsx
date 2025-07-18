@@ -8,6 +8,7 @@ const ActualizarPasswordPage = () => {
   const [mensaje, setMensaje] = useState('');
   const [showNuevoPassword, setShowNuevoPassword] = useState(false);
   const [showRepetirPassword, setShowRepetirPassword] = useState(false);
+  const [modal, setModal] = useState({ show: false, title: '', message: '' });
   const navigate = useNavigate();
 
   const handleActualizar = async (e) => {
@@ -25,13 +26,17 @@ const ActualizarPasswordPage = () => {
       });
       const data = await res.json();
       if (res.ok) {
-        setMensaje('Contraseña actualizada correctamente. Revisa tu correo para la notificación. Redirigiendo al login...');
+        setModal({
+          show: true,
+          title: 'Contraseña actualizada',
+          message: 'Tu contraseña se ha actualizado correctamente. Presiona "Aceptar" para ir al login.',
+        });
         setTimeout(() => navigate('/'), 2500);
       } else {
-        setMensaje(data.mensaje || 'Error al actualizar la contraseña.');
+        setModal({ show: true, title: 'Error', message: data.mensaje || 'Error al actualizar la contraseña.' });
       }
     } catch (err) {
-      setMensaje('Error de red.');
+      setModal({ show: true, title: 'Error', message: 'Error de red.' });
     }
   };
 
@@ -128,6 +133,24 @@ const ActualizarPasswordPage = () => {
       <footer className="bg-esfot text-white text-center py-3" style={{ background: '#e94c4c' }}>
         &copy; 2025 ASO-ESFOT. Todos los derechos reservados.
       </footer>
+      {modal.show && (
+        <div className="modal fade show" style={{ display: 'block', background: 'rgba(0,0,0,0.4)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header bg-success text-white">
+                <h5 className="modal-title">{modal.title}</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={() => navigate('/')}></button>
+              </div>
+              <div className="modal-body">
+                <p>{modal.message}</p>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={() => navigate('/')}>Aceptar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

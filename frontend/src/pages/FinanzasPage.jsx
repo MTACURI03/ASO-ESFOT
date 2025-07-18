@@ -41,12 +41,12 @@ const FinanzasPage = () => {
     import('jspdf').then(jsPDF => {
       const doc = new jsPDF.jsPDF();
 
-      // Dibuja margen rojo
-      doc.setDrawColor(233, 76, 76); // Rojo
-      doc.setLineWidth(3);
-      doc.rect(8, 8, 194, 281, 'S'); // Margen para A4
+      // Margen y tabla
+      doc.setDrawColor(0, 0, 0);
+      doc.setLineWidth(0.3);
+      doc.rect(15, 50, 180, 7 + 7 * Math.max(pagos.length, gastos.length) + 14); // Rectángulo de la tabla
 
-      // Logo (usa una URL pública o base64 para máxima compatibilidad)
+      // Logo y encabezado
       const logoUrl = window.location.origin + '/imagenes_asoesfot/logo.png';
       const img = new window.Image();
       img.crossOrigin = '';
@@ -65,11 +65,10 @@ const FinanzasPage = () => {
         doc.text('ASOCIACIÓN DE ESTUDIANTES DE LA ESFOT', 55, 36);
         doc.text('Quito, Ecuador', 55, 41);
 
-        // --- TABLA DIVIDIDA ---
         let y = 55;
         const margenInferior = 270;
 
-        // Encabezados de tabla doble
+        // Encabezados
         doc.setFontSize(13);
         doc.setTextColor(233, 76, 76);
         doc.text('Aportaciones', 20, y);
@@ -80,8 +79,8 @@ const FinanzasPage = () => {
         doc.setTextColor(0, 0, 0);
 
         // Encabezados de columnas
-        doc.text('Fecha', 20, y);
-        doc.text('Nombre', 40, y);
+        doc.text('Fecha', 18, y);
+        doc.text('Nombre', 38, y);
         doc.text('Plan', 80, y);
         doc.text('Monto', 100, y);
 
@@ -89,9 +88,25 @@ const FinanzasPage = () => {
         doc.text('Descripción', 140, y);
         doc.text('Monto', 180, y);
 
-        y += 6;
+        // Líneas verticales (ajustadas)
+        doc.setDrawColor(0, 0, 0);
+        doc.setLineWidth(0.3);
+        doc.line(15, 50, 15, y + 7 * Math.max(pagos.length, gastos.length) + 7);    // Borde izquierdo
+        doc.line(115, 50, 115, y + 7 * Math.max(pagos.length, gastos.length) + 7);  // Centro
+        doc.line(195, 50, 195, y + 7 * Math.max(pagos.length, gastos.length) + 7);  // Borde derecho
 
-        // Determinar el máximo de filas
+        // Líneas verticales internas
+        doc.line(35, y - 6, 35, y + 7 * Math.max(pagos.length, gastos.length) + 7); // Nombre
+        doc.line(75, y - 6, 75, y + 7 * Math.max(pagos.length, gastos.length) + 7); // Plan
+        doc.line(110, y - 6, 110, y + 7 * Math.max(pagos.length, gastos.length) + 7); // Monto izq
+        doc.line(135, y - 6, 135, y + 7 * Math.max(pagos.length, gastos.length) + 7); // Fecha gasto
+        doc.line(175, y - 6, 175, y + 7 * Math.max(pagos.length, gastos.length) + 7); // Descripción gasto
+
+        // Línea horizontal bajo encabezados
+        doc.line(15, y + 2, 195, y + 2);
+
+        y += 8;
+
         const maxFilas = Math.max(pagos.length, gastos.length);
 
         for (let i = 0; i < maxFilas; i++) {
@@ -102,28 +117,28 @@ const FinanzasPage = () => {
               18, y
             );
             doc.text(
-              (pagos[i].usuarioId?.nombre || '').slice(0, 12), // recorta si es muy largo
-              36, y
+              (pagos[i].usuarioId?.nombre || '').slice(0, 12),
+              38, y
             );
             doc.text(
               (pagos[i].nombrePlan || '').slice(0, 15),
-              65, y
+              80, y
             );
             doc.text(
               `$${pagos[i].precio}`,
-              95, y
+              100, y
             );
           }
 
-          // Gastos (derecha)
+          // Gastos (derecha) - AJUSTA columnas para que no se crucen
           if (gastos[i]) {
             doc.text(
               gastos[i].fecha || '',
               120, y
             );
             doc.text(
-              (gastos[i].descripcion || '').slice(0, 18),
-              138, y
+              (gastos[i].descripcion || '').slice(0, 20),
+              140, y
             );
             doc.text(
               `$${gastos[i].monto}`,
@@ -132,25 +147,17 @@ const FinanzasPage = () => {
           }
 
           // Línea horizontal por fila
-          doc.setDrawColor(200, 200, 200);
           doc.line(15, y + 2, 195, y + 2);
 
           y += 7;
           if (y > margenInferior) {
             doc.addPage();
-            doc.setDrawColor(233, 76, 76);
-            doc.setLineWidth(3);
-            doc.rect(8, 8, 194, 281, 'S');
-            doc.addImage(img, 'PNG', 15, 10, 30, 30);
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.3);
+            doc.rect(15, 50, 180, 7 + 7 * Math.max(pagos.length, gastos.length) + 14);
             y = 55;
           }
         }
-
-        // Líneas verticales para dividir columnas
-        doc.setDrawColor(180, 180, 180);
-        doc.line(115, 55, 115, y); // Línea central
-        doc.line(15, 55, 15, y);   // Borde izquierdo
-        doc.line(195, 55, 195, y); // Borde derecho
 
         // --- SALDO TOTAL ---
         y += 5;
