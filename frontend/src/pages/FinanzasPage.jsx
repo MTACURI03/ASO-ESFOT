@@ -110,44 +110,41 @@ const FinanzasPage = () => {
         const maxFilas = Math.max(pagos.length, gastos.length);
 
         for (let i = 0; i < maxFilas; i++) {
-          // Aportaciones (izquierda)
+          // Aportaciones (lado izquierdo del rectángulo)
           if (pagos[i]) {
             doc.text(
               pagos[i].fechaSeleccion ? new Date(pagos[i].fechaSeleccion).toLocaleDateString() : '',
-              18, y
+              20, y
             );
             doc.text(
               (pagos[i].usuarioId?.nombre || '').slice(0, 12),
-              45, y // Ajusta posición para más espacio
+              40, y
             );
             doc.text(
               (pagos[i].nombrePlan || '').slice(0, 12),
-              85, y // Ajusta posición para más espacio
+              60, y
             );
             doc.text(
               `$${pagos[i].precio}`,
-              110, y
+              80, y
             );
           }
 
-          // Gastos (derecha)
+          // Gastos (lado derecho del rectángulo)
           if (gastos[i]) {
             doc.text(
               gastos[i].fecha || '',
-              125, y
+              120, y
             );
             doc.text(
               (gastos[i].descripcion || '').slice(0, 15),
-              155, y // Ajusta posición para más espacio
+              140, y
             );
             doc.text(
               `$${gastos[i].monto}`,
-              185, y
+              160, y
             );
           }
-
-          // Línea horizontal por fila
-          doc.line(15, y + 2, 195, y + 2);
 
           y += 7;
           if (y > margenInferior) {
