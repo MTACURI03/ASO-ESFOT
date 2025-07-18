@@ -41,29 +41,35 @@ const FinanzasPage = () => {
     import('jspdf').then(jsPDF => {
       const doc = new jsPDF.jsPDF();
 
+      // Logo y encabezado
+      const img = '/imagenes_asoesfot/logo.png'; // Ruta del logo
+      doc.addImage(img, 'PNG', 15, 10, 30, 30);
+      doc.setFontSize(18);
+      doc.setTextColor(0, 0, 0);
+      doc.text('Factura de Finanzas ASO-ESFOT', 50, 20);
+      doc.setFontSize(12);
+      doc.text(`Fecha de emisión: ${new Date().toLocaleDateString()}`, 50, 30);
+      doc.text('ASOCIACIÓN DE ESTUDIANTES DE LA ESFOT', 50, 40);
+      doc.text('Quito, Ecuador', 50, 50);
+
       // Dimensiones generales
       const xInicio = 15;
       const anchoTotal = 180;
-      const alturaSeccion = 40; // Altura de cada sección
-      const yInicio = 50;
+      const alturaSeccionGrande = 40; // Altura de las secciones grandes
+      const alturaSeccionPequeña = 10; // Altura de las secciones pequeñas
+      const yInicio = 60;
 
-      // Rectángulo general dividido en cinco secciones
+      // Rectángulo pequeño para el título "Aportaciones"
       doc.setDrawColor(0, 0, 0);
       doc.setLineWidth(0.3);
-      doc.rect(xInicio, yInicio, anchoTotal, alturaSeccion * 5); // Rectángulo general
-
-      // Líneas horizontales para dividir las secciones
-      for (let i = 1; i <= 5; i++) {
-        doc.line(xInicio, yInicio + alturaSeccion * i, xInicio + anchoTotal, yInicio + alturaSeccion * i);
-      }
-
-      // Primera sección: Título "Aportaciones"
+      doc.rect(xInicio, yInicio, 50, alturaSeccionPequeña); // Rectángulo ajustado al texto
       doc.setFontSize(14);
       doc.setTextColor(233, 76, 76);
-      doc.text('Aportaciones', xInicio + 5, yInicio + 10);
+      doc.text('Aportaciones', xInicio + 5, yInicio + 7);
 
-      // Segunda sección: Lista de aportaciones
-      let y = yInicio + alturaSeccion + 10;
+      // Rectángulo grande para la lista de aportaciones
+      doc.rect(xInicio, yInicio + alturaSeccionPequeña, anchoTotal, alturaSeccionGrande);
+      let y = yInicio + alturaSeccionPequeña + 10;
       doc.setFontSize(11);
       doc.setTextColor(0, 0, 0);
       pagos.forEach((pago, index) => {
@@ -75,13 +81,17 @@ const FinanzasPage = () => {
         y += 5;
       });
 
-      // Tercera sección: Título "Gastos"
+      // Rectángulo pequeño para el título "Gastos"
+      const yGastosTitulo = yInicio + alturaSeccionPequeña + alturaSeccionGrande;
+      doc.rect(xInicio, yGastosTitulo, 30, alturaSeccionPequeña); // Rectángulo ajustado al texto
       doc.setFontSize(14);
       doc.setTextColor(233, 76, 76);
-      doc.text('Gastos', xInicio + 5, yInicio + alturaSeccion * 2 + 10);
+      doc.text('Gastos', xInicio + 5, yGastosTitulo + 7);
 
-      // Cuarta sección: Lista de gastos
-      y = yInicio + alturaSeccion * 3 + 10;
+      // Rectángulo grande para la lista de gastos
+      const yGastosLista = yGastosTitulo + alturaSeccionPequeña;
+      doc.rect(xInicio, yGastosLista, anchoTotal, alturaSeccionGrande);
+      y = yGastosLista + 10;
       doc.setFontSize(11);
       doc.setTextColor(0, 0, 0);
       gastos.forEach((gasto, index) => {
@@ -93,10 +103,12 @@ const FinanzasPage = () => {
         y += 5;
       });
 
-      // Quinta sección: Saldo total
+      // Rectángulo pequeño para el saldo total
+      const ySaldoTitulo = yGastosLista + alturaSeccionGrande;
+      doc.rect(xInicio, ySaldoTitulo, 50, alturaSeccionPequeña); // Rectángulo ajustado al texto
       doc.setFontSize(14);
       doc.setTextColor(40, 167, 69);
-      doc.text(`Saldo total: $${saldo}`, xInicio + 5, yInicio + alturaSeccion * 4 + 20);
+      doc.text(`Saldo total: $${saldo}`, xInicio + 5, ySaldoTitulo + 7);
 
       // Pie de página
       doc.setFontSize(10);
