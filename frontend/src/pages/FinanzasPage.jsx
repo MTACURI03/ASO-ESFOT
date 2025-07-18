@@ -118,15 +118,15 @@ const FinanzasPage = () => {
             );
             doc.text(
               (pagos[i].usuarioId?.nombre || '').slice(0, 12),
-              38, y
+              45, y // Ajusta posición para más espacio
             );
             doc.text(
-              (pagos[i].nombrePlan || '').slice(0, 12), // Recorta para evitar cruces
-              70, y // Ajusta posición para más espacio
+              (pagos[i].nombrePlan || '').slice(0, 12),
+              85, y // Ajusta posición para más espacio
             );
             doc.text(
               `$${pagos[i].precio}`,
-              95, y
+              110, y
             );
           }
 
@@ -134,15 +134,15 @@ const FinanzasPage = () => {
           if (gastos[i]) {
             doc.text(
               gastos[i].fecha || '',
-              120, y
+              125, y
             );
             doc.text(
-              (gastos[i].descripcion || '').slice(0, 15), // Recorta para evitar cruces
-              150, y // Ajusta posición para más espacio
+              (gastos[i].descripcion || '').slice(0, 15),
+              155, y // Ajusta posición para más espacio
             );
             doc.text(
               `$${gastos[i].monto}`,
-              180, y
+              185, y
             );
           }
 
