@@ -100,14 +100,14 @@ const RegistroPage = () => {
             }
             return (
               <>
+                <Link to="/landing" className="nav-link-custom me-3">
+                  Inicio
+                </Link>
                 <Link to="/visualizar" className="nav-link-custom me-3">
                   Mis Aportaciones
                 </Link>
                 <Link to="/registro" className="nav-link-custom me-3">
                   Planes de Aportaciones
-                </Link>
-                <Link to="/landing" className="nav-link-custom me-3">
-                  Menú
                 </Link>
                 <span
                   className="nav-link-custom me-3"

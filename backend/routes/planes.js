@@ -99,34 +99,22 @@ router.get('/aportaciones', async (req, res) => {
 });
 
 router.put('/aportaciones/:id/estado', async (req, res) => {
+  const { id } = req.params;
   const { estado } = req.body;
   try {
-    // Busca la aportación antes de actualizar para saber su estado anterior
-    const aportacionPrev = await PlanAportacion.findById(req.params.id);
-
-    const aportacion = await PlanAportacion.findByIdAndUpdate(
-      req.params.id,
-      { estado },
-      { new: true }
-    ).populate('usuarioId');
-
-    if (!aportacion) return res.status(404).json({ mensaje: 'Aportación no encontrada' });
-
-    // Sumar al saldo solo si pasa de pendiente a pagado
-    if (
-      aportacionPrev &&
-      aportacionPrev.estado !== 'Pagado' &&
-      estado === 'Pagado'
-    ) {
-      let finanza = await Finanza.findOne();
-      if (!finanza) finanza = await Finanza.create({ saldo: 0 });
-      finanza.saldo += aportacion.precio;
-      await finanza.save();
+    const aportacion = await PlanAportacion.findById(id).populate('usuarioId');
+    if (!aportacion) {
+      return res.status(404).json({ mensaje: 'Aportación no encontrada.' });
     }
-
-    res.json({ mensaje: 'Estado actualizado', aportacion });
+    // Solo validar si se quiere cambiar a Pagado
+    if (estado === 'Pagado' && aportacion.usuarioId && aportacion.usuarioId.activo === false) {
+      return res.status(400).json({ mensaje: 'El usuario está inactivo y no puede cambiar a Pagado.' });
+    }
+    aportacion.estado = estado;
+    await aportacion.save();
+    res.json({ mensaje: 'Estado actualizado correctamente.' });
   } catch (error) {
-    res.status(500).json({ mensaje: 'Error al actualizar estado', error: error.message });
+    res.status(500).json({ mensaje: 'Error al actualizar el estado.' });
   }
 });
 

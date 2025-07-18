@@ -99,19 +99,19 @@ const FinanzasPage = () => {
           if (pagos[i]) {
             doc.text(
               pagos[i].fechaSeleccion ? new Date(pagos[i].fechaSeleccion).toLocaleDateString() : '',
-              20, y
+              18, y
             );
             doc.text(
-              `${pagos[i].usuarioId?.nombre || ''} ${pagos[i].usuarioId?.apellido || ''}`,
-              40, y
+              (pagos[i].usuarioId?.nombre || '').slice(0, 12), // recorta si es muy largo
+              36, y
             );
             doc.text(
-              pagos[i].nombrePlan || '',
-              80, y
+              (pagos[i].nombrePlan || '').slice(0, 15),
+              65, y
             );
             doc.text(
               `$${pagos[i].precio}`,
-              100, y
+              95, y
             );
           }
 
@@ -122,14 +122,18 @@ const FinanzasPage = () => {
               120, y
             );
             doc.text(
-              gastos[i].descripcion || '',
-              140, y
+              (gastos[i].descripcion || '').slice(0, 18),
+              138, y
             );
             doc.text(
               `$${gastos[i].monto}`,
               180, y
             );
           }
+
+          // Línea horizontal por fila
+          doc.setDrawColor(200, 200, 200);
+          doc.line(15, y + 2, 195, y + 2);
 
           y += 7;
           if (y > margenInferior) {
@@ -141,6 +145,12 @@ const FinanzasPage = () => {
             y = 55;
           }
         }
+
+        // Líneas verticales para dividir columnas
+        doc.setDrawColor(180, 180, 180);
+        doc.line(115, 55, 115, y); // Línea central
+        doc.line(15, 55, 15, y);   // Borde izquierdo
+        doc.line(195, 55, 195, y); // Borde derecho
 
         // --- SALDO TOTAL ---
         y += 5;

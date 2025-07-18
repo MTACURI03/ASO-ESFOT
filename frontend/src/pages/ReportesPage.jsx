@@ -96,13 +96,20 @@ const ReportesPage = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ estado: nuevoEstado }),
     })
-      .then(res => res.json())
-      .then(() => {
-        setAportaciones(aportaciones =>
-          aportaciones.map(ap =>
-            ap._id === id ? { ...ap, estado: nuevoEstado } : ap
-          )
-        );
+      .then(res => res.json().then(data => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok && data.mensaje && data.mensaje.includes('inactivo')) {
+          setModal({ show: false, id: null, estadoActual: '', loading: false });
+          setModalInactivo({ show: true, nombre: '' }); // Puedes pasar el nombre si lo tienes
+          return;
+        }
+        if (ok) {
+          setAportaciones(aportaciones =>
+            aportaciones.map(ap =>
+              ap._id === id ? { ...ap, estado: nuevoEstado } : ap
+            )
+          );
+        }
         setModal({ show: false, id: null, estadoActual: '', loading: false });
       });
   };

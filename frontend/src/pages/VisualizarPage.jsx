@@ -182,14 +182,14 @@ const VisualizarPage = () => {
             // Si el usuario está activo, muestra los otros links normales:
             return (
               <>
+                <Link to="/landing" className="nav-link-custom me-3">
+                  Inicio
+                </Link>
                 <Link to="/visualizar" className="nav-link-custom me-3">
                   Mis Aportaciones
                 </Link>
                 <Link to="/registro" className="nav-link-custom me-3">
                   Planes de Aportaciones
-                </Link>
-                <Link to="/landing" className="nav-link-custom me-3"> {/* Nuevo enlace al menú */}
-                  Menú
                 </Link>
                 <span
                   className="nav-link-custom me-3"

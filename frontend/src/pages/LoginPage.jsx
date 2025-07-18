@@ -28,9 +28,12 @@ const LoginPage = () => {
           if (yaAccedio === 'true') {
             setMensaje('Solicitud enviada. Espera la activación de tu cuenta.');
           } else {
-            localStorage.setItem('actualizacionRealizada', 'true');
-            localStorage.setItem('usuario', JSON.stringify(usuario));
-            navigate('/actualizar-datos');
+            // Mostrar alert antes de redirigir
+            if (window.confirm('Cuenta inactiva. Serás dirigido a la actualización de datos. Presiona "Aceptar" para continuar.')) {
+              localStorage.setItem('actualizacionRealizada', 'true');
+              localStorage.setItem('usuario', JSON.stringify(usuario));
+              navigate('/actualizar-datos');
+            }
           }
         } else if (usuario.rol === 'admin') {
           localStorage.setItem('usuario', JSON.stringify(usuario));
