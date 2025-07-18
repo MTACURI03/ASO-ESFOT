@@ -146,9 +146,6 @@ const FinanzasPage = () => {
             );
           }
 
-          // Línea horizontal por fila
-          doc.line(15, y + 2, 195, y + 2);
-
           y += 7;
           if (y > margenInferior) {
             doc.addPage();
