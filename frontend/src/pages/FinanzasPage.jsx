@@ -41,146 +41,69 @@ const FinanzasPage = () => {
     import('jspdf').then(jsPDF => {
       const doc = new jsPDF.jsPDF();
 
-      // Margen y tabla
+      // Dimensiones generales
+      const xInicio = 15;
+      const anchoTotal = 180;
+      const alturaSeccion = 40; // Altura de cada sección
+      const yInicio = 50;
+
+      // Rectángulo general dividido en cinco secciones
       doc.setDrawColor(0, 0, 0);
       doc.setLineWidth(0.3);
-      doc.rect(15, 50, 180, 7 + 7 * Math.max(pagos.length, gastos.length) + 14); // Rectángulo de la tabla
+      doc.rect(xInicio, yInicio, anchoTotal, alturaSeccion * 5); // Rectángulo general
 
-      // Logo y encabezado
-      const logoUrl = window.location.origin + '/imagenes_asoesfot/logo.png';
-      const img = new window.Image();
-      img.crossOrigin = '';
-      img.src = logoUrl;
-      img.onload = () => {
-        doc.addImage(img, 'PNG', 15, 10, 30, 30);
+      // Líneas horizontales para dividir las secciones
+      for (let i = 1; i <= 5; i++) {
+        doc.line(xInicio, yInicio + alturaSeccion * i, xInicio + anchoTotal, yInicio + alturaSeccion * i);
+      }
 
-        // Encabezado de factura
-        doc.setFontSize(18);
-        doc.text('Factura de Finanzas ASO-ESFOT', 55, 22);
-        doc.setFontSize(12);
-        doc.text(`Fecha de emisión: ${new Date().toLocaleDateString()}`, 55, 30);
+      // Primera sección: Título "Aportaciones"
+      doc.setFontSize(14);
+      doc.setTextColor(233, 76, 76);
+      doc.text('Aportaciones', xInicio + 5, yInicio + 10);
 
-        // Datos de la "empresa"
-        doc.setFontSize(10);
-        doc.text('ASOCIACIÓN DE ESTUDIANTES DE LA ESFOT', 55, 36);
-        doc.text('Quito, Ecuador', 55, 41);
-
-        let y = 55;
-        const margenInferior = 270;
-
-        // Encabezados
-        doc.setFontSize(13);
-        doc.setTextColor(233, 76, 76);
-        doc.text('Aportaciones', 20, y);
-        doc.text('Gastos', 120, y);
-
-        y += 7;
-        doc.setFontSize(11);
-        doc.setTextColor(0, 0, 0);
-
-        // Encabezados de columnas
-        doc.text('Fecha', 18, y);
-        doc.text('Nombre', 38, y);
-        doc.text('Plan', 80, y);
-        doc.text('Monto', 100, y);
-
-        doc.text('Fecha', 120, y);
-        doc.text('Descripción', 140, y);
-        doc.text('Monto', 180, y);
-
-        // Líneas verticales (ajustadas)
-        doc.setDrawColor(0, 0, 0);
-        doc.setLineWidth(0.3);
-        doc.line(15, 50, 15, y + 7 * Math.max(pagos.length, gastos.length) + 7);    // Borde izquierdo
-        doc.line(115, 50, 115, y + 7 * Math.max(pagos.length, gastos.length) + 7);  // Centro
-        doc.line(195, 50, 195, y + 7 * Math.max(pagos.length, gastos.length) + 7);  // Borde derecho
-
-        // Líneas verticales internas
-        doc.line(35, y - 6, 35, y + 7 * Math.max(pagos.length, gastos.length) + 7); // Nombre
-        doc.line(75, y - 6, 75, y + 7 * Math.max(pagos.length, gastos.length) + 7); // Plan
-        doc.line(110, y - 6, 110, y + 7 * Math.max(pagos.length, gastos.length) + 7); // Monto izq
-        doc.line(135, y - 6, 135, y + 7 * Math.max(pagos.length, gastos.length) + 7); // Fecha gasto
-        doc.line(175, y - 6, 175, y + 7 * Math.max(pagos.length, gastos.length) + 7); // Descripción gasto
-
-        // Línea horizontal bajo encabezados
-        doc.line(15, y + 2, 195, y + 2);
-
-        y += 8;
-
-        const maxFilas = Math.max(pagos.length, gastos.length);
-
-        for (let i = 0; i < maxFilas; i++) {
-          // Aportaciones (lado izquierdo del rectángulo)
-          if (pagos[i]) {
-            doc.text(
-              pagos[i].fechaSeleccion ? new Date(pagos[i].fechaSeleccion).toLocaleDateString() : '',
-              20, y
-            );
-            doc.text(
-              (pagos[i].usuarioId?.nombre || '').slice(0, 12),
-              40, y
-            );
-            doc.text(
-              (pagos[i].nombrePlan || '').slice(0, 12),
-              60, y
-            );
-            doc.text(
-              `$${pagos[i].precio}`,
-              80, y
-            );
-          }
-
-          // Gastos (lado derecho del rectángulo)
-          if (gastos[i]) {
-            doc.text(
-              gastos[i].fecha || '',
-              120, y
-            );
-            doc.text(
-              (gastos[i].descripcion || '').slice(0, 15),
-              140, y
-            );
-            doc.text(
-              `$${gastos[i].monto}`,
-              160, y
-            );
-          }
-
-          y += 7;
-          if (y > margenInferior) {
-            doc.addPage();
-            doc.setDrawColor(0, 0, 0);
-            doc.setLineWidth(0.3);
-            doc.rect(15, 50, 180, 7 + 7 * Math.max(pagos.length, gastos.length) + 14); // Rectángulo general
-            doc.line(115, 50, 115, y); // Línea vertical que separa aportaciones de gastos
-            y = 55;
-          }
-        }
-
-        // Línea vertical que separa aportaciones de gastos
-        doc.setDrawColor(0, 0, 0);
-        doc.setLineWidth(0.3);
-        doc.line(115, 50, 115, y); // Línea vertical central
-
-        // --- SALDO TOTAL ---
+      // Segunda sección: Lista de aportaciones
+      let y = yInicio + alturaSeccion + 10;
+      doc.setFontSize(11);
+      doc.setTextColor(0, 0, 0);
+      pagos.forEach((pago, index) => {
+        doc.text(
+          `${index + 1}. ${pago.fechaSeleccion ? new Date(pago.fechaSeleccion).toLocaleDateString() : ''} - ${pago.usuarioId?.nombre || ''} - ${pago.nombrePlan} - $${pago.precio}`,
+          xInicio + 5,
+          y
+        );
         y += 5;
-        doc.setFontSize(12);
-        doc.setTextColor(40, 167, 69);
+      });
 
-        // Dibuja un rectángulo pequeño alrededor del saldo total
-        doc.setDrawColor(0, 0, 0);
-        doc.setLineWidth(0.3);
-        doc.rect(115, y - 5, 70, 10); // Rectángulo alrededor del saldo
+      // Tercera sección: Título "Gastos"
+      doc.setFontSize(14);
+      doc.setTextColor(233, 76, 76);
+      doc.text('Gastos', xInicio + 5, yInicio + alturaSeccion * 2 + 10);
 
-        doc.text(`Saldo total: $${saldo}`, 120, y + 2);
+      // Cuarta sección: Lista de gastos
+      y = yInicio + alturaSeccion * 3 + 10;
+      doc.setFontSize(11);
+      doc.setTextColor(0, 0, 0);
+      gastos.forEach((gasto, index) => {
+        doc.text(
+          `${index + 1}. ${gasto.fecha || ''} - ${gasto.descripcion} - $${gasto.monto}`,
+          xInicio + 5,
+          y
+        );
+        y += 5;
+      });
 
-        // Pie de página
-        doc.setFontSize(10);
-        doc.setTextColor(150, 150, 150);
-        doc.text('ASO-ESFOT © 2025 | Este documento es solo informativo.', 20, 285);
+      // Quinta sección: Saldo total
+      doc.setFontSize(14);
+      doc.setTextColor(40, 167, 69);
+      doc.text(`Saldo total: $${saldo}`, xInicio + 5, yInicio + alturaSeccion * 4 + 20);
 
-        doc.save('factura_finanzas.pdf');
-      };
+      // Pie de página
+      doc.setFontSize(10);
+      doc.setTextColor(150, 150, 150);
+      doc.text('ASO-ESFOT © 2025 | Este documento es solo informativo.', 20, 285);
+
+      doc.save('factura_finanzas.pdf');
     });
   };
 
