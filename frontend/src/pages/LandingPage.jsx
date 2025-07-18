@@ -55,14 +55,14 @@ const LandingPage = () => {
               return (
                 <>
                   <Link to="/actualizar-datos" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-                    Actualizar datos
+                    Actualizar Datos
                   </Link>
                   <span
                     className="nav-link-custom"
                     onClick={handleLogout}
                     style={{ fontSize: '1.25rem' }}
                   >
-                    Cerrar sesión
+                    Cerrar Sesión
                   </span>
                 </>
               );
@@ -81,14 +81,14 @@ const LandingPage = () => {
                   onClick={handleActualizarClick}
                   style={{ fontSize: '1.25rem' }}
                 >
-                  Actualizar datos
+                  Actualizar Datos
                 </span>
                 <span
                   className="nav-link-custom"
                   onClick={handleLogout}
                   style={{ fontSize: '1.25rem' }}
                 >
-                  Cerrar sesión
+                  Cerrar Sesión
                 </span>
               </>
             );

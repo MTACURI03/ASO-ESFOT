@@ -109,6 +109,11 @@ const CrearPasswordPage = () => {
       });
       const data = await response.json();
       if (!response.ok) {
+        // Validar si el mensaje es de usuario ya registrado
+        if (data.mensaje && data.mensaje.toLowerCase().includes('ya existe')) {
+          alert("Ya existe una cuenta registrada con ese correo.");
+          return;
+        }
         setModal({
           show: true,
           title: 'Error',

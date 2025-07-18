@@ -140,8 +140,8 @@ const ActualizarPage = () => {
           <div style={{
             background: 'white', padding: 32, borderRadius: 12, minWidth: 300, textAlign: 'center', boxShadow: '0 2px 16px #0002'
           }}>
-            <h4 style={{ color: '#e94c4c' }}>¡Datos actualizados correctamente!</h4>
-            <p>Serás redirigido al inicio de sesión.</p>
+            <h4 style={{ color: '#e94c4c' }}>¡Solicitud de actualizacion de datos enviada correctamente!</h4>
+            <p>Serás redirigido al inicio de sesión, Espera la notificacion de activacion</p>
           </div>
         </div>
       )}

@@ -36,7 +36,7 @@ const FinanzasPage = () => {
       });
   };
 
-  // Generar reporte PDF tipo factura con logo y detalles
+  // Generar reporte PDF tipo factura con tabla doble (aportaciones y gastos)
   const generarReportePDF = () => {
     import('jspdf').then(jsPDF => {
       const doc = new jsPDF.jsPDF();
@@ -65,59 +65,88 @@ const FinanzasPage = () => {
         doc.text('ASOCIACIÓN DE ESTUDIANTES DE LA ESFOT', 55, 36);
         doc.text('Quito, Ecuador', 55, 41);
 
+        // --- TABLA DIVIDIDA ---
         let y = 55;
         const margenInferior = 270;
 
-        // Detalle de Pagos
+        // Encabezados de tabla doble
         doc.setFontSize(13);
         doc.setTextColor(233, 76, 76);
-        doc.text('Detalle de Pagos:', 20, y);
+        doc.text('Aportaciones', 20, y);
+        doc.text('Gastos', 120, y);
+
+        y += 7;
+        doc.setFontSize(11);
         doc.setTextColor(0, 0, 0);
-        y += 8;
-        pagos.forEach((p, i) => {
-          doc.setFontSize(11);
-          doc.text(
-            `${i + 1}. ${new Date(p.fechaSeleccion).toLocaleDateString()} - ${p.usuarioId?.nombre || ''} ${p.usuarioId?.apellido || ''} - ${p.nombrePlan}: $${p.precio}`,
-            25,
-            y
-          );
+
+        // Encabezados de columnas
+        doc.text('Fecha', 20, y);
+        doc.text('Nombre', 40, y);
+        doc.text('Plan', 80, y);
+        doc.text('Monto', 100, y);
+
+        doc.text('Fecha', 120, y);
+        doc.text('Descripción', 140, y);
+        doc.text('Monto', 180, y);
+
+        y += 6;
+
+        // Determinar el máximo de filas
+        const maxFilas = Math.max(pagos.length, gastos.length);
+
+        for (let i = 0; i < maxFilas; i++) {
+          // Aportaciones (izquierda)
+          if (pagos[i]) {
+            doc.text(
+              pagos[i].fechaSeleccion ? new Date(pagos[i].fechaSeleccion).toLocaleDateString() : '',
+              20, y
+            );
+            doc.text(
+              `${pagos[i].usuarioId?.nombre || ''} ${pagos[i].usuarioId?.apellido || ''}`,
+              40, y
+            );
+            doc.text(
+              pagos[i].nombrePlan || '',
+              80, y
+            );
+            doc.text(
+              `$${pagos[i].precio}`,
+              100, y
+            );
+          }
+
+          // Gastos (derecha)
+          if (gastos[i]) {
+            doc.text(
+              gastos[i].fecha || '',
+              120, y
+            );
+            doc.text(
+              gastos[i].descripcion || '',
+              140, y
+            );
+            doc.text(
+              `$${gastos[i].monto}`,
+              180, y
+            );
+          }
+
           y += 7;
           if (y > margenInferior) {
             doc.addPage();
-            // Redibuja margen y logo en nueva página
             doc.setDrawColor(233, 76, 76);
             doc.setLineWidth(3);
             doc.rect(8, 8, 194, 281, 'S');
             doc.addImage(img, 'PNG', 15, 10, 30, 30);
             y = 55;
           }
-        });
+        }
 
-        y += 8;
-        doc.setFontSize(13);
-        doc.setTextColor(233, 76, 76);
-        doc.text('Detalle de Gastos:', 20, y);
-        doc.setTextColor(0, 0, 0);
-        y += 8;
-        gastos.forEach((g, i) => {
-          doc.setFontSize(11);
-          doc.text(`${i + 1}. ${g.fecha || ''} - ${g.descripcion}: $${g.monto}`, 25, y);
-          y += 7;
-          if (y > margenInferior) {
-            doc.addPage();
-            // Redibuja margen y logo en nueva página
-            doc.setDrawColor(233, 76, 76);
-            doc.setLineWidth(3);
-            doc.rect(8, 8, 194, 281, 'S');
-            doc.addImage(img, 'PNG', 15, 10, 30, 30);
-            y = 55;
-          }
-        });
-
-        y += 10;
-        doc.setFontSize(13);
+        // --- SALDO TOTAL ---
+        y += 5;
+        doc.setFontSize(12);
         doc.setTextColor(40, 167, 69);
-        doc.text(`Saldo actual: $${saldo}`, 20, y);
+        doc.text(`Saldo total: $${saldo}`, 120, y);
 
         // Pie de página
         doc.setFontSize(10);
@@ -136,16 +165,16 @@ const FinanzasPage = () => {
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
         <div>
           <Link to="/adminpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Menú
+            Inicio
           </Link>
           <Link to="/adminpage/crudpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Gestionar Planes
+            Planes
           </Link>
           <Link to="/adminpage/usuariospage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Gestión de Usuarios
+            Usuarios
           </Link>
           <Link to="/adminpage/reportespage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Gestionar Aportantes
+            Aportantes
           </Link>
           <Link to="/adminpage/finanzaspage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
             Finanzas

@@ -5,6 +5,7 @@ const ReportesPage = () => {
   const [busqueda, setBusqueda] = useState('');
   const [aportaciones, setAportaciones] = useState([]);
   const [modal, setModal] = useState({ show: false, id: null, estadoActual: '', loading: false });
+  const [modalInactivo, setModalInactivo] = useState({ show: false, nombre: '' });
 
   useEffect(() => {
     fetch('https://aso-esfot-backend.onrender.com/api/planes/aportaciones')
@@ -76,7 +77,12 @@ const ReportesPage = () => {
     doc.save('factura_aportaciones.pdf');
   };
 
-  const mostrarModal = (id, estadoActual) => {
+  const mostrarModal = (id, estadoActual, usuarioActivo, nombreUsuario) => {
+    // Solo bloquear si está inactivo y aún no ha pagado
+    if (usuarioActivo === false && estadoActual !== 'Pagado') {
+      setModalInactivo({ show: true, nombre: nombreUsuario });
+      return;
+    }
     setModal({ show: true, id, estadoActual, loading: false });
   };
 
@@ -102,9 +108,27 @@ const ReportesPage = () => {
   };
 
   const cerrarModal = () => setModal({ show: false, id: null, estadoActual: '', loading: false });
+  const cerrarModalInactivo = () => setModalInactivo({ show: false, nombre: '' });
 
   return (
     <div className="d-flex flex-column min-vh-100">
+      {/* Modal de usuario inactivo */}
+      {modalInactivo.show && (
+        <div className="modal fade show" style={{ display: 'block', background: 'rgba(0,0,0,0.4)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header bg-danger text-white">
+                <h5 className="modal-title">Usuario inactivo</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={cerrarModalInactivo}></button>
+              </div>
+              <div className="modal-body">
+                El usuario <b>{modalInactivo.nombre}</b> está inactivo y no puede realizar esta gestión.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modal de confirmación */}
       {modal.show && (
         <div className="modal fade show" style={{ display: 'block', background: 'rgba(0,0,0,0.4)' }}>
@@ -133,16 +157,16 @@ const ReportesPage = () => {
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
         <div>
           <Link to="/adminpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Menú
+            Inicio
           </Link>
           <Link to="/adminpage/crudpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Gestionar Planes
+            Planes
           </Link>
           <Link to="/adminpage/usuariospage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Gestión de Usuarios
+            Usuarios
           </Link>
           <Link to="/adminpage/reportespage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Gestionar Aportantes
+            Aportantes
           </Link>
           <Link to="/adminpage/finanzaspage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
             Finanzas
@@ -204,7 +228,14 @@ const ReportesPage = () => {
                     <td>
                       <button
                         className="btn btn-sm btn-outline-secondary"
-                        onClick={() => mostrarModal(ap._id, ap.estado)}
+                        onClick={() =>
+                          mostrarModal(
+                            ap._id,
+                            ap.estado,
+                            ap.usuarioId?.activo,
+                            `${ap.usuarioId?.nombre || ''} ${ap.usuarioId?.apellido || ''}`
+                          )
+                        }
                         disabled={ap.estado === 'Pagado'}
                       >
                         Cambiar estado

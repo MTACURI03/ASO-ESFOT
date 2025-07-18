@@ -99,9 +99,13 @@ router.post('/registrar', async (req, res) => {
       subject: 'Verifica tu cuenta',
       html: dragonNotification(
         'Verifica tu cuenta',
-        `¡Hola! Para activar tu cuenta y disfrutar de todos los beneficios, haz clic en el siguiente botón:<br>
+        `¡Hola <b>${nombre} ${apellido}</b>!<br>
+        Te damos la bienvenida al sistema de ASO-ESFOT.<br><br>
+        Para acceder a todos los beneficios y disfrutar de ellos, <b>debes verificar tu cuenta</b>.<br>
+        No esperes más, haz clic en el siguiente botón para completar tu registro:<br>
         <a href="${link}" style="display: inline-block; padding: 14px 32px; background-color: #2986f5; color: #fff; text-decoration: none; border-radius: 8px; font-size: 1.1em; font-weight: bold; margin: 24px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: background 0.2s;">Verificar mi cuenta 🐉</a><br>
-        Si el botón no funciona, copia y pega este enlace en tu navegador:<br><span style="color: #4da3ff;">${link}</span>`,
+        Si el botón no funciona, copia y pega este enlace en tu navegador:<br>
+        <span style="color: #4da3ff;">${link}</span>`,
         { background: '#232323', text: '#ff5e5e' }
       )
     });
@@ -189,7 +193,7 @@ router.put('/:id/activo', async (req, res) => {
 });
 
 router.put('/actualizar-password', async (req, res) => {
-  const { correo, passwordActual, nuevoPassword } = req.body;
+  const { correo, nuevoPassword } = req.body;
   try {
     // Buscar usuario por correo
     const usuario = await Usuario.findOne({ correo });
@@ -197,13 +201,8 @@ router.put('/actualizar-password', async (req, res) => {
       return res.status(404).json({ mensaje: 'El correo no está registrado.' });
     }
 
-    // Validar contraseña actual
-    if (usuario.password !== passwordActual) {
-      return res.status(400).json({ mensaje: 'La contraseña actual es incorrecta.' });
-    }
-
-    // Validar que la nueva contraseña sea diferente
-    if (nuevoPassword === passwordActual) {
+    // Validar que la nueva contraseña sea diferente a la anterior
+    if (usuario.password === nuevoPassword) {
       return res.status(400).json({ mensaje: 'La nueva contraseña debe ser diferente a la anterior.' });
     }
 
@@ -217,7 +216,21 @@ router.put('/actualizar-password', async (req, res) => {
     usuario.password = nuevoPassword;
     await usuario.save();
 
-    res.json({ mensaje: 'Contraseña actualizada correctamente.' });
+    // Notificación por correo
+    await transporter.sendMail({
+      from: 'ASO-ESFOT <asoesfot@gmail.com>',
+      to: correo,
+      subject: 'Contraseña actualizada',
+      html: dragonNotification(
+        'Contraseña actualizada',
+        `Hola <b>${usuario.nombre} ${usuario.apellido}</b>,<br>
+        Tu contraseña ha sido actualizada correctamente en ASO-ESFOT.<br>
+        Si no realizaste este cambio, por favor contacta al soporte de inmediato.`,
+        { background: '#232323', text: '#e94c4c' }
+      )
+    });
+
+    res.json({ mensaje: 'Contraseña actualizada correctamente. Se ha enviado una notificación a tu correo.' });
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al actualizar la contraseña.' });
   }

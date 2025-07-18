@@ -3,26 +3,30 @@ import { useNavigate, Link } from 'react-router-dom';
 
 const ActualizarPasswordPage = () => {
   const [correo, setCorreo] = useState('');
-  const [passwordActual, setPasswordActual] = useState('');
   const [nuevoPassword, setNuevoPassword] = useState('');
+  const [repetirPassword, setRepetirPassword] = useState('');
   const [mensaje, setMensaje] = useState('');
-  const [showPasswordActual, setShowPasswordActual] = useState(false);
   const [showNuevoPassword, setShowNuevoPassword] = useState(false);
+  const [showRepetirPassword, setShowRepetirPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleActualizar = async (e) => {
     e.preventDefault();
     setMensaje('');
+    if (nuevoPassword !== repetirPassword) {
+      setMensaje('Las contraseñas no coinciden.');
+      return;
+    }
     try {
       const res = await fetch('https://aso-esfot-backend.onrender.com/api/usuarios/actualizar-password', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ correo, passwordActual, nuevoPassword }),
+        body: JSON.stringify({ correo, nuevoPassword }),
       });
       const data = await res.json();
       if (res.ok) {
-        setMensaje('Contraseña actualizada correctamente. Redirigiendo al login...');
-        setTimeout(() => navigate('/'), 1800);
+        setMensaje('Contraseña actualizada correctamente. Revisa tu correo para la notificación. Redirigiendo al login...');
+        setTimeout(() => navigate('/'), 2500);
       } else {
         setMensaje(data.mensaje || 'Error al actualizar la contraseña.');
       }
@@ -31,7 +35,6 @@ const ActualizarPasswordPage = () => {
     }
   };
 
-  const labelStyle = { color: '#e94c4c', fontWeight: 'bold' };
   const inputStyle = { color: '#222', fontWeight: 'bold' };
 
   // SVG ojo simple
@@ -66,33 +69,13 @@ const ActualizarPasswordPage = () => {
         <Link to="/" className="btn btn-esfot me-2">Volver</Link>
       </header>
       <main className="flex-grow-1 d-flex align-items-center justify-content-center">
-        <div className="card shadow" style={{ maxWidth: 420, width: '100%', borderTop: '5px solidrgb(2, 2, 2)' }}>
+        <div className="card shadow" style={{ maxWidth: 420, width: '100%', borderTop: '5px solid rgb(2, 2, 2)' }}>
           <div className="card-body">
             <h2 className="text-center mb-4">Actualizar Contraseña</h2>
             <form onSubmit={handleActualizar}>
               <div className="mb-3">
                 <label className="text-center mb-4">Correo institucional</label>
                 <input type="email" className="form-control" style={inputStyle} value={correo} onChange={e => setCorreo(e.target.value)} required />
-              </div>
-              <div className="mb-3">
-                <label className="text-center mb-4">Contraseña actual</label>
-                <div className="input-group">
-                  <input
-                    type={showPasswordActual ? "text" : "password"}
-                    className="form-control"
-                    style={inputStyle}
-                    value={passwordActual}
-                    onChange={e => setPasswordActual(e.target.value)}
-                    required
-                  />
-                  <span
-                    className="input-group-text"
-                    style={{ background: 'transparent', border: 'none', paddingLeft: 6, cursor: 'pointer' }}
-                    onClick={() => setShowPasswordActual(v => !v)}
-                  >
-                    <EyeIcon open={showPasswordActual} />
-                  </span>
-                </div>
               </div>
               <div className="mb-3">
                 <label className="text-center mb-4">Nueva contraseña</label>
@@ -111,6 +94,26 @@ const ActualizarPasswordPage = () => {
                     onClick={() => setShowNuevoPassword(v => !v)}
                   >
                     <EyeIcon open={showNuevoPassword} />
+                  </span>
+                </div>
+              </div>
+              <div className="mb-3">
+                <label className="text-center mb-4">Repetir nueva contraseña</label>
+                <div className="input-group">
+                  <input
+                    type={showRepetirPassword ? "text" : "password"}
+                    className="form-control"
+                    style={inputStyle}
+                    value={repetirPassword}
+                    onChange={e => setRepetirPassword(e.target.value)}
+                    required
+                  />
+                  <span
+                    className="input-group-text"
+                    style={{ background: 'transparent', border: 'none', paddingLeft: 6, cursor: 'pointer' }}
+                    onClick={() => setShowRepetirPassword(v => !v)}
+                  >
+                    <EyeIcon open={showRepetirPassword} />
                   </span>
                 </div>
               </div>

@@ -11,6 +11,9 @@ const CrudPlanesPage = () => {
   });
   const [editId, setEditId] = useState(null);
 
+  // Referencia al formulario
+  const formRef = React.useRef(null);
+
   useEffect(() => {
     fetch('https://aso-esfot-backend.onrender.com/api/planescrud')
       .then(res => res.json())
@@ -61,6 +64,10 @@ const CrudPlanesPage = () => {
       precio: plan.precio
     });
     setEditId(plan._id);
+    // Scroll al formulario al editar
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const handleDelete = async (id) => {
@@ -77,16 +84,16 @@ const CrudPlanesPage = () => {
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
         <div>
           <Link to="/adminpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Menú
+            Inicio
           </Link>
           <Link to="/adminpage/crudpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Gestionar Planes
+            Planes
           </Link>
           <Link to="/adminpage/usuariospage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Gestión de Usuarios
+            Usuarios
           </Link>
           <Link to="/adminpage/reportespage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Gestionar Aportantes
+            Aportantes
           </Link>
           <Link to="/adminpage/finanzaspage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
             Finanzas
@@ -101,7 +108,7 @@ const CrudPlanesPage = () => {
       <main className="flex-grow-1 container py-5">
         <h2 className="text-center mb-4">Gestión de Planes de Aportaciones</h2>
 
-        <form onSubmit={handleSubmit} className="card p-4 mb-5 shadow-sm">
+        <form ref={formRef} onSubmit={handleSubmit} className="card p-4 mb-5 shadow-sm">
           <div className="mb-3">
             <label htmlFor="titulo" className="form-label">Título del Plan</label>
             <input

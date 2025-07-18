@@ -40,16 +40,16 @@ const AdminSolicitudesPage = () => {
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px', marginRight: '16px' }} />
         <div>
           <Link to="/adminpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Menú
+            Inicio
           </Link>
           <Link to="/adminpage/crudpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Gestionar Planes
+            Planes
           </Link>
           <Link to="/adminpage/usuariospage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Gestión de Usuarios
+            Usuarios
           </Link>
           <Link to="/adminpage/reportespage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Gestionar Aportantes
+            Aportantes
           </Link>
           <Link to="/adminpage/finanzaspage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
             Finanzas
