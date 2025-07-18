@@ -146,21 +146,36 @@ const FinanzasPage = () => {
             );
           }
 
+          // Línea horizontal por fila
+          doc.line(15, y + 2, 195, y + 2);
+
           y += 7;
           if (y > margenInferior) {
             doc.addPage();
             doc.setDrawColor(0, 0, 0);
             doc.setLineWidth(0.3);
-            doc.rect(15, 50, 180, 7 + 7 * Math.max(pagos.length, gastos.length) + 14);
+            doc.rect(15, 50, 180, 7 + 7 * Math.max(pagos.length, gastos.length) + 14); // Rectángulo general
+            doc.line(115, 50, 115, y); // Línea vertical que separa aportaciones de gastos
             y = 55;
           }
         }
+
+        // Línea vertical que separa aportaciones de gastos
+        doc.setDrawColor(0, 0, 0);
+        doc.setLineWidth(0.3);
+        doc.line(115, 50, 115, y); // Línea vertical central
 
         // --- SALDO TOTAL ---
         y += 5;
         doc.setFontSize(12);
         doc.setTextColor(40, 167, 69);
-        doc.text(`Saldo total: $${saldo}`, 120, y);
+
+        // Dibuja un rectángulo pequeño alrededor del saldo total
+        doc.setDrawColor(0, 0, 0);
+        doc.setLineWidth(0.3);
+        doc.rect(115, y - 5, 70, 10); // Rectángulo alrededor del saldo
+
+        doc.text(`Saldo total: $${saldo}`, 120, y + 2);
 
         // Pie de página
         doc.setFontSize(10);
