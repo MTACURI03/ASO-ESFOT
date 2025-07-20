@@ -20,22 +20,26 @@ const LoginPage = () => {
         body: JSON.stringify(body),
       });
       const data = await res.json();
+
+      // --- Manejo de cuenta inactiva aunque la respuesta sea error ---
+      if (data.usuario && data.usuario.activo === false) {
+        const yaAccedio = localStorage.getItem('actualizacionRealizada');
+        if (yaAccedio === 'true') {
+          setMensaje('Solicitud enviada. Espera la activación de tu cuenta.');
+        } else {
+          if (window.confirm('Cuenta inactiva. Serás dirigido a la actualización de datos. Presiona "Aceptar" para continuar.')) {
+            localStorage.setItem('actualizacionRealizada', 'true');
+            localStorage.setItem('usuario', JSON.stringify(data.usuario));
+            navigate('/actualizar-datos');
+          }
+        }
+        return; // Importante: detener aquí
+      }
+
+      // --- Resto de tu lógica ---
       if (res.ok && data.usuario) {
         const usuario = data.usuario;
-
-        if (usuario.activo === false) {
-          const yaAccedio = localStorage.getItem('actualizacionRealizada');
-          if (yaAccedio === 'true') {
-            setMensaje('Solicitud enviada. Espera la activación de tu cuenta.');
-          } else {
-            // Mostrar alert antes de redirigir
-            if (window.confirm('Cuenta inactiva. Serás dirigido a la actualización de datos. Presiona "Aceptar" para continuar.')) {
-              localStorage.setItem('actualizacionRealizada', 'true');
-              localStorage.setItem('usuario', JSON.stringify(usuario));
-              navigate('/actualizar-datos');
-            }
-          }
-        } else if (usuario.rol === 'admin') {
+        if (usuario.rol === 'admin') {
           localStorage.setItem('usuario', JSON.stringify(usuario));
           navigate('/adminpage');
         } else if (usuario.rol === 'estudiante') {
