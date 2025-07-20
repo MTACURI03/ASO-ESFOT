@@ -331,17 +331,12 @@ router.post('/aprobar-actualizacion/:solicitudId', async (req, res) => {
   }
 });
 
-router.post('/api/usuarios/desactivar-todos', async (req, res) => {
+router.post('/desactivar-todos', async (req, res) => {
   try {
-    // Desactivar todas las cuentas
-    await db.query('UPDATE usuarios SET activo = false WHERE rol = "estudiante"');
+    // Desactivar todas las cuentas de estudiantes en MongoDB
+    await Usuario.updateMany({ rol: 'estudiante' }, { $set: { activo: false } });
 
-    // Registrar planes actuales en el historial (si aplica)
-    const usuarios = await db.query('SELECT id, plan_id, semestre FROM usuarios WHERE rol = "estudiante"');
-    usuarios.forEach(async usuario => {
-      await db.query('INSERT INTO planes_historial (usuario_id, plan_id, semestre, fecha_seleccion) VALUES (?, ?, ?, ?)', 
-        [usuario.id, usuario.plan_id, usuario.semestre, new Date()]);
-    });
+    // Si quieres registrar los planes actuales en el historial, hazlo aquí usando Mongoose
 
     res.status(200).json({ message: 'Todas las cuentas han sido desactivadas.' });
   } catch (error) {
