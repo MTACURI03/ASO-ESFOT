@@ -45,9 +45,11 @@ async function enviarNotificacionAportacion({ correo, nombre, nombrePlan, fechaS
 router.post('/seleccionar', async (req, res) => {
   try {
     const { usuarioId, nombrePlan, precio } = req.body;
+    console.log('usuarioId recibido:', usuarioId);
 
-    // Busca el usuario
     const usuario = await Usuario.findById(usuarioId);
+    console.log('usuario encontrado:', usuario);
+
     if (!usuario || usuario.rol !== 'estudiante') {
       return res.status(404).json({ mensaje: 'Usuario no encontrado o no autorizado.' });
     }
