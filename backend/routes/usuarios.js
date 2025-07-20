@@ -327,7 +327,7 @@ router.post('/aprobar-actualizacion/:solicitudId', async (req, res) => {
   }
 });
 
-app.post('/api/usuarios/desactivar-todos', async (req, res) => {
+router.post('/api/usuarios/desactivar-todos', async (req, res) => {
   try {
     // Desactivar todas las cuentas
     await db.query('UPDATE usuarios SET activo = false WHERE rol = "estudiante"');
