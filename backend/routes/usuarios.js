@@ -3,6 +3,7 @@ const router = express.Router();
 const Usuario = require('../models/Usuario');
 const Admin = require('../models/Admin');
 const SolicitudActualizacion = require('../models/SolicitudActualizacion');
+const PlanUsuario = require('../models/PlanUsuario'); // tu modelo de planes actuales
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
@@ -300,6 +301,12 @@ router.post('/aprobar-actualizacion/:solicitudId', async (req, res) => {
     usuario.activo = true; // Reactiva la cuenta
     await usuario.save();
 
+    // MARCA LOS PLANES ANTERIORES COMO INACTIVOS/HISTÓRICOS
+    await PlanUsuario.updateMany(
+      { usuarioId: usuario._id, activo: true },
+      { $set: { activo: false } }
+    );
+
     solicitud.estado = 'aprobada';
     await solicitud.save();
 
@@ -317,6 +324,24 @@ router.post('/aprobar-actualizacion/:solicitudId', async (req, res) => {
     res.json({ mensaje: 'Datos actualizados y cuenta reactivada.' });
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al aprobar la actualización.' });
+  }
+});
+
+app.post('/api/usuarios/desactivar-todos', async (req, res) => {
+  try {
+    // Desactivar todas las cuentas
+    await db.query('UPDATE usuarios SET activo = false WHERE rol = "estudiante"');
+
+    // Registrar planes actuales en el historial (si aplica)
+    const usuarios = await db.query('SELECT id, plan_id, semestre FROM usuarios WHERE rol = "estudiante"');
+    usuarios.forEach(async usuario => {
+      await db.query('INSERT INTO planes_historial (usuario_id, plan_id, semestre, fecha_seleccion) VALUES (?, ?, ?, ?)', 
+        [usuario.id, usuario.plan_id, usuario.semestre, new Date()]);
+    });
+
+    res.status(200).json({ message: 'Todas las cuentas han sido desactivadas.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al desactivar las cuentas.' });
   }
 });
 

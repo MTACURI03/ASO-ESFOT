@@ -8,7 +8,7 @@ const SEMESTRES = [
 const UsuariosPage = () => {
   const [busqueda, setBusqueda] = useState('');
   const [usuarios, setUsuarios] = useState([]);
-  const [modal, setModal] = useState({ show: false, id: null, activoActual: true, loading: false });
+  const [modal, setModal] = useState({ show: false, step: 1, loading: false });
 
   useEffect(() => {
     const url = busqueda
@@ -20,30 +20,21 @@ const UsuariosPage = () => {
       .catch(() => setUsuarios([]));
   }, [busqueda]);
 
-  const confirmarCambioActivo = (nuevoActivo) => {
+  const desactivarTodasCuentas = async () => {
     setModal(modal => ({ ...modal, loading: true }));
-    const id = modal.id;
-    fetch(`https://aso-esfot-backend.onrender.com/api/usuarios/${id}/activo`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ activo: nuevoActivo }),
-    })
-      .then(res => res.json())
-      .then(() => {
-        setUsuarios(usuarios =>
-          usuarios.map(u =>
-            u._id === id ? { ...u, activo: nuevoActivo } : u
-          )
-        );
-        setModal({ show: false, id: null, activoActual: true, loading: false });
-      });
+    await fetch('https://aso-esfot-backend.onrender.com/api/usuarios/desactivar-todos', {
+      method: 'POST',
+    });
+    setUsuarios(usuarios.map(u => ({ ...u, activo: false })));
+    setModal({ show: false, step: 1, loading: false });
+    alert('Todas las cuentas han sido desactivadas.');
   };
 
-  const mostrarModal = (id, activoActual) => {
-    setModal({ show: true, id, activoActual, loading: false });
+  const mostrarModal = (step) => {
+    setModal({ show: true, step, loading: false });
   };
 
-  const cerrarModal = () => setModal({ show: false, id: null, activoActual: true, loading: false });
+  const cerrarModal = () => setModal({ show: false, step: 1, loading: false });
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -54,26 +45,41 @@ const UsuariosPage = () => {
             <div className="modal-content">
               <div className="modal-header bg-warning text-dark">
                 <h5 className="modal-title">
-                  {modal.activoActual ? 'Confirmar inactivación' : 'Confirmar activación'}
+                  {modal.step === 1
+                    ? 'Confirmar acción'
+                    : '¿Está seguro de realizar esta acción?'}
                 </h5>
                 <button type="button" className="btn-close" onClick={cerrarModal}></button>
               </div>
               <div className="modal-body">
-                {modal.activoActual
-                  ? '¿Seguro que quieres inactivar este usuario? No podrá iniciar sesión.'
-                  : '¿Seguro que quieres activar este usuario? Podrá iniciar sesión.'}
+                {modal.step === 1
+                  ? '¿Desea desactivar todas las cuentas al finalizar el semestre en curso?'
+                  : 'Esta acción desactivará todas las cuentas. ¿Está seguro de continuar?'}
               </div>
               <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={cerrarModal} disabled={modal.loading}>No</button>
-                <button
-                  className={`btn ${modal.activoActual ? 'btn-danger' : 'btn-success'}`}
-                  onClick={() => confirmarCambioActivo(!modal.activoActual)}
-                  disabled={modal.loading}
-                >
-                  {modal.loading
-                    ? (modal.activoActual ? 'Inactivando...' : 'Activando...')
-                    : 'Sí'}
-                </button>
+                {modal.step === 1 ? (
+                  <>
+                    <button className="btn btn-secondary" onClick={cerrarModal} disabled={modal.loading}>Cancelar</button>
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => mostrarModal(2)}
+                      disabled={modal.loading}
+                    >
+                      Aceptar
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button className="btn btn-secondary" onClick={cerrarModal} disabled={modal.loading}>Cancelar</button>
+                    <button
+                      className="btn btn-danger"
+                      onClick={desactivarTodasCuentas}
+                      disabled={modal.loading}
+                    >
+                      {modal.loading ? 'Desactivando...' : 'Aceptar'}
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -123,6 +129,11 @@ const UsuariosPage = () => {
               <option key={s} value={s}>{s}</option>
             ))}
           </select>
+        </div>
+
+        {/* Botón para desactivar todas las cuentas */}
+        <div className="mb-4 text-end">
+          <button className="btn btn-danger" onClick={() => mostrarModal(1)}>Desactivar todas las cuentas</button>
         </div>
 
         {/* Tabla */}

@@ -63,7 +63,9 @@ const VisualizarPage = () => {
     fetch(`https://aso-esfot-backend.onrender.com/api/planes/usuario/${usuarioId}`)
       .then(res => res.json())
       .then(data => {
-        const planes = data.map(plan => ({
+        // Filtra solo los planes activos
+        const planesActivos = data.filter(plan => plan.activo || plan.estado === 'Activo');
+        const planes = planesActivos.map(plan => ({
           fecha: new Date(plan.fechaSeleccion).toISOString().split('T')[0],
           plan: plan.nombrePlan,
           estado: plan.estado || 'Pendiente',
