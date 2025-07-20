@@ -28,6 +28,10 @@ const RegistroPage = () => {
       const usuarioId = usuario?.id;
       const nombreUsuario = usuario ? `${usuario.nombre} ${usuario.apellido}` : 'Usuario';
 
+      // <-- Agrega aquí los logs
+      console.log('Usuario en localStorage:', usuario);
+      console.log('usuarioId enviado:', usuarioId);
+
       if (!usuarioId) {
         setModal({
           show: true,

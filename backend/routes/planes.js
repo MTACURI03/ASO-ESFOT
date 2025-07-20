@@ -44,13 +44,20 @@ async function enviarNotificacionAportacion({ correo, nombre, nombrePlan, fechaS
 // Ruta para seleccionar plan, guardar y notificar
 router.post('/seleccionar', async (req, res) => {
   try {
+    console.log('--- PETICIÓN RECIBIDA EN /api/planes/seleccionar ---');
+    console.log('Body recibido:', req.body);
+
     const { usuarioId, nombrePlan, precio } = req.body;
-    console.log('usuarioId recibido:', usuarioId);
+    if (!usuarioId) {
+      console.log('❌ usuarioId no recibido');
+      return res.status(400).json({ mensaje: 'No se recibió usuarioId' });
+    }
 
     const usuario = await Usuario.findById(usuarioId);
     console.log('usuario encontrado:', usuario);
 
     if (!usuario || usuario.rol !== 'estudiante') {
+      console.log('❌ Usuario no encontrado o no autorizado');
       return res.status(404).json({ mensaje: 'Usuario no encontrado o no autorizado.' });
     }
 
@@ -59,7 +66,6 @@ router.post('/seleccionar', async (req, res) => {
       usuarioId,
       nombrePlan,
       precio,
-      // fechaSeleccion y estado se asignan por defecto
     });
     await nuevaAportacion.save();
 
@@ -75,7 +81,7 @@ router.post('/seleccionar', async (req, res) => {
 
     res.status(201).json({ mensaje: 'Aportación registrada y notificación enviada.' });
   } catch (error) {
-    console.error('Error al registrar la aportación:', error);
+    console.error('Error en /seleccionar:', error);
     res.status(500).json({ mensaje: 'Error al registrar la aportación', error: error.message });
   }
 });
