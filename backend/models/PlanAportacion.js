@@ -5,7 +5,8 @@ const planAportacionSchema = new mongoose.Schema({
   nombrePlan: { type: String, required: true },
   precio: { type: Number, required: true },
   fechaSeleccion: { type: Date, default: Date.now },
-  estado: { type: String, default: 'Pendiente' }
+  estado: { type: String, default: 'Pendiente' },
+  activo: { type: Boolean, default: true } // Nuevo campo para activo/inactivo
 });
 
 module.exports = mongoose.model('PlanAportacion', planAportacionSchema);

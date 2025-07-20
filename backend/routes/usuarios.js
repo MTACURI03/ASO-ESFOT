@@ -4,6 +4,7 @@ const Usuario = require('../models/Usuario');
 const Admin = require('../models/Admin');
 const SolicitudActualizacion = require('../models/SolicitudActualizacion');
 const PlanUsuario = require('../models/PlanUsuario'); // tu modelo de planes actuales
+const PlanAportacion = require('../models/PlanAportacion');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
@@ -302,7 +303,7 @@ router.post('/aprobar-actualizacion/:solicitudId', async (req, res) => {
     await usuario.save();
 
     // MARCA LOS PLANES ANTERIORES COMO INACTIVOS/HISTÓRICOS
-    await PlanUsuario.updateMany(
+    await PlanAportacion.updateMany(
       { usuarioId: usuario._id, activo: true },
       { $set: { activo: false } }
     );
