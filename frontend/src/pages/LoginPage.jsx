@@ -29,21 +29,23 @@ const LoginPage = () => {
         } else {
           if (window.confirm('Cuenta inactiva. Serás dirigido a la actualización de datos. Presiona "Aceptar" para continuar.')) {
             localStorage.setItem('actualizacionRealizada', 'true');
-            localStorage.setItem('usuario', JSON.stringify(data.usuario));
+            // Guarda el usuario con id igual a _id
+            localStorage.setItem('usuario', JSON.stringify({ ...data.usuario, id: data.usuario._id }));
             navigate('/actualizar-datos');
           }
         }
-        return; // Importante: detener aquí
+        return;
       }
 
       // --- Resto de tu lógica ---
       if (res.ok && data.usuario) {
         const usuario = data.usuario;
+        // Guarda el usuario con id igual a _id
+        localStorage.setItem('usuario', JSON.stringify({ ...usuario, id: usuario._id }));
+
         if (usuario.rol === 'admin') {
-          localStorage.setItem('usuario', JSON.stringify(usuario));
           navigate('/adminpage');
         } else if (usuario.rol === 'estudiante') {
-          localStorage.setItem('usuario', JSON.stringify(usuario));
           navigate('/landing');
         } else {
           setMensaje('Tu cuenta no tiene un rol válido.');
