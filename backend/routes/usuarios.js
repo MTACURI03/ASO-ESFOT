@@ -127,6 +127,10 @@ router.post('/login', async (req, res) => {
   }
 
   if (!usuario) return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
+
+  // NUEVA VALIDACIÓN
+  if (!usuario.activo) return res.status(403).json({ mensaje: 'Cuenta inactiva. Contacte al administrador.' });
+
   if (usuario.password !== password) return res.status(400).json({ mensaje: 'Contraseña incorrecta.' });
 
   res.json({
