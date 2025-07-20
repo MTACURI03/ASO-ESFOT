@@ -29,8 +29,8 @@ const LoginPage = () => {
         } else {
           if (window.confirm('Cuenta inactiva. Serás dirigido a la actualización de datos. Presiona "Aceptar" para continuar.')) {
             localStorage.setItem('actualizacionRealizada', 'true');
-            // Guarda el usuario con id igual a _id
-            localStorage.setItem('usuario', JSON.stringify({ ...data.usuario, id: data.usuario._id }));
+            // Guarda el usuario tal como viene del backend
+            localStorage.setItem('usuario', JSON.stringify(data.usuario));
             navigate('/actualizar-datos');
           }
         }
@@ -40,8 +40,8 @@ const LoginPage = () => {
       // --- Resto de tu lógica ---
       if (res.ok && data.usuario) {
         const usuario = data.usuario;
-        // Guarda el usuario con id igual a _id
-        localStorage.setItem('usuario', JSON.stringify({ ...usuario, id: usuario._id }));
+        // Guarda el usuario tal como viene del backend
+        localStorage.setItem('usuario', JSON.stringify(usuario));
 
         if (usuario.rol === 'admin') {
           navigate('/adminpage');
