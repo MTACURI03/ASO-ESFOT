@@ -6,6 +6,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [modal, setModal] = useState({ show: false, message: '' });
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -21,17 +22,16 @@ const LoginPage = () => {
       });
       const data = await res.json();
 
-      // --- Manejo de cuenta inactiva aunque la respuesta sea error ---
+      // --- Manejo de cuenta inactiva ---
       if (data.usuario && data.usuario.activo === false) {
         const yaAccedio = localStorage.getItem('actualizacionRealizada');
         if (yaAccedio === 'true') {
           setMensaje('Solicitud enviada. Espera la activación de tu cuenta.');
         } else {
-          if (window.confirm('Cuenta inactiva. Serás dirigido a la actualización de datos. Presiona "Aceptar" para continuar.')) {
-            localStorage.setItem('actualizacionRealizada', 'true');
-            localStorage.setItem('usuario', JSON.stringify({ ...data.usuario, id: data.usuario._id || data.usuario.id }));
-            navigate('/actualizar-datos');
-          }
+          setModal({
+            show: true,
+            message: 'Cuenta inactiva. Serás dirigido a la actualización de datos. Presiona "Aceptar" para continuar.'
+          });
         }
         return;
       }
@@ -63,6 +63,32 @@ const LoginPage = () => {
 
   return (
     <div className="d-flex flex-column min-vh-100">
+      {/* MODAL CUENTA INACTIVA */}
+      {modal.show && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999
+        }}>
+          <div style={{
+            background: 'white', padding: 32, borderRadius: 12, minWidth: 300, textAlign: 'center', boxShadow: '0 2px 16px #0002'
+          }}>
+            <h4 className="text-danger">Cuenta inactiva</h4>
+            <p>{modal.message}</p>
+            <button
+              className="btn mt-3"
+              style={{ backgroundColor: '#e94c4c', color: 'white', border: 'none' }}
+              onClick={() => {
+                localStorage.setItem('actualizacionRealizada', 'true');
+                localStorage.setItem('usuario', JSON.stringify({ ...data.usuario, id: data.usuario._id || data.usuario.id }));
+                setModal({ show: false, message: '' });
+                navigate('/actualizar-datos');
+              }}
+            >
+              Aceptar
+            </button>
+          </div>
+        </div>
+      )}
       {/* ENCABEZADO */}
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />

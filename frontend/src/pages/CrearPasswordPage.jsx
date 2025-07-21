@@ -189,7 +189,25 @@ const CrearPasswordPage = () => {
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
         <div>
-          <a href="/" className="text-white text-decoration-none" style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
+          <a
+            href="/"
+            className="text-white text-decoration-none"
+            style={{
+              fontWeight: 'bold',
+              fontSize: '1.1rem',
+              padding: '6px 16px',
+              borderRadius: '6px',
+              transition: 'background 0.2s, color 0.2s'
+            }}
+            onMouseEnter={e => {
+              e.target.style.background = '#111';
+              e.target.style.color = '#fff';
+            }}
+            onMouseLeave={e => {
+              e.target.style.background = 'transparent';
+              e.target.style.color = '#fff';
+            }}
+          >
             Volver al login
           </a>
         </div>

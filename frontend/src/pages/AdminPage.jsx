@@ -104,7 +104,12 @@ const AdminPage = () => {
 
       {/* ENCABEZADO */}
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
-        <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
+        <div className="d-flex align-items-center">
+          <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
+          <span className="ms-3 fw-bold" style={{ fontSize: '1.2rem' }}>
+            Hola Administrador{adminNombre && `, ${adminNombre} ${adminApellido}`}
+          </span>
+        </div>
         <div>
           <Link to="/adminpage/crudpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
             Planes
