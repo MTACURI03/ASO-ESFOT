@@ -31,7 +31,7 @@ const ActualizarPasswordPage = () => {
           title: 'Contraseña actualizada',
           message: 'Tu contraseña se ha actualizado correctamente. Presiona "Aceptar" para ir al login.',
         });
-        setTimeout(() => navigate('/'), 2500);
+        // El navigate('/') solo se ejecuta al presionar "Aceptar" en el modal
       } else {
         setModal({ show: true, title: 'Error', message: data.mensaje || 'Error al actualizar la contraseña.' });
       }
@@ -137,15 +137,36 @@ const ActualizarPasswordPage = () => {
         <div className="modal fade show" style={{ display: 'block', background: 'rgba(0,0,0,0.4)' }}>
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
-              <div className="modal-header bg-success text-white">
+              <div className={`modal-header ${modal.title === 'Contraseña actualizada' ? 'bg-success text-white' : 'bg-danger text-white'}`}>
                 <h5 className="modal-title">{modal.title}</h5>
-                <button type="button" className="btn-close btn-close-white" onClick={() => navigate('/')}></button>
+                <button
+                  type="button"
+                  className="btn-close btn-close-white"
+                  onClick={() => {
+                    if (modal.title === 'Contraseña actualizada') {
+                      navigate('/');
+                    } else {
+                      setModal({ show: false, title: '', message: '' });
+                    }
+                  }}
+                ></button>
               </div>
               <div className="modal-body">
                 <p>{modal.message}</p>
               </div>
               <div className="modal-footer">
-                <button className="btn btn-primary" onClick={() => navigate('/')}>Aceptar</button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    if (modal.title === 'Contraseña actualizada') {
+                      navigate('/');
+                    } else {
+                      setModal({ show: false, title: '', message: '' });
+                    }
+                  }}
+                >
+                  Aceptar
+                </button>
               </div>
             </div>
           </div>

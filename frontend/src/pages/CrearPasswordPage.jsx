@@ -109,9 +109,14 @@ const CrearPasswordPage = () => {
       });
       const data = await response.json();
       if (!response.ok) {
-        // Validar si el mensaje es de usuario ya registrado
+        // Si el correo ya existe, muestra el modal personalizado
         if (data.mensaje && data.mensaje.toLowerCase().includes('ya existe')) {
-          alert("Ya existe una cuenta registrada con ese correo.");
+          setModal({
+            show: true,
+            title: 'Correo existente',
+            message: 'No puedes crear la cuenta con un correo ya registrado.',
+            error: true,
+          });
           return;
         }
         setModal({
@@ -125,7 +130,12 @@ const CrearPasswordPage = () => {
       setSuccessMessage(data.mensaje || "Registrado con éxito ✅");
       setShowSuccessModal(true);
     } catch (err) {
-      alert("Error al registrar: " + err.message);
+      setModal({
+        show: true,
+        title: 'Error',
+        message: "Error al registrar: " + err.message,
+        error: true,
+      });
     }
   };
 
@@ -154,10 +164,35 @@ const CrearPasswordPage = () => {
           </div>
         </div>
       )}
+      {/* Modal de error */}
+      {modal.show && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999
+        }}>
+          <div style={{
+            background: 'white', padding: 32, borderRadius: 12, minWidth: 300, textAlign: 'center', boxShadow: '0 2px 16px #0002'
+          }}>
+            <h4 className={modal.error ? "text-danger" : "text-success"}>{modal.title}</h4>
+            <p>{modal.message}</p>
+            <button
+              className="btn mt-3"
+              style={{ backgroundColor: '#e94c4c', color: 'white', border: 'none' }}
+              onClick={() => setModal({ show: false, title: '', message: '', error: false })}
+            >
+              Aceptar
+            </button>
+          </div>
+        </div>
+      )}
       {/* ENCABEZADO */}
       <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
         <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
-        <div></div>
+        <div>
+          <a href="/" className="text-white text-decoration-none" style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
+            Volver al login
+          </a>
+        </div>
       </header>
 
       {/* CUERPO PRINCIPAL */}
