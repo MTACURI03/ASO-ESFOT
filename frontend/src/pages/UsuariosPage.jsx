@@ -8,7 +8,7 @@ const SEMESTRES = [
 const UsuariosPage = () => {
   const [busqueda, setBusqueda] = useState('');
   const [usuarios, setUsuarios] = useState([]);
-  const [modal, setModal] = useState({ show: false, step: 1, loading: false });
+  const [modal, setModal] = useState({ show: false, step: 1, loading: false, usuarioId: null, activar: null, mensaje: '' });
 
   useEffect(() => {
     const url = busqueda
@@ -30,11 +30,36 @@ const UsuariosPage = () => {
     setModal({ show: true, step: 3, loading: false, mensaje: '¡Todas las cuentas han sido desactivadas!' });
   };
 
-  const mostrarModal = (step) => {
-    setModal({ show: true, step, loading: false });
+  const mostrarModal = (usuarioId = null, activar = null, step = 1) => {
+    setModal({ show: true, step, loading: false, usuarioId, activar, mensaje: '' });
   };
 
   const cerrarModal = () => setModal({ show: false, step: 1, loading: false });
+
+  // Función para activar/desactivar usuario individual:
+  const cambiarEstadoUsuario = async () => {
+    setModal(modal => ({ ...modal, loading: true }));
+    await fetch(`https://aso-esfot-backend.onrender.com/api/usuarios/${modal.usuarioId}/activo`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ activo: !modal.activar })
+    });
+    setUsuarios(usuarios =>
+      usuarios.map(u =>
+        u._id === modal.usuarioId ? { ...u, activo: !modal.activar } : u
+      )
+    );
+    setModal({
+      show: true,
+      step: 5,
+      loading: false,
+      usuarioId: null,
+      activar: null,
+      mensaje: modal.activar
+        ? '¡Usuario desactivado correctamente!'
+        : '¡Usuario activado correctamente!'
+    });
+  };
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -47,14 +72,28 @@ const UsuariosPage = () => {
                 <h5 className="modal-title">
                   {modal.step === 1
                     ? 'Confirmar acción'
-                    : '¿Está seguro de realizar esta acción?'}
+                    : modal.step === 2
+                    ? '¿Está seguro de realizar esta acción?'
+                    : modal.step === 3
+                    ? 'Acción completada'
+                    : modal.step === 4
+                    ? (modal.activar ? 'Desactivar usuario' : 'Activar usuario')
+                    : 'Acción completada'}
                 </h5>
                 <button type="button" className="btn-close" onClick={cerrarModal}></button>
               </div>
               <div className="modal-body">
                 {modal.step === 1
                   ? '¿Desea desactivar todas las cuentas al finalizar el semestre en curso?'
-                  : 'Esta acción desactivará todas las cuentas. ¿Está seguro de continuar?'}
+                  : modal.step === 2
+                  ? 'Esta acción desactivará todas las cuentas. ¿Está seguro de continuar?'
+                  : modal.step === 3
+                  ? modal.mensaje
+                  : modal.step === 4
+                  ? (modal.activar
+                      ? '¿Está seguro que desea desactivar este usuario?'
+                      : '¿Está seguro que desea activar este usuario?')
+                  : modal.mensaje}
               </div>
               <div className="modal-footer">
                 {modal.step === 1 ? (
@@ -62,13 +101,13 @@ const UsuariosPage = () => {
                     <button className="btn btn-secondary" onClick={cerrarModal} disabled={modal.loading}>Cancelar</button>
                     <button
                       className="btn btn-primary"
-                      onClick={() => mostrarModal(2)}
+                      onClick={() => mostrarModal(null, null, 2)}
                       disabled={modal.loading}
                     >
                       Aceptar
                     </button>
                   </>
-                ) : (
+                ) : modal.step === 2 ? (
                   <>
                     <button className="btn btn-secondary" onClick={cerrarModal} disabled={modal.loading}>Cancelar</button>
                     <button
@@ -79,6 +118,21 @@ const UsuariosPage = () => {
                       {modal.loading ? 'Desactivando...' : 'Aceptar'}
                     </button>
                   </>
+                ) : modal.step === 4 ? (
+                  <>
+                    <button className="btn btn-secondary" onClick={cerrarModal} disabled={modal.loading}>Cancelar</button>
+                    <button
+                      className={`btn ${modal.activar ? 'btn-danger' : 'btn-success'}`}
+                      onClick={cambiarEstadoUsuario}
+                      disabled={modal.loading}
+                    >
+                      {modal.loading
+                        ? (modal.activar ? 'Desactivando...' : 'Activando...')
+                        : (modal.activar ? 'Desactivar' : 'Activar')}
+                    </button>
+                  </>
+                ) : (
+                  <button className="btn btn-primary" onClick={cerrarModal}>Cerrar</button>
                 )}
               </div>
             </div>
@@ -175,7 +229,7 @@ const UsuariosPage = () => {
                       <td>
                         <button
                           className={`btn btn-sm ${u.activo ? 'btn-outline-danger' : 'btn-outline-success'}`}
-                          onClick={() => mostrarModal(u._id, u.activo)}
+                          onClick={() => mostrarModal(u._id, u.activo, 4)}
                           disabled={modal.loading}
                         >
                           {u.activo ? 'Desactivar' : 'Activar'}
