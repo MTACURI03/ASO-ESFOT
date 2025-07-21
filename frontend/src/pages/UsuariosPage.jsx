@@ -26,8 +26,8 @@ const UsuariosPage = () => {
       method: 'POST',
     });
     setUsuarios(usuarios.map(u => ({ ...u, activo: false })));
-    setModal({ show: false, step: 1, loading: false });
-    alert('Todas las cuentas han sido desactivadas.');
+    // Muestra el modal de confirmación final
+    setModal({ show: true, step: 3, loading: false, mensaje: '¡Todas las cuentas han sido desactivadas!' });
   };
 
   const mostrarModal = (step) => {
@@ -47,14 +47,18 @@ const UsuariosPage = () => {
                 <h5 className="modal-title">
                   {modal.step === 1
                     ? 'Confirmar acción'
-                    : '¿Está seguro de realizar esta acción?'}
+                    : modal.step === 2
+                    ? '¿Está seguro de realizar esta acción?'
+                    : 'Acción completada'}
                 </h5>
                 <button type="button" className="btn-close" onClick={cerrarModal}></button>
               </div>
               <div className="modal-body">
                 {modal.step === 1
                   ? '¿Desea desactivar todas las cuentas al finalizar el semestre en curso?'
-                  : 'Esta acción desactivará todas las cuentas. ¿Está seguro de continuar?'}
+                  : modal.step === 2
+                  ? 'Esta acción desactivará todas las cuentas. ¿Está seguro de continuar?'
+                  : modal.mensaje}
               </div>
               <div className="modal-footer">
                 {modal.step === 1 ? (
@@ -68,7 +72,7 @@ const UsuariosPage = () => {
                       Aceptar
                     </button>
                   </>
-                ) : (
+                ) : modal.step === 2 ? (
                   <>
                     <button className="btn btn-secondary" onClick={cerrarModal} disabled={modal.loading}>Cancelar</button>
                     <button
@@ -79,6 +83,8 @@ const UsuariosPage = () => {
                       {modal.loading ? 'Desactivando...' : 'Aceptar'}
                     </button>
                   </>
+                ) : (
+                  <button className="btn btn-primary" onClick={cerrarModal}>Cerrar</button>
                 )}
               </div>
             </div>
