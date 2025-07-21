@@ -7,6 +7,7 @@ const LoginPage = () => {
   const [mensaje, setMensaje] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [modal, setModal] = useState({ show: false, message: '' });
+  const [usuarioInactivo, setUsuarioInactivo] = useState(null);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -28,6 +29,7 @@ const LoginPage = () => {
         if (yaAccedio === 'true') {
           setMensaje('Solicitud enviada. Espera la activación de tu cuenta.');
         } else {
+          setUsuarioInactivo(data.usuario); // Guarda el usuario para el modal
           setModal({
             show: true,
             message: 'Cuenta inactiva. Serás dirigido a la actualización de datos. Presiona "Aceptar" para continuar.'
@@ -79,7 +81,9 @@ const LoginPage = () => {
               style={{ backgroundColor: '#e94c4c', color: 'white', border: 'none' }}
               onClick={() => {
                 localStorage.setItem('actualizacionRealizada', 'true');
-                localStorage.setItem('usuario', JSON.stringify({ ...data.usuario, id: data.usuario._id || data.usuario.id }));
+                if (usuarioInactivo) {
+                  localStorage.setItem('usuario', JSON.stringify({ ...usuarioInactivo, id: usuarioInactivo._id || usuarioInactivo.id }));
+                }
                 setModal({ show: false, message: '' });
                 navigate('/actualizar-datos');
               }}
