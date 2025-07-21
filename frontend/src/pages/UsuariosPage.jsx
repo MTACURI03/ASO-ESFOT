@@ -47,18 +47,14 @@ const UsuariosPage = () => {
                 <h5 className="modal-title">
                   {modal.step === 1
                     ? 'Confirmar acción'
-                    : modal.step === 2
-                    ? '¿Está seguro de realizar esta acción?'
-                    : 'Acción completada'}
+                    : '¿Está seguro de realizar esta acción?'}
                 </h5>
                 <button type="button" className="btn-close" onClick={cerrarModal}></button>
               </div>
               <div className="modal-body">
                 {modal.step === 1
                   ? '¿Desea desactivar todas las cuentas al finalizar el semestre en curso?'
-                  : modal.step === 2
-                  ? 'Esta acción desactivará todas las cuentas. ¿Está seguro de continuar?'
-                  : modal.mensaje}
+                  : 'Esta acción desactivará todas las cuentas. ¿Está seguro de continuar?'}
               </div>
               <div className="modal-footer">
                 {modal.step === 1 ? (
@@ -72,7 +68,7 @@ const UsuariosPage = () => {
                       Aceptar
                     </button>
                   </>
-                ) : modal.step === 2 ? (
+                ) : (
                   <>
                     <button className="btn btn-secondary" onClick={cerrarModal} disabled={modal.loading}>Cancelar</button>
                     <button
@@ -83,8 +79,6 @@ const UsuariosPage = () => {
                       {modal.loading ? 'Desactivando...' : 'Aceptar'}
                     </button>
                   </>
-                ) : (
-                  <button className="btn btn-primary" onClick={cerrarModal}>Cerrar</button>
                 )}
               </div>
             </div>

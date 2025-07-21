@@ -6,7 +6,6 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [modal, setModal] = useState({ show: false, mensaje: '' });
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -28,10 +27,11 @@ const LoginPage = () => {
         if (yaAccedio === 'true') {
           setMensaje('Solicitud enviada. Espera la activación de tu cuenta.');
         } else {
-          setModal({
-            show: true,
-            mensaje: 'Cuenta inactiva. Serás dirigido a la actualización de datos. Presiona "Aceptar" para continuar.'
-          });
+          if (window.confirm('Cuenta inactiva. Serás dirigido a la actualización de datos. Presiona "Aceptar" para continuar.')) {
+            localStorage.setItem('actualizacionRealizada', 'true');
+            localStorage.setItem('usuario', JSON.stringify({ ...data.usuario, id: data.usuario._id || data.usuario.id }));
+            navigate('/actualizar-datos');
+          }
         }
         return;
       }
@@ -144,35 +144,6 @@ const LoginPage = () => {
       <footer className="bg-esfot text-white text-center py-3">
         &copy; 2025 ASO-ESFOT. Todos los derechos reservados.
       </footer>
-
-      {/* MODAL DE CUENTA INACTIVA */}
-      {modal.show && (
-        <div className="modal fade show" style={{ display: 'block', background: 'rgba(0,0,0,0.4)' }}>
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header bg-warning text-dark">
-                <h5 className="modal-title">Cuenta inactiva</h5>
-                <button type="button" className="btn-close" onClick={() => setModal({ show: false, mensaje: '' })}></button>
-              </div>
-              <div className="modal-body">{modal.mensaje}</div>
-              <div className="modal-footer">
-                <button
-                  className="btn btn-primary"
-                  onClick={() => {
-                    localStorage.setItem('actualizacionRealizada', 'true');
-                    localStorage.setItem('usuario', JSON.stringify({ ...data.usuario, id: data.usuario._id || data.usuario.id }));
-                    setModal({ show: false, mensaje: '' });
-                    navigate('/actualizar-datos');
-                  }}
-                >
-                  Aceptar
-                </button>
-                <button className="btn btn-secondary" onClick={() => setModal({ show: false, mensaje: '' })}>Cancelar</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
