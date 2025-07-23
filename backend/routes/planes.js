@@ -118,8 +118,19 @@ router.put('/aportaciones/:id/estado', async (req, res) => {
     if (estado === 'Pagado' && aportacion.usuarioId && aportacion.usuarioId.activo === false) {
       return res.status(400).json({ mensaje: 'El usuario está inactivo y no puede cambiar a Pagado.' });
     }
+    
+    // Actualizar el estado
     aportacion.estado = estado;
     await aportacion.save();
+    
+    // Si cambió a "Pagado", sumar al saldo automáticamente
+    if (estado === 'Pagado') {
+      let finanza = await Finanza.findOne();
+      if (!finanza) finanza = await Finanza.create({ saldo: 0 });
+      finanza.saldo += aportacion.precio;
+      await finanza.save();
+    }
+    
     res.json({ mensaje: 'Estado actualizado correctamente.' });
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al actualizar el estado.' });
