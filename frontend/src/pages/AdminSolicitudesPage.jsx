@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import AdminHeader from '../components/AdminHeader';
 
 const AdminSolicitudesPage = () => {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -35,27 +36,7 @@ const AdminSolicitudesPage = () => {
 
   return (
     <div className="d-flex flex-column min-vh-100">
-      {/* ENCABEZADO */}
-      <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
-        <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px', marginRight: '16px' }} />
-        <div>
-          <Link to="/adminpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Inicio
-          </Link>
-          <Link to="/adminpage/crudpage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Planes
-          </Link>
-          <Link to="/adminpage/usuariospage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Usuarios
-          </Link>
-          <Link to="/adminpage/reportespage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Aportantes
-          </Link>
-          <Link to="/adminpage/finanzaspage" className="nav-link-custom me-3" style={{ fontSize: '1.25rem' }}>
-            Finanzas
-          </Link>
-        </div>
-      </header>
+      <AdminHeader />
 
       {/* CONTENIDO */}
       <main className="container flex-grow-1 py-5">
