@@ -44,17 +44,16 @@ const ActualizarPage = () => {
     const indiceSemestreOriginal = SEMESTRES.indexOf(usuario.semestre);
     const indiceSemestreSeleccionado = SEMESTRES.indexOf(semestre);
 
-    // Si selecciona semestre anterior y no cambió de carrera
+    // Si selecciona semestre anterior y la carrera es la misma
     if (
       indiceSemestreSeleccionado < indiceSemestreOriginal &&
-      carrera === usuario.carrera &&
-      !forzar
+      carrera === usuario.carrera
     ) {
       setShowErrorModal(true);
       return;
     }
 
-    // Si selecciona semestre anterior y cambió de carrera
+    // Si selecciona semestre anterior y la carrera es diferente
     if (
       indiceSemestreSeleccionado < indiceSemestreOriginal &&
       carrera !== usuario.carrera &&
@@ -196,7 +195,8 @@ const ActualizarPage = () => {
                 <button type="button" className="btn-close" onClick={() => setShowConfirmModal(false)}></button>
               </div>
               <div className="modal-body">
-                Estás seleccionando un semestre anterior al que registraste originalmente. ¿Cambiaste de carrera?
+                Has cambiado de carrera y tu nivel es anterior al registrado originalmente.<br />
+                ¿Deseas solicitar la actualización con estos datos?
               </div>
               <div className="modal-footer">
                 <button className="btn btn-secondary" onClick={() => setShowConfirmModal(false)}>No</button>
