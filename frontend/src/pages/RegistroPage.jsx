@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import StudentHeader from '../components/StudentHeader';
 
 const RegistroPage = () => {
   const [visible, setVisible] = useState([false, false, false]);
@@ -80,50 +80,9 @@ const RegistroPage = () => {
       .then(data => setSecciones(data));
   }, []);
 
-  const handleActualizarClick = (e) => {
-    e.preventDefault();
-    window.location.href = "/actualizar-datos";
-  };
-
   return (
     <div className="d-flex flex-column min-vh-100">
-      {/* ENCABEZADO */}
-      <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
-        <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
-        <div>
-          {(() => {
-            const usuario = JSON.parse(localStorage.getItem('usuario'));
-            if (usuario && usuario.activo === false) {
-              return (
-                <>
-                  <Link to="/actualizar-datos" className="nav-link-custom me-3">
-                    Actualizar datos
-                  </Link>
-                </>
-              );
-            }
-            return (
-              <>
-                <Link to="/landing" className="nav-link-custom me-3">
-                  Inicio
-                </Link>
-                <Link to="/visualizar" className="nav-link-custom me-3">
-                  Mis Aportaciones
-                </Link>
-                <Link to="/registro" className="nav-link-custom me-3">
-                  Planes de Aportaciones
-                </Link>
-                <span
-                  className="nav-link-custom me-3"
-                  onClick={handleActualizarClick}
-                >
-                  Actualizar datos
-                </span>
-              </>
-            );
-          })()}
-        </div>
-      </header>
+      <StudentHeader />
 
       {/* MODAL DE CONFIRMACIÓN */}
       {confirmModal.show && (

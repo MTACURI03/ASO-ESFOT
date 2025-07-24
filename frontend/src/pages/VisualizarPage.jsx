@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import jsPDF from 'jspdf';
+import StudentHeader from '../components/StudentHeader';
 
 // Detalles de los planes
 const PLANES_DETALLE = {
@@ -159,51 +159,9 @@ const VisualizarPage = () => {
     doc.save('factura_aportaciones.pdf');
   };
 
-  const handleActualizarClick = (e) => {
-    e.preventDefault();
-    window.location.href = "/actualizar-datos"; // Redirige a la página de actualización
-  };
-
   return (
     <div className="d-flex flex-column min-vh-100">
-      {/* ENCABEZADO */}
-      <header className="bg-esfot text-white py-3 px-4 d-flex justify-content-between align-items-center">
-        <img src="/imagenes_asoesfot/logo.png" alt="ESFOT" style={{ height: '60px' }} />
-        <div>
-          {(() => {
-            const usuario = JSON.parse(localStorage.getItem('usuario'));
-            if (usuario && usuario.activo === false) {
-              return (
-                <>
-                  <Link to="/actualizar-datos" className="nav-link-custom me-3">
-                    Actualizar datos
-                  </Link>
-                </>
-              );
-            }
-            // Si el usuario está activo, muestra los otros links normales:
-            return (
-              <>
-                <Link to="/landing" className="nav-link-custom me-3">
-                  Inicio
-                </Link>
-                <Link to="/visualizar" className="nav-link-custom me-3">
-                  Mis Aportaciones
-                </Link>
-                <Link to="/registro" className="nav-link-custom me-3">
-                  Planes de Aportaciones
-                </Link>
-                <span
-                  className="nav-link-custom me-3"
-                  onClick={handleActualizarClick}
-                >
-                  Actualizar datos
-                </span>
-              </>
-            );
-          })()}
-        </div>
-      </header>
+      <StudentHeader />
 
       {/* CUERPO */}
       <main className="flex-grow-1 container py-5">
