@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const SEMESTRES = [
+  "Nivelación",
+  "Primer semestre",
+  "Segundo semestre",
+  "Tercer semestre",
+  "Cuarto semestre",
+  "Quinto semestre",
+];
+
 const ActualizarPage = () => {
   const [usuario, setUsuario] = useState(null);
   const [telefono, setTelefono] = useState('');
@@ -8,10 +17,11 @@ const ActualizarPage = () => {
   const [semestre, setSemestre] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Obtén el usuario del localStorage
     const user = JSON.parse(localStorage.getItem('usuario'));
     setUsuario(user);
     if (user) {
@@ -21,13 +31,40 @@ const ActualizarPage = () => {
     }
   }, []);
 
-  const handleActualizar = async (e) => {
-    e.preventDefault();
+  // Validación y flujo de actualización
+  const handleActualizar = async (e, forzar = false) => {
+    e && e.preventDefault();
     setMensaje('');
+
     if (!usuario || usuario.activo) {
       setMensaje('Solo puedes actualizar tus datos si tu cuenta está inactiva.');
       return;
     }
+
+    const indiceSemestreOriginal = SEMESTRES.indexOf(usuario.semestre);
+    const indiceSemestreSeleccionado = SEMESTRES.indexOf(semestre);
+
+    // Si selecciona semestre anterior y no cambió de carrera
+    if (
+      indiceSemestreSeleccionado < indiceSemestreOriginal &&
+      carrera === usuario.carrera &&
+      !forzar
+    ) {
+      setShowErrorModal(true);
+      return;
+    }
+
+    // Si selecciona semestre anterior y cambió de carrera
+    if (
+      indiceSemestreSeleccionado < indiceSemestreOriginal &&
+      carrera !== usuario.carrera &&
+      !forzar
+    ) {
+      setShowConfirmModal(true);
+      return;
+    }
+
+    // Si selecciona semestre igual o posterior, o confirmó cambio de carrera
     try {
       const res = await fetch('https://aso-esfot-backend.onrender.com/api/usuarios/solicitar-actualizacion', {
         method: 'POST',
@@ -60,12 +97,12 @@ const ActualizarPage = () => {
 
   if (usuario.activo) {
     setTimeout(() => {
-      navigate('/landing'); // Redirige al landing
-    }, 4000); // Espera 2 segundos antes de redirigir
+      navigate('/landing');
+    }, 4000);
     return (
       <div className="container py-5">
         <div className="alert alert-info">
-          Tu cuenta está activa. Solo puedes actualizar datos si tu cuenta está inactiva.Volveras el Menu....
+          Tu cuenta está activa. Solo puedes actualizar datos si tu cuenta está inactiva. Volverás al menú...
         </div>
       </div>
     );
@@ -117,12 +154,9 @@ const ActualizarPage = () => {
             required
           >
             <option value="">Selecciona un semestre</option>
-            <option value="Nivelación">Nivelación</option>
-            <option value="Primer semestre">Primer semestre</option>
-            <option value="Segundo semestre">Segundo semestre</option>
-            <option value="Tercer semestre">Tercer semestre</option>
-            <option value="Cuarto semestre">Cuarto semestre</option>
-            <option value="Quinto semestre">Quinto semestre</option>
+            {SEMESTRES.map((s, i) => (
+              <option key={i} value={s}>{s}</option>
+            ))}
           </select>
         </div>
         <button type="submit" className="btn" style={{ background: '#e94c4c', color: '#fff', fontWeight: 'bold' }}>
@@ -130,6 +164,48 @@ const ActualizarPage = () => {
         </button>
         {mensaje && <div className="mt-3 alert alert-info">{mensaje}</div>}
       </form>
+
+      {/* Modal: semestre anterior y no cambió de carrera */}
+      {showErrorModal && (
+        <div className="modal fade show" style={{ display: 'block', background: 'rgba(0,0,0,0.4)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header bg-danger text-white">
+                <h5 className="modal-title">Semestre no permitido</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={() => setShowErrorModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                Estás seleccionando un semestre anterior al que registraste originalmente. Solo puedes hacerlo si cambiaste de carrera. <br />
+                Por favor, selecciona el mismo semestre o uno posterior.
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => setShowErrorModal(false)}>Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: semestre anterior y cambió de carrera */}
+      {showConfirmModal && (
+        <div className="modal fade show" style={{ display: 'block', background: 'rgba(0,0,0,0.4)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header bg-warning text-dark">
+                <h5 className="modal-title">Confirmar cambio de carrera</h5>
+                <button type="button" className="btn-close" onClick={() => setShowConfirmModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                Estás seleccionando un semestre anterior al que registraste originalmente. ¿Cambiaste de carrera?
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => setShowConfirmModal(false)}>No</button>
+                <button className="btn btn-primary" onClick={e => { setShowConfirmModal(false); handleActualizar(e, true); }}>Sí, actualizar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal de éxito */}
       {showSuccessModal && (
@@ -140,8 +216,8 @@ const ActualizarPage = () => {
           <div style={{
             background: 'white', padding: 32, borderRadius: 12, minWidth: 300, textAlign: 'center', boxShadow: '0 2px 16px #0002'
           }}>
-            <h4 style={{ color: '#e94c4c' }}>¡Solicitud de actualizacion de datos enviada correctamente!</h4>
-            <p>Serás redirigido al inicio de sesión, Espera la notificacion de activacion</p>
+            <h4 style={{ color: '#e94c4c' }}>¡Solicitud de actualización de datos enviada correctamente!</h4>
+            <p>Serás redirigido al inicio de sesión, Espera la notificación de activación</p>
           </div>
         </div>
       )}

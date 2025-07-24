@@ -253,6 +253,29 @@ router.post('/solicitar-actualizacion', async (req, res) => {
     if (!usuario) return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
     if (usuario.activo) return res.status(400).json({ mensaje: 'Solo puedes actualizar datos si tu cuenta está inactiva.' });
 
+    // --- VALIDACIÓN DE SEMESTRE ---
+    const SEMESTRES = [
+      "Nivelación",
+      "Primer semestre",
+      "Segundo semestre",
+      "Tercer semestre",
+      "Cuarto semestre",
+      "Quinto semestre",
+    ];
+    const indiceSemestreOriginal = SEMESTRES.indexOf(usuario.semestre);
+    const indiceSemestreSeleccionado = SEMESTRES.indexOf(semestre);
+
+    // Si selecciona semestre anterior y no cambió de carrera
+    if (
+      indiceSemestreSeleccionado < indiceSemestreOriginal &&
+      carrera === usuario.carrera
+    ) {
+      return res.status(400).json({
+        mensaje: 'Solo puedes seleccionar un semestre anterior si cambiaste de carrera.',
+      });
+    }
+    // --- FIN VALIDACIÓN ---
+
     // Guarda la solicitud pendiente
     const solicitud = await SolicitudActualizacion.create({
       usuarioId: id,
